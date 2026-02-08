@@ -1,0 +1,96 @@
+
+import { Machine } from './types';
+
+export const MACHINES_DATA: Machine[] = [
+  {
+    id: '1',
+    name: 'Caterpillar 320 Next Gen',
+    model: '320-07',
+    brand: 'Caterpillar',
+    year: 2023,
+    hours: 120,
+    weight: 22.5,
+    type: 'both',
+    category: 'Medio',
+    price: 145000,
+    rentalPrice: '350€ / giorno',
+    imageUrl: 'https://picsum.photos/seed/excavator1/800/600',
+    features: ['GPS Integrato', 'Cabina Climatizzata', 'Basso Consumo'],
+    description: 'Escavatore di ultima generazione con tecnologia 2D e 3D integrata.'
+  },
+  {
+    id: '2',
+    name: 'Komatsu PC55MR-5',
+    model: 'PC55MR',
+    brand: 'Komatsu',
+    year: 2022,
+    hours: 450,
+    weight: 5.3,
+    type: 'rental',
+    category: 'Mini',
+    rentalPrice: '150€ / giorno',
+    imageUrl: 'https://picsum.photos/seed/excavator2/800/600',
+    features: ['Zero Tail Swing', 'Attacco Rapido', 'Linea Martello'],
+    description: 'Perfetto per lavori in spazi ristretti e manutenzione urbana.'
+  },
+  {
+    id: '3',
+    name: 'Volvo EC300E',
+    model: 'EC300E',
+    brand: 'Volvo',
+    year: 2021,
+    hours: 2100,
+    weight: 30.2,
+    type: 'sale',
+    category: 'Pesante',
+    price: 185000,
+    imageUrl: 'https://picsum.photos/seed/excavator3/800/600',
+    features: ['Motore Stage V', 'Telecamera 360°', 'Benna da 2.0m3'],
+    description: 'Potenza e precisione per grandi cantieri e movimento terra pesante.'
+  },
+  {
+    id: '4',
+    name: 'Yanmar Vio80-1',
+    model: 'Vio80',
+    brand: 'Yanmar',
+    year: 2023,
+    hours: 50,
+    weight: 8.2,
+    type: 'both',
+    category: 'Mini',
+    price: 72000,
+    rentalPrice: '220€ / giorno',
+    imageUrl: 'https://picsum.photos/seed/excavator4/800/600',
+    features: ['Cingoli in Gomma', 'Lama frontale', 'Cabina FOPS'],
+    description: 'Il top di gamma per i midi escavatori, stabilità eccezionale.'
+  },
+  {
+    id: '5',
+    name: 'Hitachi ZX210LC-7',
+    model: 'ZX210LC',
+    brand: 'Hitachi',
+    year: 2024,
+    weight: 21.8,
+    type: 'rental',
+    category: 'Medio',
+    rentalPrice: '300€ / giorno',
+    imageUrl: 'https://picsum.photos/seed/excavator5/800/600',
+    features: ['Nuova Idraulica HIOS V', 'Monitor LCD 8"', 'Sicurezza Aumentata'],
+    description: 'Noleggia l\'efficienza pura con il nuovo ZX210LC-7.'
+  },
+  {
+    id: '6',
+    name: 'Liebherr R 926',
+    model: 'R926-G8',
+    brand: 'Liebherr',
+    year: 2022,
+    hours: 1500,
+    weight: 26.5,
+    type: 'sale',
+    category: 'Pesante',
+    price: 160000,
+    imageUrl: 'https://picsum.photos/seed/excavator6/800/600',
+    features: ['Tecnologia Generation 8', 'Comfort cabina Premium', 'Braccio Triplice'],
+    description: 'Ingegneria tedesca al servizio del tuo profitto.'
+  }
+];
