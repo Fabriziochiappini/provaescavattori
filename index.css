@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Oswald", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --color-primary: #f59e0b; /* Amber 500 - Excavator Yellow */
+  --color-secondary: #27272a; /* Zinc 800 */
+  --color-background-light: #fafafa; /* Zinc 50 */
+  --color-background-dark: #18181b; /* Zinc 900 */
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #27272a; /* Zinc 800 */
+  --color-text-light: #18181b; /* Zinc 900 */
+  --color-text-dark: #f4f4f5; /* Zinc 100 */
+
+  --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
+  
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: #a1a1aa transparent;
+}
+
+.dark {
+  scrollbar-color: #52525b transparent;
+}
+
+body {
+  @apply bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-body antialiased transition-colors duration-300;
+}
+
+h1, q, h2, h3, h4, .font-display, .font-oswald {
+  font-family: var(--font-display);
+}
