@@ -9,6 +9,7 @@ import Rental from './pages/Rental';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import Assistance from './pages/Assistance';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -32,6 +33,7 @@ const LayoutContent: React.FC = () => {
           <Route path="/noleggio" element={<Rental />} />
           <Route path="/chi-siamo" element={<About />} />
           <Route path="/contatti" element={<Contact />} />
+          <Route path="/assistenza" element={<Assistance />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>

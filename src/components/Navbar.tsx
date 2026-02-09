@@ -12,6 +12,7 @@ const Navbar: React.FC = () => {
     { name: 'Vendita', path: '/vendita' },
     { name: 'Noleggio', path: '/noleggio' },
     { name: 'Chi Siamo', path: '/chi-siamo' },
+    { name: 'Assistenza', path: '/assistenza' },
     { name: 'Contatti', path: '/contatti' },
   ];
 
@@ -36,9 +37,8 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-semibold uppercase tracking-widest transition-colors hover:text-orange-500 ${
-                  isActive(link.path) ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : 'text-zinc-300'
-                }`}
+                className={`text-sm font-semibold uppercase tracking-widest transition-colors hover:text-orange-500 ${isActive(link.path) ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : 'text-zinc-300'
+                  }`}
               >
                 {link.name}
               </Link>
@@ -73,9 +73,8 @@ const Navbar: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-4 rounded-md text-base font-medium transition-colors ${
-                  isActive(link.path) ? 'bg-orange-600 text-black' : 'text-zinc-300 hover:bg-zinc-800'
-                }`}
+                className={`block px-3 py-4 rounded-md text-base font-medium transition-colors ${isActive(link.path) ? 'bg-orange-600 text-black' : 'text-zinc-300 hover:bg-zinc-800'
+                  }`}
               >
                 {link.name}
               </Link>
