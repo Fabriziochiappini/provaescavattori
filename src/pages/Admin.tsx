@@ -250,15 +250,6 @@ const Admin: React.FC = () => {
                             )}
                         </button>
                     </form>
-                    <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
-                        <p className="text-xs text-center text-gray-400 mb-4">Solo per anteprima (non richiede Firebase):</p>
-                        <button
-                            onClick={() => setIsAuthenticated(true)}
-                            className="w-full bg-white dark:bg-gray-700 text-amber-500 border border-amber-500 py-2 rounded-lg font-bold hover:bg-amber-50 dark:hover:bg-amber-600 transition-colors"
-                        >
-                            Esplora come Guest
-                        </button>
-                    </div>
                 </div>
             </div>
         );

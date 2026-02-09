@@ -90,6 +90,52 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
     const [stats, setStats] = useState<Stats>({ visits: 0, footerClicks: 0 });
 
+    // Seeding Logic: If database is empty, seed with mock data
+    useEffect(() => {
+        const seedData = async () => {
+            // Check excavators
+            if (excavators.length === 0 && initialSiteData.excavators.length > 0) {
+                console.log("Seeding excavators...");
+                for (const item of initialSiteData.excavators) {
+                    const { id, ...rest } = item;
+                    await addDoc(collection(db, 'excavators'), rest);
+                }
+            }
+
+            // Seed default contacts if empty
+            if (contacts.length === 0) {
+                console.log("Seeding default contacts...");
+                const defaultContacts = [
+                    { icon: 'phone', label: 'Telefono', value: '+39 06 1234567', sub: 'Lun-Ven 9:00-18:00' },
+                    { icon: 'email', label: 'Email', value: 'info@contegroup.it', sub: 'Rispondiamo entro 24h' },
+                    { icon: 'place', label: 'Sede Centrale', value: 'Via Roma 123, Roma', sub: 'Showroom e Officina' }
+                ];
+                for (const c of defaultContacts) {
+                    await addDoc(collection(db, 'contacts'), c);
+                }
+            }
+
+            // Seed default gallery if empty
+            if (homeGallery.items.length === 0) {
+                console.log("Seeding default gallery...");
+                await setDoc(doc(db, 'settings', 'home_gallery'), {
+                    title: 'Il nostro Parco Macchine',
+                    subtitle: 'Eccellenza e potenza per ogni cantiere',
+                    items: [
+                        { id: '1', title: 'Scavo Fondamenta', subtitle: 'Utilizzo Caterpillar 320', image: 'https://picsum.photos/seed/ex1/1200/800' },
+                        { id: '2', title: 'Terrazzamento', subtitle: 'Precisione con Bobcat E19', image: 'https://picsum.photos/seed/ex2/1200/800' }
+                    ]
+                });
+            }
+        };
+
+        // Run seed check after a short delay to allow snapshots to initialize
+        if (excavators.length === 0 && services.length === 0) {
+            const timer = setTimeout(seedData, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [excavators.length, services.length, contacts.length, homeGallery.items.length]);
+
     // Real-time Listeners
     useEffect(() => {
         const unsub = onSnapshot(collection(db, 'excavators'), (snap) => {
