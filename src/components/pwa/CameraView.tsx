@@ -267,12 +267,31 @@ export const CameraView: React.FC = () => {
 
             {/* Top Bar / Side Bar Overlay (Landscape) */}
             <div className={`absolute z-40 flex items-center justify-between p-6 ${isLandscape ? 'top-0 bottom-0 left-0 w-24 flex-col bg-gradient-to-r from-black/60 to-transparent' : 'top-0 left-0 right-0 bg-gradient-to-b from-black/60 to-transparent'}`}>
-                <button
-                    onClick={() => { stopCamera(); navigate('/admin/pwa'); }}
-                    className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md border border-white/10 active:scale-90 transition-all"
-                >
-                    <X className="w-6 h-6" />
-                </button>
+                <div className="flex flex-col gap-6 items-center">
+                    <button
+                        onClick={() => { stopCamera(); navigate('/admin/pwa'); }}
+                        className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md border border-white/10 active:scale-90 transition-all"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+
+                    {/* Mini Gallery (Landscape - Left Side) */}
+                    {isLandscape && capturedPhotos.length > 0 && (
+                        <div className="flex flex-col gap-3 py-4 overflow-y-auto scrollbar-none max-h-[50vh] animate-in slide-in-from-left duration-300">
+                            {capturedPhotos.map((photo) => (
+                                <div key={photo.id} className="relative w-14 h-14 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/20">
+                                    <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                                    <button
+                                        onClick={() => discardPhoto(photo.id)}
+                                        className="absolute inset-0 bg-red-600/80 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 <div className={`flex items-center gap-3 bg-amber-500 px-4 py-2 rounded-full shadow-2xl animate-in zoom-in duration-300 ${isLandscape ? 'rotate-90' : ''}`}>
                     <Camera className="w-5 h-5 text-black" />
@@ -322,26 +341,28 @@ export const CameraView: React.FC = () => {
             </div>
 
             {/* Bottom Controls / Right Controls (Landscape) */}
-            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-50 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l shadow-2xl' : 'h-40 border-t'}`}>
-                {/* Captured Sidebar Preview */}
-                <div className={`flex gap-3 p-2 scrollbar-none ${isLandscape ? 'flex-col overflow-y-auto max-h-[50vh] w-full items-center' : 'w-48 overflow-x-auto'}`}>
-                    {capturedPhotos.map((photo) => (
-                        <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/5">
-                            <img src={photo.url} alt="" className="w-full h-full object-cover" />
-                            <button
-                                onClick={() => discardPhoto(photo.id)}
-                                className="absolute inset-0 bg-red-600/60 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
-                            >
-                                <Trash2 className="w-5 h-5" />
-                            </button>
-                        </div>
-                    ))}
-                    {capturedPhotos.length === 0 && (
-                        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-zinc-800 flex items-center justify-center text-zinc-800">
-                            <Camera className="w-6 h-6" />
-                        </div>
-                    )}
-                </div>
+            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-50 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-32 flex-col border-l shadow-2xl' : 'h-40 border-t'}`}>
+                {/* Captured Preview (Portrait - Bottom Left) */}
+                {!isLandscape && (
+                    <div className="flex gap-3 p-2 overflow-x-auto scrollbar-none w-48">
+                        {capturedPhotos.map((photo) => (
+                            <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/5">
+                                <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                                <button
+                                    onClick={() => discardPhoto(photo.id)}
+                                    className="absolute inset-0 bg-red-600/60 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                        {capturedPhotos.length === 0 && (
+                            <div className="w-16 h-16 rounded-xl border-2 border-dashed border-zinc-800 flex items-center justify-center text-zinc-800">
+                                <Camera className="w-6 h-6" />
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="relative flex items-center justify-center">
                     <div className={`absolute inset-0 rounded-full border-4 border-amber-500 scale-125 opacity-0 ${showFlash ? 'animate-ping opacity-100' : ''}`} />
