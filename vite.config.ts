@@ -15,36 +15,15 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       VitePWA({
+        strategies: 'injectManifest',
+        srcDir: 'public',
+        filename: 'sw.js',
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'images/*.png'],
-        manifest: {
-          name: 'Conte Group Admin',
-          short_name: 'ConteAdmin',
-          description: 'Conte Group Machine Management',
-          theme_color: '#f59e0b',
-          background_color: '#ffffff',
-          display: 'standalone',
-          orientation: 'portrait',
-          start_url: '/admin/pwa',
-          scope: '/',
-          icons: [
-            {
-              src: '/images/icon-192.png',
-              sizes: '192x192',
-              type: 'image/png'
-            },
-            {
-              src: '/images/icon-512.png',
-              sizes: '512x512',
-              type: 'image/png'
-            },
-            {
-              src: '/images/icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable'
-            }
-          ]
+        injectRegister: false,
+        manifest: false, // Use public/manifest.json instead
+        includeAssets: ['favicon.ico', 'images/*.png', 'manifest.json'],
+        injectManifest: {
+          injectionPoint: undefined
         }
       })
     ],

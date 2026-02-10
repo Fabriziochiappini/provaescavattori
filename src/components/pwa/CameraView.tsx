@@ -1,120 +1,285 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, X } from 'lucide-react';
-import { savePhoto } from '../../services/pwaStorage';
+import { X, Camera, RotateCcw, Check, ZoomIn, ZoomOut, Smartphone, Trash2 } from 'lucide-react';
+import { savePhoto, deletePhoto } from '../../services/pwaStorage';
 
+interface CapturedPhoto {
+    id: string;
+    blob: Blob;
+    url: string;
+}
 
 export const CameraView: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [stream, setStream] = useState<MediaStream | null>(null);
-    const [photosTaken, setPhotosTaken] = useState<number>(0);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
     const [showFlash, setShowFlash] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+    const [showRotateMessage, setShowRotateMessage] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const [zoomCapabilities, setZoomCapabilities] = useState<{ min: number; max: number; step: number } | null>(null);
+
     const navigate = useNavigate();
+
+    // Detect iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
+    useEffect(() => {
+        const updateOrientation = () => {
+            const isLandscape = window.innerWidth > window.innerHeight;
+            setOrientation(isLandscape ? 'landscape' : 'portrait');
+            if (isLandscape) setShowRotateMessage(false);
+        };
+
+        updateOrientation();
+        window.addEventListener('resize', updateOrientation);
+        window.addEventListener('orientationchange', updateOrientation);
+
+        return () => {
+            window.removeEventListener('resize', updateOrientation);
+            window.removeEventListener('orientationchange', updateOrientation);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (orientation === 'portrait') {
+            setShowRotateMessage(true);
+            const timer = setTimeout(() => setShowRotateMessage(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [orientation]);
+
+    const startCamera = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 4032 },
+                    height: { ideal: 3024 },
+                },
+                audio: false,
+            });
+
+            streamRef.current = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                await videoRef.current.play();
+            }
+
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                const capabilities = (videoTrack as any).getCapabilities?.();
+                if (capabilities?.zoom) {
+                    setZoomCapabilities({
+                        min: capabilities.zoom.min || 1,
+                        max: capabilities.zoom.max || 1,
+                        step: capabilities.zoom.step || 0.1,
+                    });
+                }
+            }
+            setIsLoading(false);
+        } catch (err) {
+            console.error('Camera error:', err);
+            setError('Impossibile accedere alla fotocamera.');
+            setIsLoading(false);
+        }
+    }, []);
+
+    const stopCamera = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+        }
+    }, []);
 
     useEffect(() => {
         startCamera();
         return () => stopCamera();
+    }, [startCamera, stopCamera]);
+
+    const handleZoomChange = useCallback(async (newZoom: number) => {
+        if (!streamRef.current || !zoomCapabilities) return;
+        const videoTrack = streamRef.current.getVideoTracks()[0];
+        if (!videoTrack) return;
+
+        const clampedZoom = Math.max(zoomCapabilities.min, Math.min(zoomCapabilities.max, newZoom));
+        try {
+            await (videoTrack as any).applyConstraints({
+                advanced: [{ zoom: clampedZoom }],
+            });
+            setZoomLevel(clampedZoom);
+        } catch (err) {
+            console.log('Zoom error', err);
+        }
+    }, [zoomCapabilities]);
+
+    const takePhoto = useCallback(() => {
+        if (!videoRef.current || !canvasRef.current) return;
+
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0);
+
+        setShowFlash(true);
+        setTimeout(() => setShowFlash(false), 150);
+
+        if ('vibrate' in navigator) navigator.vibrate(50);
+
+        canvas.toBlob(async (blob) => {
+            if (blob) {
+                const id = crypto.randomUUID();
+                const url = URL.createObjectURL(blob);
+                await savePhoto(id, blob);
+                setCapturedPhotos((prev) => [...prev, { id, blob, url }]);
+            }
+        }, 'image/jpeg', 0.85);
     }, []);
 
-    const startCamera = async () => {
-        try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' },
-                audio: false,
-            });
-            setStream(mediaStream);
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-            }
-        } catch (err) {
-            console.error('Error accessing camera:', err);
-            // Fallback or alert specific to permission denial
-            // alert('Impossibile accedere alla fotocamera. Verifica i permessi.');
-        }
-    };
-
-    const stopCamera = () => {
-        if (stream) {
-            stream.getTracks().forEach((track) => track.stop());
-            setStream(null);
-        }
-    };
-
-    const takePhoto = async () => {
-        if (videoRef.current) {
-            const canvas = document.createElement('canvas');
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(videoRef.current, 0, 0);
-
-                canvas.toBlob(async (blob) => {
-                    if (blob) {
-                        // Visual feedback: Flash
-                        setShowFlash(true);
-                        setTimeout(() => setShowFlash(false), 150);
-
-                        // Tactile feedback: Vibration
-                        if ('vibrate' in navigator) {
-                            navigator.vibrate(50);
-                        }
-
-                        const id = crypto.randomUUID();
-                        await savePhoto(id, blob);
-                        setPhotosTaken((prev) => prev + 1);
-                    }
-                }, 'image/jpeg', 0.8);
-            }
-        }
+    const discardPhoto = async (id: string) => {
+        await deletePhoto(id);
+        setCapturedPhotos((prev) => {
+            const filtered = prev.filter((p) => p.id !== id);
+            // Cleanup URL
+            const photo = prev.find((p) => p.id === id);
+            if (photo) URL.revokeObjectURL(photo.url);
+            return filtered;
+        });
     };
 
     const handleFinish = () => {
         stopCamera();
+        // Cleanup all URLs before navigating
+        capturedPhotos.forEach((p) => URL.revokeObjectURL(p.url));
         navigate('/admin/pwa/gallery');
     };
 
+    const toggleFullscreen = async () => {
+        if (!document.fullscreenElement) {
+            await containerRef.current?.requestFullscreen();
+            setIsFullscreen(true);
+        } else {
+            await document.exitFullscreen();
+            setIsFullscreen(false);
+        }
+    };
+
+    const isLandscape = orientation === 'landscape';
+
     return (
-        <div className="fixed inset-0 bg-black flex flex-col z-50">
-            <div className="relative flex-1 bg-black overflow-hidden">
+        <div ref={containerRef} className="fixed inset-0 bg-black flex flex-col z-50 overflow-hidden font-sans">
+            <canvas ref={canvasRef} className="hidden" />
+
+            {/* Orientation Message */}
+            {showRotateMessage && !isLandscape && (
+                <div className="absolute inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6 text-center">
+                    <Smartphone className="w-24 h-24 text-amber-500 animate-bounce mb-6" style={{ transform: 'rotate(90deg)' }} />
+                    <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Gira il telefono</h2>
+                    <p className="text-zinc-400">Per scattare foto migliori dei macchinari, usa la modalità orizzontale.</p>
+                </div>
+            )}
+
+            {/* Top Bar / Side Bar Overlay (Landscape) */}
+            <div className={`absolute z-40 flex items-center justify-between p-6 ${isLandscape ? 'top-0 bottom-0 left-0 w-24 flex-col bg-gradient-to-r from-black/60 to-transparent' : 'top-0 left-0 right-0 bg-gradient-to-b from-black/60 to-transparent'}`}>
+                <button
+                    onClick={() => { stopCamera(); navigate('/admin/pwa'); }}
+                    className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md border border-white/10 active:scale-90 transition-all"
+                >
+                    <X className="w-6 h-6" />
+                </button>
+
+                <div className={`flex items-center gap-3 bg-amber-500 px-4 py-2 rounded-full shadow-2xl animate-in zoom-in duration-300 ${isLandscape ? 'rotate-90' : ''}`}>
+                    <Camera className="w-5 h-5 text-black" />
+                    <span className="text-black font-black text-sm">{capturedPhotos.length}</span>
+                </div>
+
+                <button
+                    onClick={toggleFullscreen}
+                    className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md border border-white/10 active:scale-90 transition-all"
+                >
+                    <Smartphone className={`w-6 h-6 ${isFullscreen ? '' : 'rotate-90'}`} />
+                </button>
+            </div>
+
+            {/* Video Preview */}
+            <div className="flex-1 relative bg-black flex items-center justify-center">
+                {isLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 gap-4">
+                        <Camera className="w-12 h-12 animate-pulse" />
+                        <p className="text-sm font-bold uppercase tracking-widest">Avvio Optica...</p>
+                    </div>
+                )}
+                {error && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-red-500 p-8 text-center gap-4">
+                        <X className="w-12 h-12" />
+                        <p className="font-bold">{error}</p>
+                        <button onClick={startCamera} className="px-6 py-2 bg-white/10 rounded-full text-white text-xs font-bold uppercase">Riprova</button>
+                    </div>
+                )}
                 <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="w-full h-full object-cover"
                 />
+                {showFlash && <div className="absolute inset-0 bg-white z-20 animate-in fade-in fade-out duration-150" />}
 
-                {/* Flash Overlay */}
-                {showFlash && (
-                    <div className="absolute inset-0 bg-white z-20 animate-in fade-in fade-out duration-150" />
+                {/* Zoom Controls Overlay */}
+                {zoomCapabilities && (
+                    <div className={`absolute z-40 flex items-center gap-4 ${isLandscape ? 'bottom-8 left-1/2 -translate-x-1/2' : 'right-8 top-1/2 -translate-y-1/2 flex-col'}`}>
+                        <button onClick={() => handleZoomChange(zoomLevel - 0.5)} className="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md border border-white/10 active:scale-90"><ZoomOut className="w-5 h-5" /></button>
+                        <div className={`bg-black/40 px-3 py-1 rounded-full text-[10px] font-black text-amber-500 border border-white/10 ${isLandscape ? '' : 'rotate-90'}`}>{zoomLevel.toFixed(1)}x</div>
+                        <button onClick={() => handleZoomChange(zoomLevel + 0.5)} className="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md border border-white/10 active:scale-90"><ZoomIn className="w-5 h-5" /></button>
+                    </div>
                 )}
-
-                <button
-                    onClick={() => {
-                        stopCamera();
-                        navigate('/admin/pwa');
-                    }}
-                    className="absolute top-6 left-6 p-3 bg-black/40 rounded-full text-white z-10 backdrop-blur-md border border-white/10"
-                >
-                    <X className="w-6 h-6" />
-                </button>
-
-                <div className="absolute top-6 right-6 bg-amber-500 px-4 py-1.5 rounded-full text-black text-sm font-bold z-10 shadow-lg animate-in zoom-in duration-300">
-                    {photosTaken} FOTO
-                </div>
             </div>
 
-            <div className="h-40 bg-zinc-900 flex items-center justify-between px-10 pb-8 safe-area-bottom border-t border-white/5">
-                <div className="w-16" /> {/* Spacer matched to button size approx */}
+            {/* Bottom Controls / Right Controls (Landscape) */}
+            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l' : 'h-40 border-t'}`}>
+                {/* Captured Sidebar Preview */}
+                <div className={`flex gap-3 overflow-x-auto p-2 scrollbar-none ${isLandscape ? 'flex-col overflow-y-auto max-h-[50vh] w-full items-center' : 'w-32'}`}>
+                    {capturedPhotos.map((photo) => (
+                        <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group">
+                            <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                            <button
+                                onClick={() => discardPhoto(photo.id)}
+                                className="absolute inset-0 bg-red-600/60 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
+                            >
+                                <Trash2 className="w-5 h-5" />
+                            </button>
+                        </div>
+                    ))}
+                    {capturedPhotos.length === 0 && (
+                        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-zinc-800 flex items-center justify-center text-zinc-800">
+                            <Camera className="w-6 h-6" />
+                        </div>
+                    )}
+                </div>
 
                 <div className="relative flex items-center justify-center">
-                    {/* Ring animation on capture */}
-                    <div className={`absolute inset-0 rounded-full border-4 border-amber-500 scale-110 opacity-0 ${showFlash ? 'animate-ping opacity-100' : ''}`} />
+                    <div className={`absolute inset-0 rounded-full border-4 border-amber-500 scale-125 opacity-0 ${showFlash ? 'animate-ping opacity-100' : ''}`} />
                     <button
                         onClick={takePhoto}
+                        disabled={isLoading || !!error}
                         className="w-20 h-20 rounded-full border-4 border-white bg-white/10 active:scale-90 active:bg-white/30 transition-all shadow-2xl flex items-center justify-center"
-                        aria-label="Scatta foto"
                     >
                         <div className="w-16 h-16 rounded-full bg-white shadow-inner" />
                     </button>
@@ -122,13 +287,13 @@ export const CameraView: React.FC = () => {
 
                 <button
                     onClick={handleFinish}
-                    disabled={photosTaken === 0}
-                    className="flex items-center gap-2 text-amber-500 font-bold disabled:opacity-30 disabled:grayscale bg-amber-500/10 px-6 py-3 rounded-2xl backdrop-blur-md border border-amber-500/20 active:scale-95 transition-all uppercase text-sm tracking-wider"
+                    disabled={capturedPhotos.length === 0}
+                    className="flex flex-col items-center gap-1 text-amber-500 font-bold disabled:opacity-20 bg-amber-500/10 px-6 py-3 rounded-2xl backdrop-blur-md border border-amber-500/20 active:scale-95 transition-all text-xs tracking-tighter"
                 >
-                    FINE <ArrowRight className="w-5 h-5" />
+                    <Check className="w-6 h-6" />
+                    PROCEDI
                 </button>
             </div>
-
         </div>
     );
 };
