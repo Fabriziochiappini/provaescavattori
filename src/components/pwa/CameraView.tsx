@@ -218,7 +218,8 @@ export const CameraView: React.FC = () => {
         const sourceX = (videoWidth - squareSize) / 2;
         const sourceY = (videoHeight - squareSize) / 2;
 
-        const maxDimension = 1536;
+        // Calculate output size with max dimension limit
+        const maxDimension = 3072; // Increased from 1536 for better quality
         const outputSize = Math.min(squareSize, maxDimension);
 
         canvas.width = outputSize;
@@ -255,7 +256,7 @@ export const CameraView: React.FC = () => {
                 setIsCapturing(false);
             },
             'image/jpeg',
-            0.92
+            1.0 // Maximum quality
         );
 
         // Safety timeout

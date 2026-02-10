@@ -20,9 +20,10 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
         if (!photo) return null;
 
         const options = {
-            maxSizeMB: 1,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true
+            maxSizeMB: 4,               // Increased from 1MB
+            maxWidthOrHeight: 4096,     // Increased from 1920px
+            useWebWorker: true,
+            initialQuality: 0.9         // Ensure high quality starting point
         };
 
         try {
