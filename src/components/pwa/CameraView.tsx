@@ -57,14 +57,17 @@ export const CameraView: React.FC = () => {
     }, [orientation]);
 
     const startCamera = useCallback(async () => {
+        console.log('[Camera] Starting camera...');
         setIsLoading(true);
         setError(null);
 
         if (streamRef.current) {
+            console.log('[Camera] Stopping existing stream');
             streamRef.current.getTracks().forEach((track) => track.stop());
         }
 
         try {
+            console.log('[Camera] Requesting media stream...');
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: 'environment',
@@ -74,10 +77,12 @@ export const CameraView: React.FC = () => {
                 audio: false,
             });
 
+            console.log('[Camera] Media stream obtained');
             streamRef.current = stream;
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 await videoRef.current.play();
+                console.log('[Camera] Video element playing');
             }
 
             const videoTrack = stream.getVideoTracks()[0];
@@ -89,11 +94,13 @@ export const CameraView: React.FC = () => {
                         max: capabilities.zoom.max || 1,
                         step: capabilities.zoom.step || 0.1,
                     });
+                    console.log('[Camera] Zoom capabilities:', capabilities.zoom);
                 }
             }
             setIsLoading(false);
+            console.log('[Camera] Camera started successfully');
         } catch (err) {
-            console.error('Camera error:', err);
+            console.error('[Camera] Camera error:', err);
             setError('Impossibile accedere alla fotocamera.');
             setIsLoading(false);
         }
@@ -128,19 +135,35 @@ export const CameraView: React.FC = () => {
     }, [zoomCapabilities]);
 
     const takePhoto = useCallback(() => {
-        if (!videoRef.current || !canvasRef.current || isCapturing) return;
+        if (!videoRef.current || !canvasRef.current || isCapturing) {
+            console.log('[Camera] Cannot take photo:', {
+                hasVideo: !!videoRef.current,
+                hasCanvas: !!canvasRef.current,
+                isCapturing
+            });
+            return;
+        }
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        if (!context) return;
+        if (!context) {
+            console.error('[Camera] Cannot get canvas context');
+            return;
+        }
 
-        // Limita la risoluzione per performance e compatibilità
+        // Get video dimensions
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
 
-        if (videoWidth === 0 || videoHeight === 0) return;
+        console.log('[Camera] Video dimensions:', { videoWidth, videoHeight });
 
+        if (videoWidth === 0 || videoHeight === 0) {
+            console.error('[Camera] Invalid video dimensions');
+            return;
+        }
+
+        // Calculate output size with max dimension limit
         const maxDimension = 1536;
         let scale = 1;
         if (Math.max(videoWidth, videoHeight) > maxDimension) {
@@ -150,23 +173,48 @@ export const CameraView: React.FC = () => {
         canvas.width = videoWidth * scale;
         canvas.height = videoHeight * scale;
 
+        console.log('[Camera] Canvas size:', { width: canvas.width, height: canvas.height, scale });
+
+        // Draw the current video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+        // Visual feedback
         setIsCapturing(true);
         setShowFlash(true);
         setTimeout(() => setShowFlash(false), 150);
 
+        // Haptic feedback
         if ('vibrate' in navigator) navigator.vibrate(50);
 
-        canvas.toBlob(async (blob) => {
-            if (blob) {
-                const id = crypto.randomUUID();
-                const url = URL.createObjectURL(blob);
-                await savePhoto(id, blob);
-                setCapturedPhotos((prev) => [...prev, { id, blob, url }]);
-            }
-            setIsCapturing(false);
-        }, 'image/jpeg', 0.85);
+        console.log('[Camera] Converting canvas to blob...');
+
+        // Convert canvas to blob
+        canvas.toBlob(
+            async (blob) => {
+                if (blob) {
+                    console.log('[Camera] Blob created successfully:', {
+                        size: blob.size,
+                        type: blob.type
+                    });
+
+                    const id = crypto.randomUUID();
+                    const url = URL.createObjectURL(blob);
+
+                    try {
+                        await savePhoto(id, blob);
+                        console.log('[Camera] Photo saved to IndexedDB:', id);
+                        setCapturedPhotos((prev) => [...prev, { id, blob, url }]);
+                    } catch (error) {
+                        console.error('[Camera] Error saving photo:', error);
+                    }
+                } else {
+                    console.error('[Camera] Failed to create blob from canvas');
+                }
+                setIsCapturing(false);
+            },
+            'image/jpeg',
+            0.85
+        );
     }, [isCapturing]);
 
     const discardPhoto = async (id: string) => {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
-import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
 import BrandsManager from '../components/admin/BrandsManager';
 import { Reorder } from 'framer-motion';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 const Admin: React.FC = () => {
     const {
@@ -20,6 +20,9 @@ const Admin: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // PWA Install Hook
+    const { install: installPWA, canInstall, isInstalled } = usePWAInstall();
 
     // Check auth state on mount
     React.useEffect(() => {
@@ -298,6 +301,18 @@ const Admin: React.FC = () => {
                                 </button>
                             ))}
                         </nav>
+
+                        {/* PWA Install Button - Only visible for admin users when installable */}
+                        {canInstall && !isInstalled && (
+                            <button
+                                onClick={installPWA}
+                                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-full font-bold hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 text-sm animate-pulse hover:animate-none"
+                            >
+                                <span className="material-icons-outlined">download</span>
+                                INSTALLA APP
+                            </button>
+                        )}
+
                         <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500 font-bold">Log Out</button>
                     </div>
                 </div>
