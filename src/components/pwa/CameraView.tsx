@@ -210,11 +210,16 @@ export const CameraView: React.FC = () => {
                 } else {
                     console.error('[Camera] Failed to create blob from canvas');
                 }
+
+                // Reset capturing state
                 setIsCapturing(false);
             },
             'image/jpeg',
             0.85
         );
+
+        // Safety timeout to reset isCapturing if transition fails (3 seconds)
+        setTimeout(() => setIsCapturing(false), 3000);
     }, [isCapturing]);
 
     const discardPhoto = async (id: string) => {
@@ -251,12 +256,12 @@ export const CameraView: React.FC = () => {
         <div ref={containerRef} className="fixed inset-0 bg-black flex flex-col z-50 overflow-hidden font-sans">
             <canvas ref={canvasRef} className="hidden" />
 
-            {/* Orientation Message */}
+            {/* Orientation Message - Non-blocking overlay */}
             {showRotateMessage && !isLandscape && (
-                <div className="absolute inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6 text-center">
+                <div className="absolute inset-0 z-[100] bg-black/60 flex flex-col items-center justify-center p-6 text-center pointer-events-none select-none animate-in fade-in duration-500">
                     <Smartphone className="w-24 h-24 text-amber-500 animate-bounce mb-6" style={{ transform: 'rotate(90deg)' }} />
                     <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Gira il telefono</h2>
-                    <p className="text-zinc-400">Per scattare foto migliori dei macchinari, usa la modalità orizzontale.</p>
+                    <p className="text-zinc-400">Usa la modalità orizzontale per scatti migliori.</p>
                 </div>
             )}
 
@@ -317,7 +322,7 @@ export const CameraView: React.FC = () => {
             </div>
 
             {/* Bottom Controls / Right Controls (Landscape) */}
-            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-40 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l' : 'h-40 border-t'}`}>
+            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-50 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l shadow-2xl' : 'h-40 border-t'}`}>
                 {/* Captured Sidebar Preview */}
                 <div className={`flex gap-3 p-2 scrollbar-none ${isLandscape ? 'flex-col overflow-y-auto max-h-[50vh] w-full items-center' : 'w-48 overflow-x-auto'}`}>
                     {capturedPhotos.map((photo) => (
@@ -341,11 +346,14 @@ export const CameraView: React.FC = () => {
                 <div className="relative flex items-center justify-center">
                     <div className={`absolute inset-0 rounded-full border-4 border-amber-500 scale-125 opacity-0 ${showFlash ? 'animate-ping opacity-100' : ''}`} />
                     <button
-                        onClick={takePhoto}
-                        disabled={isLoading || !!error || isCapturing}
-                        className={`w-20 h-20 rounded-full border-4 border-white bg-white/10 active:scale-95 active:bg-white/30 transition-all shadow-2xl flex items-center justify-center ${isCapturing ? 'opacity-50' : ''}`}
+                        onClick={() => {
+                            console.log('[Camera] Shutter button pressed');
+                            takePhoto();
+                        }}
+                        disabled={isLoading || !!error}
+                        className={`w-24 h-24 rounded-full border-4 border-white bg-white/10 active:scale-95 active:bg-white/30 transition-all shadow-2xl flex items-center justify-center z-50 cursor-pointer touch-manipulation ${isCapturing ? 'opacity-70' : ''} ${isLoading || error ? 'opacity-30 cursor-not-allowed' : ''}`}
                     >
-                        <div className={`rounded-full bg-white shadow-inner transition-all ${isCapturing ? 'w-10 h-10' : 'w-16 h-16'}`} />
+                        <div className={`rounded-full shadow-inner transition-all duration-200 ${isCapturing ? 'w-10 h-10 bg-amber-500 rounded-lg' : 'w-18 h-18 bg-white'}`} />
                     </button>
                 </div>
 
