@@ -92,13 +92,15 @@ export const LocalGalleryEditor: React.FC = () => {
 
     const loadPhotos = async () => {
         const storedPhotos = await getAllPhotos();
+
+        // Sort by timestamp (explicitly handle missing timestamps just in case)
+        storedPhotos.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
         const photosWithUrls = storedPhotos.map(p => ({
             id: p.id,
             blob: p.blob,
             url: URL.createObjectURL(p.blob)
         }));
-        // Sort by timestamp if needed, but IDB usually returns loosely sorted.
-        // We'll trust IDB order initially.
         setPhotos(photosWithUrls);
     };
 
