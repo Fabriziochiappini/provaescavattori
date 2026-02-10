@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, X } from 'lucide-react';
 import { savePhoto } from '../../services/pwaStorage';
-import { v4 as uuidv4 } from 'uuid';
+
 
 export const CameraView: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -50,7 +50,7 @@ export const CameraView: React.FC = () => {
 
                 canvas.toBlob(async (blob) => {
                     if (blob) {
-                        const id = uuidv4();
+                        const id = crypto.randomUUID();
                         await savePhoto(id, blob);
                         setPhotosTaken((prev) => prev + 1);
                     }

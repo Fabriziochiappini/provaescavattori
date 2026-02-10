@@ -327,7 +327,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 <select name="category" value={formData.category} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl">
                                     <option value="Mini">Mini (0-5t)</option>
                                     <option value="Medio">Medio (6-20t)</option>
-                                    <option value="Pesante">Pesante (>20t)</option>
+                                    <option value="Pesante">Pesante (&gt;20t)</option>
                                     <option value="Specialistico">Specialistico</option>
                                 </select>
                             </div>
