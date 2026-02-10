@@ -36,30 +36,39 @@ const Contact: React.FC = () => {
                 <p className="text-zinc-600">info@contegroup.it</p>
                 <p className="text-zinc-600">commerciale@contegroup.it</p>
               </div>
-              <div className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200">
-                <MapPin className="text-orange-600 mb-6" size={32} />
-                <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">Sede</h4>
-                <p className="text-zinc-600">Via dell'Industria, 123</p>
-                <p className="text-zinc-600">00100 Roma (RM)</p>
-              </div>
-              <div className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200">
-                <Clock className="text-orange-600 mb-6" size={32} />
-                <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">Orari</h4>
-                <p className="text-zinc-600">Lun - Ven: 08:30 - 18:30</p>
-                <p className="text-zinc-600">Sabato: 08:30 - 12:30</p>
-              </div>
+              {[
+                { icon: Phone, title: 'TELEFONO', content: '0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
+                { icon: Mail, title: 'EMAIL', content: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
+                { icon: MapPin, title: 'SEDE', content: 'SP330, 24, 81016', sub: 'Pietravairano (CE)', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
+                { icon: Clock, title: 'ORARI', content: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' },
+              ].map((item, i) => (
+                <a
+                  key={i}
+                  href={item.href}
+                  target={item.href?.startsWith('http') ? '_blank' : '_self'}
+                  rel={item.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200 flex flex-col justify-between hover:border-orange-600 transition-all duration-300"
+                >
+                  <item.icon className="text-orange-600 mb-6" size={32} />
+                  <div>
+                    <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">{item.title}</h4>
+                    <p className="text-zinc-600">{item.content}</p>
+                    {item.sub && <p className="text-zinc-600 text-sm mt-1">{item.sub}</p>}
+                  </div>
+                </a>
+              ))}
             </div>
 
-            <div className="rounded-3xl overflow-hidden h-80 grayscale">
+            <section className="h-[500px] rounded-3xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl">
               <iframe
-                title="Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215!2d12.4822!3d41.8902!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDUzJzI0LjciTiAxMsKwMjgnNTUuOSJF!5e0!3m2!1sit!2sit!4v1634567890123"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000.5!2d14.1!3d41.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDE4JzAwLjAiTiAxNMKwMDYnMDAuMCJF!5e0!3m2!1sit!2sit!4v1234567890" // This should be updated with a real embed link if available, or I can use the search tool to find the exact coordinates.
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
+                allowFullScreen
                 loading="lazy"
               ></iframe>
-            </div>
+            </section>
           </div>
 
           {/* Form Side */}

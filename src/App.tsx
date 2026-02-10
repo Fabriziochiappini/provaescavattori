@@ -8,8 +8,11 @@ import Sales from './pages/Sales';
 import Rental from './pages/Rental';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import Admin from './pages/Admin';
 import Assistance from './pages/Assistance';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
+import Admin from './pages/Admin';
+import CookieBanner from './components/CookieBanner';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -34,8 +37,11 @@ const LayoutContent: React.FC = () => {
           <Route path="/chi-siamo" element={<About />} />
           <Route path="/contatti" element={<Contact />} />
           <Route path="/assistenza" element={<Assistance />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/termini-e-condizioni" element={<Terms />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
+        <CookieBanner />
       </main>
       {!isAdmin && <Footer />}
     </div>

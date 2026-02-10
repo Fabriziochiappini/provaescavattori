@@ -22,15 +22,12 @@ const Home: React.FC = () => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-orange-600 text-black px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest mb-6 animate-bounce">
-              <Award size={16} /> Best in Class 2024
-            </div>
+          <div className="max-w-3xl">
             <h1 className="text-6xl md:text-8xl font-black text-white leading-none tracking-tighter mb-6 uppercase italic">
-              Costruiamo il tuo <span className="text-orange-500">Futuro</span>
+              IL PARTNER IDEALE PER IL <span className="text-orange-500">TUO CANTIERE</span>
             </h1>
             <p className="text-xl text-zinc-300 mb-10 leading-relaxed font-light">
-              Vendita e noleggio di escavatori ad alte prestazioni. Tecnologia d'avanguardia per massimizzare la produttività del tuo cantiere.
+              Vendita, noleggio e assistenza di carrelli elevatori e macchine movimento terra. La nostra esperienza di oltre 40 anni al servizio della tua produttività.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/vendita" className="group bg-orange-600 hover:bg-orange-700 text-black px-8 py-4 rounded font-bold text-lg flex items-center justify-center gap-2 transition-all">
@@ -38,7 +35,7 @@ const Home: React.FC = () => {
                 <ArrowRight className="group-hover:translate-x-2 transition-transform" />
               </Link>
               <Link to="/noleggio" className="group border-2 border-white hover:bg-white hover:text-black text-white px-8 py-4 rounded font-bold text-lg flex items-center justify-center gap-2 transition-all">
-                PROVA IL NOLEGGIO
+                ESPLORA IL NOLEGGIO
               </Link>
             </div>
           </div>
@@ -50,10 +47,10 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             {[
-              { label: 'Anni di Esperienza', value: '25+' },
-              { label: 'Macchine Vendute', value: '1.2k+' },
-              { label: 'Clienti Soddisfatti', value: '850' },
-              { label: 'Sedi in Italia', value: '5' },
+              { label: 'Anni di Esperienza', value: '40+' },
+              { label: 'Macchine in Flotta', value: '500+' },
+              { label: 'Clienti Attivi', value: '1000+' },
+              { label: 'Sede in Campania', value: '1' },
             ].map((stat, i) => (
               <div key={i} className="space-y-2 border-l-2 border-orange-600 pl-8 text-left">
                 <p className="text-5xl font-black text-white">{stat.value}</p>
@@ -70,9 +67,9 @@ const Home: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
             <div>
               <h2 className="text-4xl md:text-6xl font-black uppercase italic leading-none mb-4">
-                Ultimi <span className="text-orange-600 underline decoration-black decoration-4">Arrivi</span>
+                IL NOSTRO <span className="text-orange-600 underline decoration-black decoration-4">USATO GARANTITO</span>
               </h2>
-              <p className="text-zinc-500 max-w-xl">Le novità più recenti del nostro parco macchine, selezionate per qualità e affidabilità estrema.</p>
+              <p className="text-zinc-500 max-w-xl">Le migliori occasioni dal nostro parco macchine, revisionate e garantite dai nostri tecnici.</p>
             </div>
             <Link to="/vendita" className="text-zinc-900 font-bold hover:text-orange-600 flex items-center gap-2 group whitespace-nowrap">
               Vedi tutto il catalogo
@@ -107,9 +104,9 @@ const Home: React.FC = () => {
               </h2>
               <div className="space-y-8">
                 {[
-                  { icon: ShieldCheck, title: 'Garanzia Certificata', desc: 'Ogni macchina viene sottoposta a oltre 100 test di controllo prima della consegna.' },
-                  { icon: Truck, title: 'Trasporto Rapido', desc: 'Consegniamo direttamente in cantiere in tutta Italia entro 48 ore.' },
-                  { icon: Clock, title: 'Assistenza Mobile', desc: 'Officine mobili pronte ad intervenire sul posto per ridurre i tempi di fermo.' },
+                  { icon: ShieldCheck, title: 'Usato Certificato e Garantito', desc: 'Ogni macchina usata è sottoposta a rigorosi controlli e viene consegnata con garanzia.' },
+                  { icon: Truck, title: 'Consegna in Cantiere', desc: 'Organizziamo la consegna rapida della macchina direttamente presso il vostro cantiere.' },
+                  { icon: Clock, title: 'Assistenza Specializzata', desc: 'Le nostre officine mobili intervengono a domicilio per ridurre al minimo i tempi di fermo.' },
                 ].map((feature, i) => (
                   <div key={i} className="flex gap-6">
                     <div className="bg-black p-4 rounded-xl shrink-0 h-fit">
@@ -168,17 +165,17 @@ const Home: React.FC = () => {
               <div className="absolute -bottom-10 -right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
             </div>
             <h2 className="text-4xl md:text-7xl font-black text-black uppercase italic leading-none mb-8 relative z-10">
-              Pronto a far decollare il tuo <br /> <span className="underline decoration-white decoration-4 underline-offset-8">Cantiere?</span>
+              PRONTO A POTENZIARE IL <br /> <span className="underline decoration-white decoration-4 underline-offset-8">TUO CANTIERE?</span>
             </h2>
             <p className="text-xl text-black font-medium mb-10 max-w-2xl relative z-10">
-              Contattaci oggi stesso per una consulenza gratuita o per ricevere un preventivo personalizzato basato sulle tue necessità operative.
+              Contattaci oggi per una consulenza gratuita. Il nostro team ti aiuterà a trovare la soluzione perfetta per le tue esigenze.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 relative z-10">
               <Link to="/contatti" className="bg-black text-white hover:bg-zinc-900 px-10 py-5 rounded-full font-black text-xl transition-all shadow-2xl">
-                CONTATTACI ORA
+                RICHIEDI UN PREVENTIVO
               </Link>
-              <a href="tel:+39061234567" className="bg-white text-black hover:bg-zinc-100 px-10 py-5 rounded-full font-black text-xl transition-all shadow-xl">
-                CHIAMA SUBITO
+              <a href="tel:+390823982162" className="bg-white text-black hover:bg-zinc-100 px-10 py-5 rounded-full font-black text-xl transition-all shadow-xl">
+                CHIAMA ORA: 0823 982162
               </a>
             </div>
           </div>

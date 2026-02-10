@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
             <div className="bg-orange-600 p-2 rounded-lg">
               <HardHat className="w-8 h-8 text-black" />
             </div>
-            <span className="text-2xl font-bold font-oswald tracking-tighter">
+            <span className="text-2xl font-bold font-oswald tracking-tighter uppercase">
               CONTE<span className="text-orange-500">GROUP</span>
             </span>
           </Link>

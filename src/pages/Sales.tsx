@@ -9,25 +9,25 @@ const Sales: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const saleMachines = MACHINES_DATA.filter(m => m.type === 'sale' || m.type === 'both');
-  
+
   const filteredMachines = saleMachines.filter(m => {
     const matchesCategory = filter === 'Tutti' || m.category === filter;
-    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         m.brand.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.brand.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const categories = ['Tutti', 'Mini', 'Medio', 'Pesante'];
+  const categories = ['Tutti', 'Carrelli Elettrici', 'Carrelli Diesel', 'Piattaforme Aeree', 'Mini Escavatori'];
 
   return (
     <div className="pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="mb-12">
           <h1 className="text-5xl md:text-7xl font-black uppercase italic mb-6">
-            Vendita <span className="text-orange-600">Escavatori</span>
+            VENDITA <span className="text-orange-600">NUOVO E USATO</span>
           </h1>
           <p className="text-zinc-500 max-w-2xl text-lg">
-            Sfoglia il nostro catalogo di macchinari usati e nuovi. Ogni mezzo è certificato e garantito per offrirti il massimo della resa operativa.
+            Sfoglia il nostro catalogo di macchine nuove e usate. Ogni mezzo è certificato e garantito per offrirti il massimo.
           </p>
         </header>
 
@@ -39,9 +39,8 @@ const Sales: React.FC = () => {
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-6 py-2 rounded-full font-bold uppercase tracking-wider text-xs transition-all whitespace-nowrap ${
-                  filter === cat ? 'bg-orange-600 text-black' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-                }`}
+                className={`px-6 py-2 rounded-full font-bold uppercase tracking-wider text-xs transition-all whitespace-nowrap ${filter === cat ? 'bg-orange-600 text-black' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                  }`}
               >
                 {cat}
               </button>
@@ -69,7 +68,7 @@ const Sales: React.FC = () => {
         ) : (
           <div className="py-20 text-center">
             <p className="text-zinc-400 text-xl italic font-light">Nessun macchinario trovato con questi criteri.</p>
-            <button onClick={() => {setFilter('Tutti'); setSearchQuery('');}} className="mt-4 text-orange-600 font-bold underline">Resetta filtri</button>
+            <button onClick={() => { setFilter('Tutti'); setSearchQuery(''); }} className="mt-4 text-orange-600 font-bold underline">Resetta filtri</button>
           </div>
         )}
       </div>

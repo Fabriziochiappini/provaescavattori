@@ -55,7 +55,7 @@ const Assistance: React.FC = () => {
                                 <h3 className="text-3xl font-black uppercase italic">Ricambi Originali</h3>
                             </div>
                             <p className="text-zinc-500 mb-8 leading-relaxed">
-                                Ampio magazzino di componenti originali per ogni modello di escavatore. Garantiamo massima durata e performance per le tue macchine.
+                                RICRICAMBI ORIGINALI E COMPATIBILI. Ampio magazzino di componenti per ogni modello. Garantiamo massima durata e performance.
                             </p>
                             <button
                                 onClick={scrollToForm}
@@ -83,7 +83,7 @@ const Assistance: React.FC = () => {
                                 <h3 className="text-3xl font-black uppercase italic">Service a Domicilio</h3>
                             </div>
                             <p className="text-zinc-500 mb-8 leading-relaxed">
-                                Officine mobili attrezzate per interventi rapidi direttamente in cantiere. Riduciamo i tempi di fermo macchina ovunque ti trovi.
+                                SERVICE A DOMICILIO. Officine mobili attrezzate per interventi rapidi. Riduciamo i tempi di fermo macchina ovunque ti trovi.
                             </p>
                             <button
                                 onClick={scrollToForm}
@@ -108,13 +108,13 @@ const Assistance: React.FC = () => {
                             <span className="text-sm font-black uppercase tracking-[0.3em]">Pronto Intervento</span>
                         </div>
                         <h2 className="text-5xl md:text-7xl font-black uppercase italic mb-8 leading-tight">
-                            Chiamata di <br /> Emergenza
+                            PRONTO <br /> INTERVENTO
                         </h2>
                         <a
-                            href="tel:+393334567890"
+                            href="tel:+393518349368"
                             className="text-6xl md:text-9xl font-black tracking-tighter hover:text-white transition-colors block break-all"
                         >
-                            333 4567890
+                            351 8349368
                         </a>
                         <p className="mt-8 text-xl font-bold uppercase">Disponibile 24 ore su 24, 7 giorni su 7</p>
                     </div>
