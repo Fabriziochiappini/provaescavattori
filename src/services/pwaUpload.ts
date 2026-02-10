@@ -63,19 +63,23 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
     // Let's quickly check 'src/services' content references in next step or use 'vehicles' which is generic.
     // Actually, I'll search for collection usage in 'src' to be sure.
 
-    await addDoc(collection(db, 'vehicles'), {
+    await addDoc(collection(db, 'excavators'), {
         name: `${data.brand} ${data.model}`,
-        model: data.model,
+        model: data.model, // Keep model for reference even if not in main interface
         brand: data.brand,
-        type: data.type,
-        price: data.price,
-        imageUrl: uploadedImages[0] || '',
-        images: uploadedImages, // Extra field for gallery if needed
-        category: 'Mini', // Default category
+        type: data.type === 'rental' ? 'rent' : data.type, // Map 'rental' to 'rent'
+        price: Number(data.price),
+        images: uploadedImages,
+        category: 'Mini Escavatori', // Default for PWA uploads for now
+        // Optional fields filling
+        rentalPrice: data.type === 'rental' ? 'Contattaci per prezzo' : undefined,
+        condition: 5, // Default to new/excellent
+        features: [],
+        serialNumber: `PWA-${Date.now()}`, // Generate a temporary serial
+        description: 'Inserito da App Mobile',
         year: new Date().getFullYear(),
         weight: 0,
-        features: [],
-        description: 'Inserimento rapido da mobile',
+        hours: 0,
         available: true,
         createdAt: serverTimestamp(),
     });

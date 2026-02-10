@@ -1,14 +1,26 @@
 
 import React, { useState } from 'react';
-import { MACHINES_DATA } from '../constants';
+import { useData } from '../context/DataContext';
+import { Machine } from '../types';
 import MachineCard from '../components/MachineCard';
 import { Filter, Search } from 'lucide-react';
 
 const Sales: React.FC = () => {
+  const { excavators } = useData();
   const [filter, setFilter] = useState<string>('Tutti');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const saleMachines = MACHINES_DATA.filter(m => m.type === 'sale' || m.type === 'both');
+  // Transform Excavators (DB) to Machines (UI)
+  const machines: Machine[] = excavators.map(exc => ({
+    ...exc,
+    id: exc.id,
+    imageUrl: exc.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image',
+    category: exc.category || 'Altro', // Fallback category if missing
+    model: exc.model || exc.name, // Fallback model
+  } as unknown as Machine)); // Cast to Machine as types are slightly diff, but compatible enough
+
+
+  const saleMachines = machines.filter(m => m.type === 'sale' || m.type === 'both');
 
   const filteredMachines = saleMachines.filter(m => {
     const matchesCategory = filter === 'Tutti' || m.category === filter;

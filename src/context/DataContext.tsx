@@ -8,7 +8,9 @@ import { siteData as initialSiteData } from '../data/mockData';
 export interface Excavator {
     id: string;
     name: string;
-    brand: string; // Added brand
+    brand: string;
+    model?: string; // Added model
+    category?: string; // Added category
     description: string;
     weight: number; // Tonnes
     price: number; // Sale price
@@ -19,7 +21,7 @@ export interface Excavator {
     serialNumber: string;
     year?: number;
     hours?: number;
-    type: 'sale' | 'rent';
+    type: 'sale' | 'rent' | 'both'; // Added 'both'
     available?: boolean;
 }
 

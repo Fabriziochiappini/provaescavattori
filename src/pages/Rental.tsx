@@ -1,11 +1,23 @@
 
 import React, { useState } from 'react';
-import { MACHINES_DATA } from '../constants';
+import { useData } from '../context/DataContext';
+import { Machine } from '../types';
 import MachineCard from '../components/MachineCard';
 import { Clock, Shield, Zap } from 'lucide-react';
 
 const Rental: React.FC = () => {
-  const rentalMachines = MACHINES_DATA.filter(m => m.type === 'rental' || m.type === 'both');
+  const { excavators } = useData();
+
+  // Transform Excavators (DB) to Machines (UI)
+  const machines: Machine[] = excavators.map(exc => ({
+    ...exc,
+    id: exc.id,
+    imageUrl: exc.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image',
+    category: exc.category || 'Altro',
+    model: exc.model || exc.name,
+  } as unknown as Machine));
+
+  const rentalMachines = machines.filter(m => m.type === 'rental' || m.type === 'both');
 
   return (
     <div className="pt-32 pb-24">
