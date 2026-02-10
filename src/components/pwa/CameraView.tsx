@@ -276,9 +276,9 @@ export const CameraView: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Independent Left Gallery (Landscape) */}
-                {isLandscape && capturedPhotos.length > 0 && (
-                    <div className="absolute left-4 top-24 bottom-24 w-20 flex flex-col gap-4 py-4 overflow-y-auto scrollbar-none animate-in slide-in-from-left duration-300 z-50">
+                {/* Independent Left Gallery (Always Visible) */}
+                {capturedPhotos.length > 0 && (
+                    <div className="absolute left-4 top-24 bottom-32 w-20 flex flex-col gap-4 py-4 overflow-y-auto scrollbar-none animate-in slide-in-from-left duration-300 z-40 pointer-events-auto">
                         {capturedPhotos.map((photo) => (
                             <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/20 bg-black">
                                 <img src={photo.url} alt="" className="w-full h-full object-cover" />
@@ -290,77 +290,6 @@ export const CameraView: React.FC = () => {
                                 </button>
                             </div>
                         ))}
-                    </div>
-                )}
-
-                <div className={`flex items-center gap-3 bg-amber-500 px-4 py-2 rounded-full shadow-2xl animate-in zoom-in duration-300 ${isLandscape ? 'rotate-90' : ''}`}>
-                    <Camera className="w-5 h-5 text-black" />
-                    <span className="text-black font-black text-sm">{capturedPhotos.length}</span>
-                </div>
-
-                <button
-                    onClick={toggleFullscreen}
-                    className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md border border-white/10 active:scale-90 transition-all"
-                >
-                    <Smartphone className={`w-6 h-6 ${isFullscreen ? '' : 'rotate-90'}`} />
-                </button>
-            </div>
-
-            {/* Video Preview */}
-            <div className="flex-1 relative bg-black flex items-center justify-center">
-                {isLoading && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500 gap-4">
-                        <Camera className="w-12 h-12 animate-pulse" />
-                        <p className="text-sm font-bold uppercase tracking-widest">Avvio Optica...</p>
-                    </div>
-                )}
-                {error && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-red-500 p-8 text-center gap-4">
-                        <X className="w-12 h-12" />
-                        <p className="font-bold">{error}</p>
-                        <button onClick={startCamera} className="px-6 py-2 bg-white/10 rounded-full text-white text-xs font-bold uppercase">Riprova</button>
-                    </div>
-                )}
-                <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                />
-                {showFlash && <div className="absolute inset-0 bg-white z-20 animate-in fade-in fade-out duration-150" />}
-
-                {/* Zoom Controls Overlay */}
-                {zoomCapabilities && (
-                    <div className={`absolute z-40 flex items-center gap-4 ${isLandscape ? 'bottom-8 left-1/2 -translate-x-1/2' : 'right-8 top-1/2 -translate-y-1/2 flex-col'}`}>
-                        <button onClick={() => handleZoomChange(zoomLevel - 0.5)} className="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md border border-white/10 active:scale-90"><ZoomOut className="w-5 h-5" /></button>
-                        <div className={`bg-black/40 px-3 py-1 rounded-full text-[10px] font-black text-amber-500 border border-white/10 ${isLandscape ? '' : 'rotate-90'}`}>{zoomLevel.toFixed(1)}x</div>
-                        <button onClick={() => handleZoomChange(zoomLevel + 0.5)} className="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md border border-white/10 active:scale-90"><ZoomIn className="w-5 h-5" /></button>
-                    </div>
-                )}
-            </div>
-
-            {/* Bottom Controls / Right Controls (Landscape) */}
-            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-50 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-32 flex-col border-l shadow-2xl' : 'h-40 border-t'}`}>
-                {/* Captured Preview (Portrait - Bottom Left) */}
-                {!isLandscape && (
-                    <div className="flex gap-3 p-2 overflow-x-auto scrollbar-none w-48">
-                        {capturedPhotos.map((photo) => (
-                            <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/5">
-                                <img src={photo.url} alt="" className="w-full h-full object-cover" />
-                                <button
-                                    onClick={() => discardPhoto(photo.id)}
-                                    className="absolute inset-0 bg-red-600/60 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                </button>
-                            </div>
-                        ))}
-                        {capturedPhotos.length === 0 && (
-                            <div className="w-16 h-16 rounded-xl border-2 border-dashed border-zinc-800 flex items-center justify-center text-zinc-800">
-                                <Camera className="w-6 h-6" />
-                            </div>
-                        )}
                     </div>
                 )}
 

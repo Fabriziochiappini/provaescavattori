@@ -72,7 +72,7 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
         images: uploadedImages,
         category: 'Mini Escavatori', // Default for PWA uploads for now
         // Optional fields filling
-        rentalPrice: data.type === 'rental' ? 'Contattaci per prezzo' : undefined,
+        rentalPrice: data.type === 'rental' ? 'Contattaci per prezzo' : null,
         condition: 5, // Default to new/excellent
         features: [],
         serialNumber: `PWA-${Date.now()}`, // Generate a temporary serial
