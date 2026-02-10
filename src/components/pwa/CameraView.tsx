@@ -24,6 +24,7 @@ export const CameraView: React.FC = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [zoomLevel, setZoomLevel] = useState(1);
     const [zoomCapabilities, setZoomCapabilities] = useState<{ min: number; max: number; step: number } | null>(null);
+    const [isCapturing, setIsCapturing] = useState(false);
 
     const navigate = useNavigate();
 
@@ -127,17 +128,31 @@ export const CameraView: React.FC = () => {
     }, [zoomCapabilities]);
 
     const takePhoto = useCallback(() => {
-        if (!videoRef.current || !canvasRef.current) return;
+        if (!videoRef.current || !canvasRef.current || isCapturing) return;
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
         if (!context) return;
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0);
+        // Limita la risoluzione per performance e compatibilità
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
 
+        if (videoWidth === 0 || videoHeight === 0) return;
+
+        const maxDimension = 1536;
+        let scale = 1;
+        if (Math.max(videoWidth, videoHeight) > maxDimension) {
+            scale = maxDimension / Math.max(videoWidth, videoHeight);
+        }
+
+        canvas.width = videoWidth * scale;
+        canvas.height = videoHeight * scale;
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        setIsCapturing(true);
         setShowFlash(true);
         setTimeout(() => setShowFlash(false), 150);
 
@@ -150,8 +165,9 @@ export const CameraView: React.FC = () => {
                 await savePhoto(id, blob);
                 setCapturedPhotos((prev) => [...prev, { id, blob, url }]);
             }
+            setIsCapturing(false);
         }, 'image/jpeg', 0.85);
-    }, []);
+    }, [isCapturing]);
 
     const discardPhoto = async (id: string) => {
         await deletePhoto(id);
@@ -253,11 +269,11 @@ export const CameraView: React.FC = () => {
             </div>
 
             {/* Bottom Controls / Right Controls (Landscape) */}
-            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l' : 'h-40 border-t'}`}>
+            <div className={`bg-zinc-950 flex items-center justify-between p-8 safe-area-bottom border-white/5 z-40 ${isLandscape ? 'absolute top-0 bottom-0 right-0 w-44 flex-col border-l' : 'h-40 border-t'}`}>
                 {/* Captured Sidebar Preview */}
-                <div className={`flex gap-3 overflow-x-auto p-2 scrollbar-none ${isLandscape ? 'flex-col overflow-y-auto max-h-[50vh] w-full items-center' : 'w-32'}`}>
+                <div className={`flex gap-3 p-2 scrollbar-none ${isLandscape ? 'flex-col overflow-y-auto max-h-[50vh] w-full items-center' : 'w-48 overflow-x-auto'}`}>
                     {capturedPhotos.map((photo) => (
-                        <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group">
+                        <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/5">
                             <img src={photo.url} alt="" className="w-full h-full object-cover" />
                             <button
                                 onClick={() => discardPhoto(photo.id)}
@@ -278,12 +294,13 @@ export const CameraView: React.FC = () => {
                     <div className={`absolute inset-0 rounded-full border-4 border-amber-500 scale-125 opacity-0 ${showFlash ? 'animate-ping opacity-100' : ''}`} />
                     <button
                         onClick={takePhoto}
-                        disabled={isLoading || !!error}
-                        className="w-20 h-20 rounded-full border-4 border-white bg-white/10 active:scale-90 active:bg-white/30 transition-all shadow-2xl flex items-center justify-center"
+                        disabled={isLoading || !!error || isCapturing}
+                        className={`w-20 h-20 rounded-full border-4 border-white bg-white/10 active:scale-95 active:bg-white/30 transition-all shadow-2xl flex items-center justify-center ${isCapturing ? 'opacity-50' : ''}`}
                     >
-                        <div className="w-16 h-16 rounded-full bg-white shadow-inner" />
+                        <div className={`rounded-full bg-white shadow-inner transition-all ${isCapturing ? 'w-10 h-10' : 'w-16 h-16'}`} />
                     </button>
                 </div>
+
 
                 <button
                     onClick={handleFinish}
