@@ -57,6 +57,19 @@ export interface Stats {
     footerClicks: number;
 }
 
+export interface BrandLogo {
+    id: string;
+    image: string;
+}
+
+export interface BrandsBannerData {
+    logos: BrandLogo[];
+    mode: 'dynamic' | 'fixed';
+    speed: 'slow' | 'medium' | 'fast';
+    position: 'after_hero' | 'before_footer';
+    active: boolean;
+}
+
 interface DataContextType {
     excavators: Excavator[];
     addExcavator: (excavator: Excavator) => Promise<void>;
@@ -81,6 +94,9 @@ interface DataContextType {
     uploadImage: (file: File, folder: string) => Promise<string>;
     deleteImage: (url: string) => Promise<void>;
     siteData: typeof initialSiteData;
+
+    brandsBanner: BrandsBannerData;
+    updateBrandsBanner: (data: BrandsBannerData) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -91,6 +107,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [contacts, setContacts] = useState<ContactInfo[]>([]);
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
     const [stats, setStats] = useState<Stats>({ visits: 0, footerClicks: 0 });
+    const [brandsBanner, setBrandsBanner] = useState<BrandsBannerData>({
+        logos: [],
+        mode: 'dynamic',
+        speed: 'medium',
+        position: 'after_hero',
+        active: true
+    });
 
     // Seeding Logic: If database is empty, seed with mock data
     useEffect(() => {
@@ -173,6 +196,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'settings', 'brands_banner'), (snap) => {
+            if (snap.exists()) {
+                setBrandsBanner(snap.data() as BrandsBannerData);
+            }
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
         const unsub = onSnapshot(doc(db, 'stats', 'global'), (snap) => {
             if (snap.exists()) {
                 setStats(snap.data() as Stats);
@@ -218,6 +250,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Home Gallery
     const updateHomeGallery = async (data: HomeGalleryData) => {
         await setDoc(doc(db, 'settings', 'home_gallery'), data);
+    };
+
+    // Brands Banner
+    const updateBrandsBanner = async (data: BrandsBannerData) => {
+        await setDoc(doc(db, 'settings', 'brands_banner'), data);
     };
 
     // Stats
@@ -272,7 +309,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             homeGallery, updateHomeGallery,
             stats, incrementVisit, incrementFooterClick,
             uploadImage, deleteImage,
-            siteData: initialSiteData
+            siteData: initialSiteData,
+            brandsBanner,
+            updateBrandsBanner
         }}>
             {children}
         </DataContext.Provider>

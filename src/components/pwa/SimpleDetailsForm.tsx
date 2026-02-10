@@ -12,7 +12,7 @@ export const SimpleDetailsForm: React.FC = () => {
     const [formData, setFormData] = useState({
         model: '',
         brand: '',
-        type: 'vendita' as 'vendita' | 'noleggio',
+        type: 'sale' as 'sale' | 'rental',
         price: '',
     });
 
@@ -99,20 +99,20 @@ export const SimpleDetailsForm: React.FC = () => {
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, type: 'vendita' })}
-                                className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'vendita'
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                        : 'bg-white text-gray-500 border border-gray-200'
+                                onClick={() => setFormData({ ...formData, type: 'sale' })}
+                                className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'sale'
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                                    : 'bg-white text-gray-500 border border-gray-200'
                                     }`}
                             >
                                 VENDITA
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, type: 'noleggio' })}
-                                className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'noleggio'
-                                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                                        : 'bg-white text-gray-500 border border-gray-200'
+                                onClick={() => setFormData({ ...formData, type: 'rental' })}
+                                className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'rental'
+                                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
+                                    : 'bg-white text-gray-500 border border-gray-200'
                                     }`}
                             >
                                 NOLEGGIO

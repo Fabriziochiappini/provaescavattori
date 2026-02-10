@@ -7,7 +7,7 @@ import { getAllPhotos } from './pwaStorage';
 interface MachineData {
     model: string;
     brand: string;
-    type: 'vendita' | 'noleggio';
+    type: 'sale' | 'rental';
     price: number;
 }
 
@@ -64,15 +64,19 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
     // Actually, I'll search for collection usage in 'src' to be sure.
 
     await addDoc(collection(db, 'vehicles'), {
-        ...data,
-        mainImage: uploadedImages[0] || '',
-        images: uploadedImages,
-        createdAt: serverTimestamp(),
+        name: `${data.brand} ${data.model}`,
+        model: data.model,
+        brand: data.brand,
+        type: data.type,
+        price: data.price,
+        imageUrl: uploadedImages[0] || '',
+        images: uploadedImages, // Extra field for gallery if needed
+        category: 'Mini', // Default category
+        year: new Date().getFullYear(),
+        weight: 0,
+        features: [],
+        description: 'Inserimento rapido da mobile',
         available: true,
-        // Add other fields that might be required by the schema?
-        // description: '', 
-        // year: new Date().getFullYear(),
-        // hours: 0,
-        // condition: 'Used'
+        createdAt: serverTimestamp(),
     });
 };

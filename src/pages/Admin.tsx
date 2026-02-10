@@ -3,6 +3,7 @@ import { useData, type Excavator, type Service, type ContactInfo } from '../cont
 import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
+import BrandsManager from '../components/admin/BrandsManager';
 import { Reorder } from 'framer-motion';
 
 const Admin: React.FC = () => {
@@ -284,16 +285,16 @@ const Admin: React.FC = () => {
                     <h1 className="text-3xl font-bold font-oswald text-amber-500">Pannello di Controllo</h1>
                     <div className="flex items-center gap-6">
                         <nav className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto">
-                            {(['excavators', 'services', 'contacts', 'gallery'] as const).map((tab) => (
+                            {(['excavators', 'services', 'contacts', 'gallery', 'brands'] as const).map((tab) => (
                                 <button
                                     key={tab}
-                                    onClick={() => { setActiveTab(tab); resetForm(); }}
+                                    onClick={() => { setActiveTab(tab as any); resetForm(); }}
                                     className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab
                                         ? 'bg-white dark:bg-gray-700 shadow-sm text-amber-500'
                                         : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
                                         }`}
                                 >
-                                    {tab === 'excavators' ? 'Parco Macchine' : tab === 'services' ? 'Servizi' : tab === 'gallery' ? 'Galleria' : 'Contatti'}
+                                    {tab === 'excavators' ? 'Parco Macchine' : tab === 'services' ? 'Servizi' : tab === 'gallery' ? 'Galleria' : tab === 'brands' ? 'Marchi' : 'Contatti'}
                                 </button>
                             ))}
                         </nav>
@@ -471,6 +472,10 @@ const Admin: React.FC = () => {
                                     )}
                                 </section>
                             </div>
+                        )}
+
+                        {activeTab === ('brands' as any) && (
+                            <BrandsManager />
                         )}
                     </div>
                 ) : (

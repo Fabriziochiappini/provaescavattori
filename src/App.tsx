@@ -14,6 +14,10 @@ import Terms from './pages/Terms';
 import Admin from './pages/Admin';
 import MachineDetail from './pages/MachineDetail';
 import CookieBanner from './components/CookieBanner';
+import { PWADashboard } from './components/pwa/PWADashboard';
+import { CameraView } from './components/pwa/CameraView';
+import { LocalGalleryEditor } from './components/pwa/LocalGalleryEditor';
+import { SimpleDetailsForm } from './components/pwa/SimpleDetailsForm';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -42,6 +46,12 @@ const LayoutContent: React.FC = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/termini-e-condizioni" element={<Terms />} />
           <Route path="/admin" element={<Admin />} />
+
+          {/* PWA Routes */}
+          <Route path="/admin/pwa" element={<PWADashboard />} />
+          <Route path="/admin/pwa/camera" element={<CameraView />} />
+          <Route path="/admin/pwa/gallery" element={<LocalGalleryEditor />} />
+          <Route path="/admin/pwa/details" element={<SimpleDetailsForm />} />
         </Routes>
         <CookieBanner />
       </main>

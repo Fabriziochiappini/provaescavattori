@@ -4,8 +4,11 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, ShieldCheck, Truck, Clock, Award, Users } from 'lucide-react';
 import { MACHINES_DATA } from '../constants';
 import MachineCard from '../components/MachineCard';
+import BrandsBanner from '../components/BrandsBanner';
+import { useData } from '../context/DataContext';
 
 const Home: React.FC = () => {
+  const { brandsBanner } = useData();
   const latestMachines = MACHINES_DATA.slice(0, 4);
 
   return (
@@ -41,6 +44,8 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {brandsBanner.position === 'after_hero' && <BrandsBanner />}
 
       {/* 2. STATS SECTION */}
       <section className="py-20 bg-zinc-950 text-white relative overflow-hidden">
@@ -191,6 +196,8 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {brandsBanner.position === 'before_footer' && <BrandsBanner />}
     </div>
   );
 };
