@@ -274,24 +274,24 @@ export const CameraView: React.FC = () => {
                     >
                         <X className="w-6 h-6" />
                     </button>
-
-                    {/* Mini Gallery (Landscape - Left Side) */}
-                    {isLandscape && capturedPhotos.length > 0 && (
-                        <div className="flex flex-col gap-3 py-4 overflow-y-auto scrollbar-none max-h-[50vh] animate-in slide-in-from-left duration-300">
-                            {capturedPhotos.map((photo) => (
-                                <div key={photo.id} className="relative w-14 h-14 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/20">
-                                    <img src={photo.url} alt="" className="w-full h-full object-cover" />
-                                    <button
-                                        onClick={() => discardPhoto(photo.id)}
-                                        className="absolute inset-0 bg-red-600/80 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
+
+                {/* Independent Left Gallery (Landscape) */}
+                {isLandscape && capturedPhotos.length > 0 && (
+                    <div className="absolute left-4 top-24 bottom-24 w-20 flex flex-col gap-4 py-4 overflow-y-auto scrollbar-none animate-in slide-in-from-left duration-300 z-50">
+                        {capturedPhotos.map((photo) => (
+                            <div key={photo.id} className="relative w-16 h-16 rounded-xl overflow-hidden shadow-2xl flex-shrink-0 group ring-2 ring-white/20 bg-black">
+                                <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                                <button
+                                    onClick={() => discardPhoto(photo.id)}
+                                    className="absolute inset-0 bg-red-600/80 opacity-0 group-active:opacity-100 flex items-center justify-center text-white transition-opacity"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className={`flex items-center gap-3 bg-amber-500 px-4 py-2 rounded-full shadow-2xl animate-in zoom-in duration-300 ${isLandscape ? 'rotate-90' : ''}`}>
                     <Camera className="w-5 h-5 text-black" />

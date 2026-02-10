@@ -36,9 +36,11 @@ export const SimpleDetailsForm: React.FC = () => {
             setTimeout(() => {
                 navigate('/admin/pwa');
             }, 2000);
-        } catch (err) {
-            console.error(err);
-            setError('Errore durante il caricamento. Riprova.');
+        } catch (err: any) {
+            console.error('Upload Error Details:', err);
+            // Alert the user with the actual error message for debugging
+            alert(`Errore di caricamento: ${err.message || JSON.stringify(err)}`);
+            setError(`Errore: ${err.message || 'Riprova più tardi'}`);
             setIsUploading(false);
         }
     };
