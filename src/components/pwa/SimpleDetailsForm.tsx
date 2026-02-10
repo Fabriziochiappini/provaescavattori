@@ -45,20 +45,23 @@ export const SimpleDetailsForm: React.FC = () => {
 
     if (isSuccess) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-green-50 p-4">
-                <div className="bg-white p-8 rounded-full shadow-lg mb-6">
-                    <CheckCircle className="w-16 h-16 text-green-500" strokeWidth={3} />
+            <div className="flex flex-col items-center justify-center h-screen bg-white p-4">
+                <div className="bg-green-500 p-6 rounded-full shadow-2xl shadow-green-500/40 mb-8 animate-in zoom-in spin-in-12 duration-700">
+                    <CheckCircle className="w-16 h-16 text-white" strokeWidth={3} />
                 </div>
-                <h2 className="text-2xl font-bold text-green-700 mb-2">Macchina Pubblicata!</h2>
-                <p className="text-green-600 text-center">Il veicolo è stato aggiunto al catalogo correttamente.</p>
+                <h2 className="text-3xl font-black text-zinc-900 mb-2 uppercase tracking-tight">Fatto!</h2>
+                <p className="text-zinc-500 text-center font-medium">Macchina caricata con successo.</p>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <div className="p-4 border-b bg-white safe-area-top sticky top-0 z-10">
-                <h2 className="text-xl font-bold text-gray-800">Dettagli Essenziali</h2>
+            <div className="p-6 border-b bg-white/80 backdrop-blur-md safe-area-top sticky top-0 z-20 flex items-center gap-4">
+                <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-zinc-400">
+                    <AlertCircle className="w-6 h-6 rotate-180" />
+                </button>
+                <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight">Dati Macchina</h2>
             </div>
 
             <div className="flex-1 p-4 pb-32"> {/* Padding bottom for fixed button */}
@@ -75,10 +78,10 @@ export const SimpleDetailsForm: React.FC = () => {
                         <input
                             type="text"
                             required
-                            className="w-full p-4 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg bg-white"
+                            className="w-full p-5 rounded-2xl border-2 border-zinc-100 bg-zinc-50 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all text-lg font-medium placeholder:text-zinc-300 outline-none"
                             value={formData.brand}
                             onChange={e => setFormData({ ...formData, brand: e.target.value })}
-                            placeholder="Es. Caterpillar"
+                            placeholder="es. Caterpillar"
                         />
                     </div>
 
@@ -87,10 +90,10 @@ export const SimpleDetailsForm: React.FC = () => {
                         <input
                             type="text"
                             required
-                            className="w-full p-4 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg bg-white"
+                            className="w-full p-5 rounded-2xl border-2 border-zinc-100 bg-zinc-50 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all text-lg font-medium placeholder:text-zinc-300 outline-none"
                             value={formData.model}
                             onChange={e => setFormData({ ...formData, model: e.target.value })}
-                            placeholder="Es. 320D"
+                            placeholder="es. 320D"
                         />
                     </div>
 
@@ -101,8 +104,8 @@ export const SimpleDetailsForm: React.FC = () => {
                                 type="button"
                                 onClick={() => setFormData({ ...formData, type: 'sale' })}
                                 className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'sale'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                    : 'bg-white text-gray-500 border border-gray-200'
+                                    ? 'bg-amber-500 text-white shadow-xl shadow-amber-500/30'
+                                    : 'bg-zinc-100 text-zinc-400 outline-none'
                                     }`}
                             >
                                 VENDITA
@@ -110,9 +113,9 @@ export const SimpleDetailsForm: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, type: 'rental' })}
-                                className={`p-4 rounded-xl text-center font-bold transition-all ${formData.type === 'rental'
-                                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                                    : 'bg-white text-gray-500 border border-gray-200'
+                                className={`p-5 rounded-2xl text-center font-black transition-all ${formData.type === 'rental'
+                                    ? 'bg-zinc-900 text-white shadow-xl shadow-zinc-900/30'
+                                    : 'bg-zinc-100 text-zinc-400 outline-none'
                                     }`}
                             >
                                 NOLEGGIO
@@ -125,28 +128,31 @@ export const SimpleDetailsForm: React.FC = () => {
                         <input
                             type="number"
                             required
-                            className="w-full p-4 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg bg-white"
+                            className="w-full p-5 rounded-2xl border-2 border-zinc-100 bg-zinc-50 focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all text-lg font-medium placeholder:text-zinc-300 outline-none"
                             value={formData.price}
                             onChange={e => setFormData({ ...formData, price: e.target.value })}
-                            placeholder="0"
+                            placeholder="0.00"
                         />
                     </div>
                 </form>
             </div>
 
-            <div className="p-4 border-t bg-white safe-area-bottom fixed bottom-0 left-0 right-0">
+            <div className="p-6 bg-white safe-area-bottom fixed bottom-0 left-0 right-0 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] z-20">
                 <button
-                    onClick={handleSubmit} // Trigger form submit externally
+                    onClick={handleSubmit}
                     disabled={isUploading}
-                    className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 disabled:opacity-50 shadow-lg shadow-blue-600/20 active:scale-98 transition-all"
+                    className="w-full bg-amber-500 text-black py-5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-amber-600 disabled:opacity-50 shadow-xl shadow-amber-500/20 active:scale-95 transition-all text-lg uppercase tracking-tight"
                 >
                     {isUploading ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            PUBBLICAZIONE IN CORSO...
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                            CARICAMENTO...
                         </>
                     ) : (
-                        'PUBBLICA MACCHINA'
+                        <>
+                            <CheckCircle className="w-6 h-6" />
+                            PUBBLICA ORA
+                        </>
                     )}
                 </button>
             </div>

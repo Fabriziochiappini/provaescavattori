@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { getAllPhotos, deletePhoto } from '../../services/pwaStorage';
-import { Trash2, ArrowRight } from 'lucide-react';
+import { Trash2, ArrowRight, Camera, Plus } from 'lucide-react';
 
 interface Photo {
     id: string;
@@ -42,20 +42,20 @@ const SortablePhoto = ({ photo, onRemove }: { photo: Photo; onRemove: (id: strin
             style={style}
             {...attributes}
             {...listeners}
-            className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden touch-none shadow-sm"
+            className="relative aspect-square bg-gray-200 rounded-2xl overflow-hidden touch-none shadow-md border-2 border-transparent active:border-amber-500 active:scale-95 transition-all"
         >
             <img src={photo.url} alt="Captured" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
             <button
                 onClick={(e) => {
-                    e.stopPropagation(); // Stop drag start
-                    // Prevent default to be safe
+                    e.stopPropagation();
                     e.preventDefault();
                     onRemove(photo.id);
                 }}
-                className="absolute top-1 right-1 p-1.5 bg-red-500/80 rounded-full text-white backdrop-blur-sm z-10"
+                className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center bg-red-500 rounded-full text-white shadow-lg active:scale-90 transition-transform z-10"
                 onPointerDown={(e) => e.stopPropagation()}
             >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-5 h-5" />
             </button>
         </div>
     );
@@ -140,10 +140,19 @@ export const LocalGalleryEditor: React.FC = () => {
                         items={photos.map(p => p.id)}
                         strategy={rectSortingStrategy}
                     >
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-4">
                             {photos.map((photo) => (
                                 <SortablePhoto key={photo.id} photo={photo} onRemove={handleRemove} />
                             ))}
+
+                            {/* Add More Photos Tile */}
+                            <button
+                                onClick={() => navigate('/admin/pwa/camera')}
+                                className="aspect-square rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 active:bg-gray-100 active:border-amber-500 active:text-amber-500 transition-all"
+                            >
+                                <Camera className="w-8 h-8" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Aggiungi</span>
+                            </button>
                         </div>
                     </SortableContext>
                 </DndContext>
