@@ -8,9 +8,11 @@ import { siteData as initialSiteData } from '../data/mockData';
 export interface Excavator {
     id: string;
     name: string;
+    brand: string; // Added brand
     description: string;
     weight: number; // Tonnes
-    price: number; // Sale price or Daily rental
+    price: number; // Sale price
+    rentalPrice?: string; // Daily rental price text
     condition: number; // 1-5 stars
     images: string[];
     features: string[];

@@ -12,6 +12,7 @@ import Assistance from './pages/Assistance';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Admin from './pages/Admin';
+import MachineDetail from './pages/MachineDetail';
 import CookieBanner from './components/CookieBanner';
 
 const ScrollToTop = () => {
@@ -34,6 +35,7 @@ const LayoutContent: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/vendita" element={<Sales />} />
           <Route path="/noleggio" element={<Rental />} />
+          <Route path="/macchina/:id" element={<MachineDetail />} />
           <Route path="/chi-siamo" element={<About />} />
           <Route path="/contatti" element={<Contact />} />
           <Route path="/assistenza" element={<Assistance />} />

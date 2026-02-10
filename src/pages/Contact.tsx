@@ -9,16 +9,23 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-16">
-          <h1 className="text-6xl md:text-8xl font-black uppercase italic mb-8">
+    <div>
+      <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center bg-zinc-900 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/contact-header.png" className="w-full h-full object-cover opacity-50" alt="Contact Header" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-zinc-50"></div>
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
+          <h1 className="text-6xl md:text-8xl font-black uppercase italic mb-6 text-white dropshadow-2xl">
             Contattaci
           </h1>
-          <p className="text-zinc-500 max-w-2xl text-xl font-light">
+          <p className="text-zinc-100 max-w-2xl mx-auto text-xl font-light dropshadow-md">
             Siamo a tua disposizione per consulenze tecniche, preventivi e assistenza. La tua prossima sfida inizia da qui.
           </p>
-        </header>
+        </div>
+      </section>
+
+      <div className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Info Side */}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
+import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
+import MachineForm from '../components/admin/MachineForm';
 import { Reorder } from 'framer-motion';
 
 const Admin: React.FC = () => {
@@ -136,9 +138,13 @@ const Admin: React.FC = () => {
             if (type === 'excavator') {
                 const item = excavators.find(r => r.id === id);
                 if (item && item.images) {
-                    for (const imgUrl of item.images) await deleteImage(imgUrl);
+                    // Delete images from storage
+                    // Note: This matches original logic. In prod, maybe keep them or soft delete.
+                    for (const imgUrl of item.images) {
+                        try { await deleteImage(imgUrl); } catch (e) { console.error(e); }
+                    }
                 }
-                deleteExcavator(id);
+                await deleteExcavator(id);
             }
             else if (type === 'service') {
                 const item = services.find(a => a.id === id);
@@ -158,19 +164,8 @@ const Admin: React.FC = () => {
         e.preventDefault();
 
         if (editType === 'excavator') {
-            if (!formData.name || !formData.price) return alert('Nome e Prezzo sono obbligatori');
-            if (isAdding) {
-                addExcavator(formData as Excavator);
-            } else {
-                // Check if images were removed
-                if (editingItem && editingItem.images) {
-                    const oldImages = editingItem.images as string[];
-                    const newImages = formData.images as string[] || [];
-                    const removedImages = oldImages.filter(img => !newImages.includes(img));
-                    removedImages.forEach(img => deleteImage(img).catch(console.error));
-                }
-                updateExcavator(editingItem.id, formData as Excavator);
-            }
+            // Handled by MachineForm now
+            return;
         } else if (editType === 'service') {
             if (!formData.title) return alert('Titolo obbligatorio');
             if (isAdding) {
@@ -238,17 +233,44 @@ const Admin: React.FC = () => {
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className={`w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors flex justify-center items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                        >
-                            {isLoading ? (
-                                <span className="material-icons-outlined animate-spin">refresh</span>
-                            ) : (
-                                "Entra"
-                            )}
-                        </button>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={`w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors flex justify-center items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            >
+                                {isLoading ? (
+                                    <span className="material-icons-outlined animate-spin">refresh</span>
+                                ) : (
+                                    "Entra"
+                                )}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!email || !password) {
+                                        setError('Inserisci email e password per registrarti');
+                                        return;
+                                    }
+                                    try {
+                                        setIsLoading(true);
+                                        const { auth } = await import('../firebase');
+                                        const { createUserWithEmailAndPassword } = await import('firebase/auth');
+                                        await createUserWithEmailAndPassword(auth, email, password);
+                                        // Auto login happens on success
+                                    } catch (err: any) {
+                                        console.error(err);
+                                        setError('Errore registrazione: ' + err.message);
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                disabled={isLoading}
+                                className={`w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition-colors flex justify-center items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            >
+                                Registrati come Admin (Temp)
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -293,21 +315,56 @@ const Admin: React.FC = () => {
                                     </button>
                                 </div>
                                 <div className="grid gap-4">
+                                    <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg font-bold text-xs uppercase text-gray-500">
+                                        <div className="col-span-1">Foto</div>
+                                        <div className="col-span-3">Modello</div>
+                                        <div className="col-span-2">Marca</div>
+                                        <div className="col-span-2">Prezzo</div>
+                                        <div className="col-span-1 text-center">Tipo</div>
+                                        <div className="col-span-1 text-center">Status</div>
+                                        <div className="col-span-2 text-right">Azioni</div>
+                                    </div>
                                     {excavators.map(excavator => (
-                                        <div key={excavator.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
-                                            <img src={excavator.images?.[0] || 'https://via.placeholder.com/150'} alt={excavator.name} className="w-20 h-20 object-cover rounded-lg" />
-                                            <div className="flex-grow">
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="font-bold text-lg">{excavator.name}</h3>
-                                                    <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${excavator.type === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                                                        {excavator.type === 'sale' ? 'Vendita' : 'Noleggio'}
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                                    €{excavator.price.toLocaleString()} | {excavator.weight}t | {excavator.hours || 0}h | Anno {excavator.year || 'N/A'}
-                                                </p>
+                                        <div key={excavator.id} className="grid grid-cols-12 gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 items-center">
+                                            {/* Image */}
+                                            <div className="col-span-1">
+                                                <img
+                                                    src={excavator.images?.[0] || 'https://via.placeholder.com/150'}
+                                                    alt={excavator.name}
+                                                    className="w-12 h-12 object-cover rounded-lg"
+                                                />
                                             </div>
-                                            <div className="flex gap-2">
+
+                                            {/* Model */}
+                                            <div className="col-span-3 font-bold text-gray-900 dark:text-gray-100 truncate">
+                                                {excavator.name}
+                                                <div className="text-[10px] text-gray-400 font-normal">{excavator.id}</div>
+                                            </div>
+
+                                            {/* Brand */}
+                                            <div className="col-span-2 text-sm text-gray-600 dark:text-gray-400">
+                                                {excavator.brand || '-'}
+                                            </div>
+
+                                            {/* Price */}
+                                            <div className="col-span-2 text-sm font-medium">
+                                                {excavator.type === 'rent' ? excavator.rentalPrice : `€ ${excavator.price?.toLocaleString()}`}
+                                            </div>
+
+                                            {/* Type */}
+                                            <div className="col-span-1 text-center">
+                                                <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${excavator.type === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                    {excavator.type === 'sale' ? 'VENDITA' : 'NOLEGGIO'}
+                                                </span>
+                                            </div>
+
+                                            {/* Availability */}
+                                            <div className="col-span-1 text-center">
+                                                <div className={`w-3 h-3 rounded-full mx-auto ${excavator.available !== false ? 'bg-green-500' : 'bg-red-500'}`} title={excavator.available !== false ? 'Disponibile' : 'Non disponibile'}></div>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="col-span-2 flex justify-end gap-2">
                                                 <button onClick={() => startEdit(excavator, 'excavator')} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
                                                     <span className="material-icons-outlined">edit</span>
                                                 </button>
@@ -427,110 +484,48 @@ const Admin: React.FC = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {editType === 'excavator' && (
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Modello</label>
-                                            <input name="name" value={formData.name || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" required />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Prezzo (€)</label>
-                                            <input name="price" type="number" value={formData.price || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" required />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Peso (Ton)</label>
-                                            <input name="weight" type="number" step="0.1" value={formData.weight || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Ore Lavoro</label>
-                                            <input name="hours" type="number" value={formData.hours || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Anno</label>
-                                            <input name="year" type="number" value={formData.year || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Tipo Offerta</label>
-                                        <select name="type" value={formData.type || 'sale'} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white">
-                                            <option value="sale">Vendita</option>
-                                            <option value="rent">Noleggio</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Matricola / ID</label>
-                                        <input name="serialNumber" value={formData.serialNumber || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Descrizione</label>
-                                        <textarea name="description" value={formData.description || ''} onChange={handleInputChange} rows={3} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Caratteristiche (separati da virgola)</label>
-                                        <input name="features" value={formData.features?.join(', ') || ''} onChange={handleFeaturesChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" placeholder="es. Aria condizionata, Cingoli gomma" />
-                                    </div>
+                        {editType === 'excavator' ? (
+                            <MachineForm
+                                initialData={isAdding ? null : editingItem}
+                                onCancel={resetForm}
+                                onSave={async (data) => {
+                                    if (isAdding) {
+                                        await addExcavator(data);
+                                    } else {
+                                        await updateExcavator(editingItem.id, data);
+                                    }
+                                    resetForm();
+                                }}
+                            />
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                {/* Machine Form handled above */}
 
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Immagini</label>
-                                        <div className="flex flex-wrap gap-2 mb-2">
-                                            {formData.images?.map((img: string, i: number) => (
-                                                <div key={i} className="relative group">
-                                                    <img src={img} alt="preview" className="w-20 h-20 object-cover rounded-lg" />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            const newImages = formData.images.filter((_: any, idx: number) => idx !== i);
-                                                            setFormData({ ...formData, images: newImages });
-                                                        }}
-                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <span className="material-icons-outlined text-xs">close</span>
-                                                    </button>
-                                                </div>
-                                            ))}
+                                {editType === 'gallery' && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Titolo</label>
+                                            <input name="title" value={formData.title || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
                                         </div>
-                                        <ImageUploader
-                                            onUpload={async (file) => {
-                                                const url = await uploadImage(file, 'excavators');
-                                                setFormData((prev: any) => ({
-                                                    ...prev,
-                                                    images: [...(prev.images || []), url]
-                                                }));
-                                            }}
-                                            multiple
-                                        />
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Immagine</label>
+                                            {formData.image && <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-lg mb-2" />}
+                                            <ImageUploader
+                                                onUpload={async (file) => {
+                                                    const url = await uploadImage(file, 'gallery');
+                                                    setFormData((prev: any) => ({ ...prev, image: url }));
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                                {/* Similar forms for Services if needed */}
 
-                            {editType === 'gallery' && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Titolo</label>
-                                        <input name="title" value={formData.title || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Immagine</label>
-                                        {formData.image && <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-lg mb-2" />}
-                                        <ImageUploader
-                                            onUpload={async (file) => {
-                                                const url = await uploadImage(file, 'gallery');
-                                                setFormData((prev: any) => ({ ...prev, image: url }));
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                            {/* Similar forms for Services if needed */}
-
-                            <button type="submit" className="w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors">
-                                Salva Modifiche
-                            </button>
-                        </form>
+                                <button type="submit" className="w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors">
+                                    Salva Modifiche
+                                </button>
+                            </form>
+                        )}
                     </div>
                 )}
             </div>

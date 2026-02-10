@@ -14,11 +14,11 @@ const Home: React.FC = () => {
       <section className="relative h-[90vh] flex items-center overflow-hidden bg-black">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://picsum.photos/seed/hero-excavator/1920/1080"
-            className="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000"
+            src="/images/hero-excavator.png"
+            className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
             alt="Hero Excavator"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,8 +43,11 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2. STATS SECTION */}
-      <section className="py-20 bg-zinc-950 text-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-zinc-950 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img src="/images/contact-header.png" className="w-full h-full object-cover grayscale" alt="Background" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             {[
               { label: 'Anni di Esperienza', value: '40+' },
@@ -90,7 +93,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
-              <img src="https://picsum.photos/seed/service-img/800/800" className="rounded-2xl shadow-2xl grayscale" alt="Service" />
+              <img src="/images/service-technician.png" className="rounded-2xl shadow-2xl" alt="Service Team" />
               <div className="absolute -bottom-8 -right-8 bg-orange-600 text-black p-8 rounded-2xl shadow-2xl hidden md:block">
                 <Users size={48} className="mb-4" />
                 <p className="text-2xl font-black italic">Team di Esperti</p>
@@ -126,10 +129,14 @@ const Home: React.FC = () => {
 
       {/* 5. TESTIMONIALS */}
       <section className="py-24 bg-zinc-950 text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 z-0">
+          <img src="/images/excavator-action.png" className="w-full h-full object-cover opacity-20 fixed-effect" alt="Background" style={{ backgroundAttachment: 'fixed' }} />
+          <div className="absolute inset-0 bg-zinc-950/90"></div>
+        </div>
+        <div className="absolute top-0 right-0 opacity-10 pointer-events-none z-10">
           <HardHat size={500} className="text-orange-600" />
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black uppercase italic mb-4">
               Cosa dicono i nostri <span className="text-orange-600">Clienti</span>
@@ -159,8 +166,11 @@ const Home: React.FC = () => {
       {/* 6. CALL TO ACTION */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-orange-600 rounded-3xl p-12 md:p-20 relative overflow-hidden flex flex-col items-center text-center">
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="bg-orange-600 rounded-3xl p-12 md:p-20 relative overflow-hidden flex flex-col items-center text-center group">
+            <div className="absolute inset-0 z-0">
+              <img src="/images/machinery-fleet.png" className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-700 mix-blend-multiply" alt="Fleet" />
+            </div>
+            <div className="absolute inset-0 opacity-10 pointer-events-none z-10">
               <div className="absolute -top-10 -left-10 w-64 h-64 bg-black rounded-full blur-3xl"></div>
               <div className="absolute -bottom-10 -right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
             </div>
