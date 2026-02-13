@@ -149,29 +149,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Seeding Logic: If database is empty, seed with mock data
     useEffect(() => {
         const seedData = async () => {
-            // Check excavators
+            // Check excavators - Use fixed IDs from mock data to prevent duplicates
             if (excavators.length === 0 && initialSiteData.excavators.length > 0) {
                 console.log("Seeding excavators...");
                 for (const item of initialSiteData.excavators) {
                     const { id, ...rest } = item;
-                    await addDoc(collection(db, 'excavators'), rest);
+                    const seedId = id || `seed_${rest.name.replace(/\s+/g, '_').toLowerCase()}`;
+                    await setDoc(doc(db, 'excavators', seedId), rest);
                 }
             }
 
             // Seed default spec categories if empty
             if (specCategories.length === 0) {
+                console.log("Seeding spec categories...");
                 const defaultCats = [
                     { name: 'Portata (kg)', order: 1 },
                     { name: 'Carico (kg)', order: 2 },
                     { name: 'Altezza Sollevamento (mm)', order: 3 }
                 ];
                 for (const cat of defaultCats) {
-                    await addDoc(collection(db, 'spec_categories'), cat);
+                    const catId = `spec_${cat.order}`;
+                    await setDoc(doc(db, 'spec_categories', catId), cat);
                 }
             }
 
             // Seed default machine categories if empty
             if (machineCategories.length === 0) {
+                console.log("Seeding machine categories...");
                 const defaultMachineCats = [
                     { name: 'Mini Escavatori' },
                     { name: 'Escavatori Cingolati' },
@@ -179,8 +183,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     { name: 'Gru' },
                     { name: 'Sollevatori Telescopici' }
                 ];
+                let idx = 1;
                 for (const cat of defaultMachineCats) {
-                    await addDoc(collection(db, 'categories'), cat);
+                    const catId = `cat_${idx}`;
+                    await setDoc(doc(db, 'categories', catId), cat);
+                    idx++;
                 }
             }
 
