@@ -283,37 +283,41 @@ const Admin: React.FC = () => {
 
     return (
         <div className="min-h-screen pt-24 pb-12 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                    <h1 className="text-3xl font-bold font-oswald text-amber-500">Pannello di Controllo</h1>
-                    <div className="flex items-center gap-6">
-                        <nav className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto">
+            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+                <div className="flex flex-col xl:flex-row justify-between items-center mb-6 gap-4">
+                    <h1 className="text-2xl md:text-3xl font-bold font-oswald text-amber-500 w-full text-center xl:text-left">Pannello di Controllo</h1>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+                        <nav className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto w-full sm:w-auto no-scrollbar">
                             {(['excavators', 'services', 'contacts', 'gallery', 'brands'] as const).map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => { setActiveTab(tab as any); resetForm(); }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab
+                                    className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab
                                         ? 'bg-white dark:bg-gray-700 shadow-sm text-amber-500'
                                         : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
                                         }`}
                                 >
-                                    {tab === 'excavators' ? 'Parco Macchine' : tab === 'services' ? 'Servizi' : tab === 'gallery' ? 'Galleria' : tab === 'brands' ? 'Marchi' : 'Contatti'}
+                                    {tab === 'excavators' ? 'Parco' : tab === 'services' ? 'Servizi' : tab === 'gallery' ? 'Galleria' : tab === 'brands' ? 'Marchi' : 'Contatti'}
                                 </button>
                             ))}
                         </nav>
 
-                        {/* PWA Install Button - Only visible for admin users when installable */}
-                        {canInstall && !isInstalled && (
-                            <button
-                                onClick={installPWA}
-                                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-full font-bold hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 text-sm animate-pulse hover:animate-none"
-                            >
-                                <span className="material-icons-outlined">download</span>
-                                INSTALLA APP
+                        <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
+                            {/* PWA Install Button - Only visible for admin users when installable */}
+                            {canInstall && !isInstalled && (
+                                <button
+                                    onClick={installPWA}
+                                    className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg font-bold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md flex items-center gap-2 text-xs uppercase"
+                                >
+                                    <span className="material-icons-outlined text-base">download</span>
+                                    <span>App</span>
+                                </button>
+                            )}
+                            <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500 font-bold px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                                <span className="material-icons-outlined align-middle sm:hidden">logout</span>
+                                <span className="hidden sm:inline">Log Out</span>
                             </button>
-                        )}
-
-                        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500 font-bold">Log Out</button>
+                        </div>
                     </div>
                 </div>
 
@@ -331,7 +335,7 @@ const Admin: React.FC = () => {
                                     </button>
                                 </div>
                                 <div className="grid gap-4">
-                                    <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg font-bold text-xs uppercase text-gray-500">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg font-bold text-xs uppercase text-gray-500">
                                         <div className="col-span-1">Foto</div>
                                         <div className="col-span-3">Modello</div>
                                         <div className="col-span-2">Marca</div>
@@ -341,51 +345,63 @@ const Admin: React.FC = () => {
                                         <div className="col-span-2 text-right">Azioni</div>
                                     </div>
                                     {excavators.map(excavator => (
-                                        <div key={excavator.id} className="grid grid-cols-12 gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 items-center">
-                                            {/* Image */}
-                                            <div className="col-span-1">
-                                                <img
-                                                    src={excavator.images?.[0] || 'https://via.placeholder.com/150'}
-                                                    alt={excavator.name}
-                                                    className="w-12 h-12 object-cover rounded-lg"
-                                                />
+                                        <div key={excavator.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 items-start md:items-center relative">
+                                            {/* Header Section for Mobile (Image + Name) */}
+                                            <div className="flex items-center gap-3 w-full md:contents">
+                                                {/* Image */}
+                                                <div className="md:col-span-1 shrink-0">
+                                                    <img
+                                                        src={excavator.images?.[0] || 'https://via.placeholder.com/150'}
+                                                        alt={excavator.name}
+                                                        className="w-16 h-16 md:w-12 md:h-12 object-cover rounded-lg bg-gray-100"
+                                                    />
+                                                </div>
+
+                                                {/* Model */}
+                                                <div className="md:col-span-3 font-bold text-gray-900 dark:text-gray-100 truncate flex-grow">
+                                                    <span className="text-lg md:text-sm">{excavator.name}</span>
+                                                    <div className="text-[10px] text-gray-400 font-normal">{excavator.id}</div>
+                                                </div>
                                             </div>
 
-                                            {/* Model */}
-                                            <div className="col-span-3 font-bold text-gray-900 dark:text-gray-100 truncate">
-                                                {excavator.name}
-                                                <div className="text-[10px] text-gray-400 font-normal">{excavator.id}</div>
-                                            </div>
+                                            {/* Details Grid for Mobile */}
+                                            <div className="card-details grid grid-cols-2 gap-y-2 w-full md:contents text-sm">
+                                                {/* Brand */}
+                                                <div className="md:col-span-2 text-gray-600 dark:text-gray-400 flex items-center justify-between md:block">
+                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Marca</span>
+                                                    <span>{excavator.brand || '-'}</span>
+                                                </div>
 
-                                            {/* Brand */}
-                                            <div className="col-span-2 text-sm text-gray-600 dark:text-gray-400">
-                                                {excavator.brand || '-'}
-                                            </div>
+                                                {/* Price */}
+                                                <div className="md:col-span-2 font-medium flex items-center justify-between md:block">
+                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Prezzo</span>
+                                                    <span>{excavator.type === 'rent' ? excavator.rentalPrice : `€ ${excavator.price?.toLocaleString()}`}</span>
+                                                </div>
 
-                                            {/* Price */}
-                                            <div className="col-span-2 text-sm font-medium">
-                                                {excavator.type === 'rent' ? excavator.rentalPrice : `€ ${excavator.price?.toLocaleString()}`}
-                                            </div>
+                                                {/* Type */}
+                                                <div className="md:col-span-1 text-center flex items-center justify-between md:justify-center">
+                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Tipo</span>
+                                                    <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${excavator.type === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                        {excavator.type === 'sale' ? 'VENDITA' : 'NOLEGGIO'}
+                                                    </span>
+                                                </div>
 
-                                            {/* Type */}
-                                            <div className="col-span-1 text-center">
-                                                <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${excavator.type === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                                                    {excavator.type === 'sale' ? 'VENDITA' : 'NOLEGGIO'}
-                                                </span>
-                                            </div>
-
-                                            {/* Availability */}
-                                            <div className="col-span-1 text-center">
-                                                <div className={`w-3 h-3 rounded-full mx-auto ${excavator.available !== false ? 'bg-green-500' : 'bg-red-500'}`} title={excavator.available !== false ? 'Disponibile' : 'Non disponibile'}></div>
+                                                {/* Availability */}
+                                                <div className="md:col-span-1 text-center flex items-center justify-between md:justify-center">
+                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Status</span>
+                                                    <div className={`w-3 h-3 rounded-full ${excavator.available !== false ? 'bg-green-500' : 'bg-red-500'}`} title={excavator.available !== false ? 'Disponibile' : 'Non disponibile'}></div>
+                                                </div>
                                             </div>
 
                                             {/* Actions */}
-                                            <div className="col-span-2 flex justify-end gap-2">
-                                                <button onClick={() => startEdit(excavator, 'excavator')} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
-                                                    <span className="material-icons-outlined">edit</span>
+                                            <div className="md:col-span-2 flex justify-end gap-2 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-gray-700">
+                                                <button onClick={() => startEdit(excavator, 'excavator')} className="flex-1 md:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 dark:hover:bg-blue-900/20 rounded-lg flex justify-center items-center gap-1">
+                                                    <span className="material-icons-outlined text-lg">edit</span>
+                                                    <span className="md:hidden text-xs font-bold">Modifica</span>
                                                 </button>
-                                                <button onClick={() => handleDelete(excavator.id, 'excavator')} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
-                                                    <span className="material-icons-outlined">delete</span>
+                                                <button onClick={() => handleDelete(excavator.id, 'excavator')} className="flex-1 md:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-lg flex justify-center items-center gap-1">
+                                                    <span className="material-icons-outlined text-lg">delete</span>
+                                                    <span className="md:hidden text-xs font-bold">Elimina</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -407,17 +423,17 @@ const Admin: React.FC = () => {
                                 </div>
                                 <div className="grid gap-4">
                                     {services.map(attr => (
-                                        <div key={attr.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
-                                            <img src={attr.image} alt={attr.title} className="w-16 h-16 object-cover rounded-lg" />
-                                            <div className="flex-grow">
+                                        <div key={attr.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4">
+                                            <img src={attr.image} alt={attr.title} className="w-full sm:w-16 h-32 sm:h-16 object-cover rounded-lg" />
+                                            <div className="flex-grow text-center sm:text-left w-full">
                                                 <h3 className="font-bold">{attr.title}</h3>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{attr.description}</p>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <button onClick={() => startEdit(attr, 'service')} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                                            <div className="flex gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 dark:border-gray-700">
+                                                <button onClick={() => startEdit(attr, 'service')} className="flex-1 sm:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 rounded-lg flex justify-center items-center">
                                                     <span className="material-icons-outlined">edit</span>
                                                 </button>
-                                                <button onClick={() => handleDelete(attr.id, 'service')} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                                <button onClick={() => handleDelete(attr.id, 'service')} className="flex-1 sm:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 rounded-lg flex justify-center items-center">
                                                     <span className="material-icons-outlined">delete</span>
                                                 </button>
                                             </div>
@@ -432,16 +448,16 @@ const Admin: React.FC = () => {
                                 <h2 className="text-xl font-bold">Gestione Contatti</h2>
                                 <div className="grid gap-4">
                                     {contacts.map(contact => (
-                                        <div key={contact.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-6">
-                                            <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                        <div key={contact.id} className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4 md:gap-6">
+                                            <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
                                                 <span className="material-icons-outlined">{contact.icon}</span>
                                             </div>
-                                            <div className="flex-grow">
+                                            <div className="flex-grow text-center sm:text-left">
                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{contact.label}</p>
-                                                <h3 className="text-lg font-bold">{contact.value}</h3>
+                                                <h3 className="text-lg font-bold break-all">{contact.value}</h3>
                                                 <p className="text-sm text-gray-500 italic">{contact.sub}</p>
                                             </div>
-                                            <button onClick={() => startEdit(contact, 'contact')} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                                            <button onClick={() => startEdit(contact, 'contact')} className="w-full sm:w-auto p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 rounded-lg flex justify-center">
                                                 <span className="material-icons-outlined">edit</span>
                                             </button>
                                         </div>
@@ -465,17 +481,17 @@ const Admin: React.FC = () => {
 
                                     <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-4">
                                         {homeGallery.items?.map(item => (
-                                            <Reorder.Item key={item.id} value={item} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4 cursor-move">
-                                                <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded-lg pointer-events-none" />
-                                                <div className="flex-grow pointer-events-none">
+                                            <Reorder.Item key={item.id} value={item} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4 cursor-move">
+                                                <img src={item.image} alt={item.title} className="w-full sm:w-16 h-48 sm:h-16 object-cover rounded-lg pointer-events-none" />
+                                                <div className="flex-grow pointer-events-none text-center sm:text-left w-full">
                                                     <h3 className="font-bold">{item.title}</h3>
                                                     <p className="text-xs text-gray-500 line-clamp-1">{item.subtitle}</p>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <button onClick={(e) => { e.stopPropagation(); startEdit(item, 'gallery'); }} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                                                <div className="flex gap-2 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
+                                                    <button onClick={(e) => { e.stopPropagation(); startEdit(item, 'gallery'); }} className="flex-1 sm:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-lg flex justify-center">
                                                         <span className="material-icons-outlined">edit</span>
                                                     </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="flex-1 sm:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg flex justify-center">
                                                         <span className="material-icons-outlined">delete</span>
                                                     </button>
                                                 </div>
@@ -494,7 +510,7 @@ const Admin: React.FC = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold">
                                 {isAdding ? 'Aggiungi' : 'Modifica'} {editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : 'Elemento'}

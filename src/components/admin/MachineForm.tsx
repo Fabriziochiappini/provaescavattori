@@ -108,41 +108,41 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
             {/* Header */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                <div className="flex items-center gap-4">
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-4 md:p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex items-center gap-4 w-full md:w-auto">
                     <button onClick={onCancel} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
                         <ArrowLeft size={20} className="text-gray-500" />
                     </button>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
                         {initialData ? `Modifica ${initialData.name}` : 'Nuova Macchina'}
                     </h2>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
                     <button
                         type="button"
                         onClick={() => setActiveSection(1)}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeSection === 1 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 1 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                     >
                         1. Info
                     </button>
                     <button
                         type="button"
                         onClick={() => setActiveSection(2)}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeSection === 2 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 2 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                     >
                         2. Galleria
                     </button>
                     <button
                         type="button"
                         onClick={() => setActiveSection(3)}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeSection === 3 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 3 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                     >
                         3. Dati
                     </button>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6">
+            <form onSubmit={handleSubmit} className="p-4 md:p-6">
 
                 {/* SECTION 1: MAIN INFO */}
                 {activeSection === 1 && (
@@ -188,7 +188,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                             <button
                                 type="button"
                                 onClick={() => setActiveSection(2)}
-                                className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
+                                className="w-full md:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
                             >
                                 Avanti: Galleria
                             </button>
@@ -240,18 +240,18 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                             </div>
                         </div>
 
-                        <div className="pt-4 flex justify-between">
+                        <div className="pt-4 flex flex-col-reverse md:flex-row justify-between gap-3">
                             <button
                                 type="button"
                                 onClick={() => setActiveSection(1)}
-                                className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                                className="w-full md:w-auto px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors"
                             >
                                 Indietro
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveSection(3)}
-                                className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
+                                className="w-full md:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
                             >
                                 Avanti: Dati Tecnici
                             </button>
@@ -370,18 +370,18 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                             <label htmlFor="available" className="font-bold text-gray-700 cursor-pointer select-none">Macchina Disponibile</label>
                         </div>
 
-                        <div className="pt-4 flex justify-between border-t border-gray-100 mt-6">
+                        <div className="pt-4 flex flex-col-reverse md:flex-row justify-between border-t border-gray-100 mt-6 gap-3">
                             <button
                                 type="button"
                                 onClick={() => setActiveSection(2)}
-                                className="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                                className="w-full md:w-auto px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors"
                             >
                                 Indietro
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="px-8 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-colors shadow-lg shadow-amber-500/30 flex items-center gap-2"
+                                className="w-full md:w-auto px-8 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-colors shadow-lg shadow-amber-500/30 flex justify-center items-center gap-2"
                             >
                                 {loading ? <span className="animate-spin material-icons-outlined">refresh</span> : <Save size={20} />}
                                 Salva Tutto

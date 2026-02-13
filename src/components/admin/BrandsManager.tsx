@@ -50,7 +50,7 @@ const BrandsManager: React.FC = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Settings Section */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6">
+                <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6">
                     <h3 className="text-xl font-bold flex items-center gap-2">
                         <span className="material-icons-outlined text-amber-500">settings</span>
                         Impostazioni Banner
@@ -123,7 +123,7 @@ const BrandsManager: React.FC = () => {
                 </div>
 
                 {/* Upload Section */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6">
+                <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6">
                     <h3 className="text-xl font-bold flex items-center gap-2">
                         <span className="material-icons-outlined text-amber-500">add_photo_alternate</span>
                         Aggiungi Marchi
@@ -147,7 +147,7 @@ const BrandsManager: React.FC = () => {
             </div>
 
             {/* Logos Grid / List */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold flex items-center gap-2">
                         <span className="material-icons-outlined text-amber-500">view_list</span>
