@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Excavator, useData } from '../../context/DataContext';
 import ImageUploader from '../ImageUploader';
 import { Reorder } from 'framer-motion';
-import { X, GripVertical, Trash2, Plus, Save, ArrowLeft } from 'lucide-react';
+import { X, GripVertical, Trash2, Plus, Save, ArrowLeft, Settings } from 'lucide-react';
 
 interface MachineFormProps {
     initialData?: Excavator | null;
