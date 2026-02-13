@@ -22,6 +22,7 @@ const Contact: React.FC = () => {
       case 'map-pin': return MapPin;
       case 'schedule':
       case 'clock': return Clock;
+      case 'whatsapp': return Phone; // Using Phone for now as Lucide doesn't have Whatsapp by default in common versions, or I could use MessageCircle
       default: return HelpCircle;
     }
   };

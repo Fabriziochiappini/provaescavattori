@@ -11,7 +11,7 @@ interface MachineFormProps {
 }
 
 const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel }) => {
-    const { uploadImage, deleteImage } = useData();
+    const { uploadImage, deleteImage, specCategories } = useData();
     const [formData, setFormData] = useState<Partial<Excavator>>({
         type: 'sale',
         category: 'Mini',
@@ -19,6 +19,8 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         images: [],
         available: true,
         condition: 5,
+        powerType: 'Termico',
+        specs: {}
     });
 
     const [images, setImages] = useState<string[]>([]);
@@ -37,6 +39,17 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        if (name.startsWith('spec_')) {
+            const specId = name.replace('spec_', '');
+            setFormData(prev => ({
+                ...prev,
+                specs: {
+                    ...(prev.specs || {}),
+                    [specId]: value
+                }
+            }));
+            return;
+        }
         setFormData(prev => ({
             ...prev,
             [name]: name === 'price' || name === 'weight' || name === 'hours' || name === 'year' || name === 'condition'
@@ -322,6 +335,44 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 </select>
                             </div>
                         </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Alimentazione</label>
+                                <div className="flex gap-2">
+                                    {['Termico', 'Elettrico'].map(type => (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() => setFormData(p => ({ ...p, powerType: type as any }))}
+                                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.powerType === type ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-500'}`}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {specCategories.length > 0 && (
+                            <div className="space-y-4 pt-4 border-t border-gray-100">
+                                <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest">Caratteristiche Variabili</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {specCategories.map(cat => (
+                                        <div key={cat.id}>
+                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">{cat.name}</label>
+                                            <input
+                                                name={`spec_${cat.id}`}
+                                                value={formData.specs?.[cat.id] || ''}
+                                                onChange={handleChange}
+                                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
+                                                placeholder={`Inserisci ${cat.name}`}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="pt-2">
                             <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Caratteristiche & Accessori</label>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
+import { useData, type Excavator, type Service, type ContactInfo, type SpecCategory } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
 import BrandsManager from '../components/admin/BrandsManager';
+import SpecCategoriesManager from '../components/admin/SpecCategoriesManager';
 import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings } from 'lucide-react';
 
 const Admin: React.FC = () => {
     const {
@@ -46,10 +47,11 @@ const Admin: React.FC = () => {
         checkAuth();
     }, []);
 
-    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands'>('excavators');
+    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs'>('excavators');
 
     const adminTabs = [
         { id: 'excavators', label: 'Parco', icon: LayoutDashboard },
+        { id: 'specs', label: 'Variabili', icon: Settings },
         { id: 'services', label: 'Servizi', icon: Briefcase },
         { id: 'gallery', label: 'Galleria', icon: ImageIcon },
         { id: 'brands', label: 'Marchi', icon: Award },
@@ -145,7 +147,7 @@ const Admin: React.FC = () => {
             });
         } else if (type === 'contact') {
             setFormData({
-                id: Date.now().toString(),
+                id: '', // Will be generated on save or if empty handled by addContact
                 label: '',
                 value: '',
                 sub: '',
@@ -200,7 +202,8 @@ const Admin: React.FC = () => {
             }
         } else if (editType === 'contact') {
             if (isAdding) {
-                await addContact(formData as ContactInfo);
+                const id = formData.label.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_');
+                await addContact({ ...formData, id } as ContactInfo);
             } else {
                 await updateContact(editingItem.id, formData as ContactInfo);
             }
@@ -577,6 +580,10 @@ const Admin: React.FC = () => {
 
                         {activeTab === 'brands' && (
                             <BrandsManager />
+                        )}
+
+                        {activeTab === 'specs' && (
+                            <SpecCategoriesManager />
                         )}
                     </div>
                 ) : (

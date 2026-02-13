@@ -9,20 +9,28 @@ export interface Excavator {
     id: string;
     name: string;
     brand: string;
-    model?: string; // Added model
-    category?: string; // Added category
+    model?: string;
+    category?: string;
     description: string;
-    weight: number; // Tonnes
-    price: number; // Sale price
-    rentalPrice?: string; // Daily rental price text
-    condition: number; // 1-5 stars
+    weight: number;
+    price: number;
+    rentalPrice?: string;
+    condition: number;
     images: string[];
     features: string[];
     serialNumber: string;
     year?: number;
     hours?: number;
-    type: 'sale' | 'rent' | 'both'; // Added 'both'
+    type: 'sale' | 'rent' | 'both';
     available?: boolean;
+    powerType?: 'Elettrico' | 'Termico'; // Added powerType
+    specs?: Record<string, string>; // Added dynamic specs
+}
+
+export interface SpecCategory {
+    id: string;
+    name: string;
+    order: number;
 }
 
 export interface Service {
@@ -78,6 +86,11 @@ interface DataContextType {
     updateExcavator: (id: string, updated: Excavator) => Promise<void>;
     deleteExcavator: (id: string) => Promise<void>;
 
+    specCategories: SpecCategory[];
+    addSpecCategory: (cat: SpecCategory) => Promise<void>;
+    updateSpecCategory: (id: string, updated: SpecCategory) => Promise<void>;
+    deleteSpecCategory: (id: string) => Promise<void>;
+
     services: Service[];
     addService: (service: Service) => Promise<void>;
     updateService: (id: string, updated: Service) => Promise<void>;
@@ -107,6 +120,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [excavators, setExcavators] = useState<Excavator[]>([]);
+    const [specCategories, setSpecCategories] = useState<SpecCategory[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [contacts, setContacts] = useState<ContactInfo[]>([]);
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
@@ -131,17 +145,30 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
             }
 
+            // Seed default spec categories if empty
+            if (specCategories.length === 0) {
+                const defaultCats = [
+                    { name: 'Portata (kg)', order: 1 },
+                    { name: 'Carico (kg)', order: 2 },
+                    { name: 'Altezza Sollevamento (mm)', order: 3 }
+                ];
+                for (const cat of defaultCats) {
+                    await addDoc(collection(db, 'spec_categories'), cat);
+                }
+            }
+
             // Seed default contacts if empty
             if (contacts.length === 0) {
                 console.log("Seeding default contacts...");
                 const defaultContacts = [
-                    { icon: 'phone', label: 'Telefono', value: '+39 0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
-                    { icon: 'email', label: 'Email', value: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
-                    { icon: 'place', label: 'Sede Centrale', value: 'SP330, 24, 81016 Pietravairano (CE)', sub: 'Sede Legale e Operativa', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
-                    { icon: 'schedule', label: 'Orari', value: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' }
+                    { id: 'phone_1', icon: 'phone', label: 'Telefono', value: '+39 0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
+                    { id: 'email_1', icon: 'email', label: 'Email', value: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
+                    { id: 'place_1', icon: 'place', label: 'Sede Centrale', value: 'SP330, 24, 81016 Pietravairano (CE)', sub: 'Sede Legale e Operativa', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
+                    { id: 'schedule_1', icon: 'schedule', label: 'Orari', value: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' }
                 ];
                 for (const c of defaultContacts) {
-                    await addDoc(collection(db, 'contacts'), c);
+                    const { id, ...rest } = c;
+                    await setDoc(doc(db, 'contacts', id), rest);
                 }
             }
 
@@ -171,6 +198,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const unsub = onSnapshot(collection(db, 'excavators'), (snap) => {
             const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Excavator));
             setExcavators(data);
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, 'spec_categories'), (snap) => {
+            const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as SpecCategory))
+                .sort((a, b) => a.order - b.order);
+            setSpecCategories(data);
         });
         return () => unsub();
     }, []);
@@ -233,6 +269,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await deleteDoc(doc(db, 'excavators', id));
     };
 
+    // CRUD Operations - SPEC CATEGORIES
+    const addSpecCategory = async (cat: SpecCategory) => {
+        const { id, ...rest } = cat;
+        await addDoc(collection(db, 'spec_categories'), rest);
+    };
+    const updateSpecCategory = async (id: string, updated: SpecCategory) => {
+        const { id: _, ...rest } = updated;
+        await updateDoc(doc(db, 'spec_categories', id), rest as any);
+    };
+    const deleteSpecCategory = async (id: string) => {
+        await deleteDoc(doc(db, 'spec_categories', id));
+    };
+
     // CRUD Operations - SERVICES
     const addService = async (item: Service) => {
         const { id, ...rest } = item;
@@ -249,7 +298,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // CRUD Operations - CONTACTS
     const addContact = async (item: ContactInfo) => {
         const { id, ...rest } = item;
-        await addDoc(collection(db, 'contacts'), rest);
+        // If an ID is provided (e.g. from the form), use it with setDoc to prevent duplicates if user clicks multiple times
+        if (id && id.length > 5) {
+            await setDoc(doc(db, 'contacts', id), rest);
+        } else {
+            await addDoc(collection(db, 'contacts'), rest);
+        }
     };
     const updateContact = async (id: string, updated: ContactInfo) => {
         const { id: _, ...rest } = updated;
@@ -316,6 +370,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return (
         <DataContext.Provider value={{
             excavators, addExcavator, updateExcavator, deleteExcavator,
+            specCategories, addSpecCategory, updateSpecCategory, deleteSpecCategory,
             services, addService, updateService, deleteService,
             contacts, addContact, updateContact, deleteContact,
             homeGallery, updateHomeGallery,

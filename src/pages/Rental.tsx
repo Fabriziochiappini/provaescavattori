@@ -3,21 +3,53 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { Machine } from '../types';
 import MachineCard from '../components/MachineCard';
-import { Clock, Shield, Zap } from 'lucide-react';
+import { Clock, Shield, Zap, Filter, Search } from 'lucide-react';
 
 const Rental: React.FC = () => {
-  const { excavators } = useData();
+  const { excavators, specCategories } = useData();
+  const [activeCategory, setActiveCategory] = useState<string>('Tutti');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('Tutte');
+  const [selectedPower, setSelectedPower] = useState('Tutte');
+  const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string>>({});
 
   // Transform Excavators (DB) to Machines (UI)
-  const machines: Machine[] = excavators.map(exc => ({
+  const machines: any[] = excavators.map(exc => ({
     ...exc,
     id: exc.id,
     imageUrl: exc.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image',
     category: exc.category || 'Altro',
     model: exc.model || exc.name,
-  } as unknown as Machine));
+  }));
 
-  const rentalMachines = machines.filter(m => m.type === 'rental' || m.type === 'both');
+  const rentalMachines = machines.filter(m => m.type === 'rent' || m.type === 'both');
+
+  const brands = ['Tutte', ...new Set(rentalMachines.map(m => m.brand).filter(Boolean))];
+
+  const filteredMachines = rentalMachines.filter(m => {
+    const matchesCategory = activeCategory === 'Tutti' || m.category === activeCategory;
+    const matchesBrand = selectedBrand === 'Tutte' || m.brand === selectedBrand;
+    const matchesPower = selectedPower === 'Tutte' || m.powerType === selectedPower;
+    const matchesSearch =
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.model.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Check dynamic specs
+    const matchesSpecs = Object.entries(selectedSpecs).every(([catId, value]) => {
+      if (!value || value === 'Tutte') return true;
+      return m.specs?.[catId] === value;
+    });
+
+    return matchesCategory && matchesBrand && matchesPower && matchesSearch && matchesSpecs;
+  });
+
+  const categories = ['Tutti', 'Mini', 'Medio', 'Pesante', 'Specialistico'];
+
+  const getSpecOptions = (catId: string) => {
+    const options = rentalMachines.map(m => m.specs?.[catId]).filter(Boolean);
+    return ['Tutte', ...new Set(options)];
+  };
 
   return (
     <div className="pt-32 pb-24">
@@ -31,30 +63,97 @@ const Rental: React.FC = () => {
           </p>
         </header>
 
-        {/* Rental Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {[
-            { icon: Clock, title: "Flessibilità Totale", text: "Noleggio da un solo giorno a periodi pluriennali, per adattarsi ai tuoi carichi di lavoro." },
-            { icon: Shield, title: "Assistenza Inclusa", text: "Tutti i nostri mezzi a noleggio sono coperti da assistenza tecnica per la tua serenità." },
-            { icon: Zap, title: "Zero Pensieri", text: "Ci occupiamo noi di tutto: dalla manutenzione ordinaria ai ricambi necessari." }
-          ].map((benefit, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-2xl border border-zinc-100 shadow-sm flex flex-col items-center text-center">
-              <div className="bg-orange-600 p-4 rounded-2xl mb-6 shadow-lg shadow-orange-600/20">
-                <benefit.icon size={32} className="text-black" />
+        {/* Advanced Filters */}
+        <div className="bg-zinc-950 p-6 rounded-2xl mb-12">
+          {/* Categories Bar */}
+          <div className="flex items-center gap-4 overflow-x-auto w-full pb-6 no-scrollbar border-b border-zinc-800 mb-8">
+            <Filter size={18} className="text-orange-500 shrink-0" />
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-5 py-2 rounded-full font-bold uppercase tracking-wider text-[10px] transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-orange-600 text-black' : 'text-zinc-500 hover:text-white hover:bg-zinc-900 border border-zinc-900'
+                  }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Search */}
+            <div className="relative">
+              <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">Cerca</label>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
+                <input
+                  type="text"
+                  placeholder="Modello o marca..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-zinc-900 border-none rounded-xl py-4 pl-12 pr-6 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none"
+                />
               </div>
-              <h3 className="text-xl font-bold mb-3">{benefit.title}</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed">{benefit.text}</p>
             </div>
-          ))}
+
+            {/* Brand */}
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">Marca</label>
+              <select
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+                className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
+              >
+                {brands.map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </div>
+
+            {/* Power Type Filter */}
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">Alimentazione</label>
+              <select
+                value={selectedPower}
+                onChange={(e) => setSelectedPower(e.target.value)}
+                className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
+              >
+                <option value="Tutte">Tutte</option>
+                <option value="Termico">Termico</option>
+                <option value="Elettrico">Elettrico</option>
+              </select>
+            </div>
+
+            {/* Dynamic Specs Filters */}
+            {specCategories.map(cat => {
+              const options = getSpecOptions(cat.id);
+              if (options.length <= 1) return null;
+              return (
+                <div key={cat.id}>
+                  <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">{cat.name}</label>
+                  <select
+                    value={selectedSpecs[cat.id] || 'Tutte'}
+                    onChange={(e) => setSelectedSpecs(prev => ({ ...prev, [cat.id]: e.target.value }))}
+                    className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
+                  >
+                    {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <h2 className="text-3xl font-black uppercase italic mb-10 border-l-8 border-orange-600 pl-6">Parco Macchine Disponibile</h2>
-
+        {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {rentalMachines.map((machine) => (
+          {filteredMachines.map((machine) => (
             <MachineCard key={machine.id} machine={machine} />
           ))}
         </div>
+
+        {filteredMachines.length === 0 && (
+          <div className="py-20 text-center">
+            <p className="text-zinc-500 text-xl font-light italic">Nessun mezzo disponibile per i criteri selezionati.</p>
+          </div>
+        )}
 
         {/* CTA */}
         <div className="mt-20 bg-zinc-950 rounded-3xl p-12 flex flex-col md:flex-row items-center justify-between gap-8">
