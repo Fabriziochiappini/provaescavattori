@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle, ShieldCheck, Truck, Clock, Award, Users } from
 import { MACHINES_DATA } from '../constants';
 import MachineCard from '../components/MachineCard';
 import BrandsBanner from '../components/BrandsBanner';
+import MachineCardStack from '../components/MachineCardStack';
 import { useData } from '../context/DataContext';
 
 const fadeInUp = {
@@ -46,7 +47,7 @@ const Home: React.FC = () => {
   return (
     <div className="pt-20">
       {/* 1. HERO SECTION */}
-      <section className="relative h-[90vh] flex items-center overflow-hidden bg-black">
+      <section className="relative min-h-[95vh] lg:h-[95vh] flex items-center overflow-hidden bg-black pb-20 lg:pb-0">
         <div className="absolute inset-0 z-0">
           <motion.img
             initial={{ scale: 1.1, opacity: 0 }}
@@ -56,41 +57,70 @@ const Home: React.FC = () => {
             className="w-full h-full object-cover"
             alt="Hero Excavator"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-black via-black/80 to-transparent"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-3xl"
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
-            <motion.h1
-              variants={fadeInRight}
-              className="text-6xl md:text-8xl font-black text-white leading-none tracking-tighter mb-6 uppercase italic"
-            >
-              IL PARTNER IDEALE PER IL <span className="text-orange-500">TUO CANTIERE</span>
-            </motion.h1>
-            <motion.p
-              variants={fadeInLeft}
-              className="text-xl text-zinc-300 mb-10 leading-relaxed font-light"
-            >
-              Vendita, noleggio e assistenza di carrelli elevatori e macchine movimento terra. La nostra esperienza di oltre 40 anni al servizio della tua produttività.
-            </motion.p>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center pt-10 lg:pt-0">
+            {/* Left Column: Content */}
             <motion.div
-              variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4"
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="text-left"
             >
-              <Link to="/vendita" className="group bg-orange-600 hover:bg-orange-700 text-black px-8 py-4 rounded font-bold text-lg flex items-center justify-center gap-2 transition-all">
-                SCOPRI LA VENDITA
-                <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-              </Link>
-              <Link to="/noleggio" className="group border-2 border-white hover:bg-white hover:text-black text-white px-8 py-4 rounded font-bold text-lg flex items-center justify-center gap-2 transition-all">
-                ESPLORA IL NOLEGGIO
-              </Link>
+              <motion.div variants={fadeInLeft} className="mb-2">
+                <span className="text-orange-600 font-black tracking-[0.2em] text-sm md:text-base uppercase">
+                  Eccellenza nel Movimento Terra
+                </span>
+              </motion.div>
+
+              <motion.h1
+                variants={fadeInLeft}
+                className="text-6xl md:text-9xl font-black text-white leading-[0.8] tracking-tighter mb-4 uppercase italic flex flex-col"
+              >
+                <span>CONTE</span>
+                <span className="text-orange-500">GROUP</span>
+              </motion.h1>
+
+              <motion.h2
+                variants={fadeInLeft}
+                className="text-2xl md:text-4xl font-black text-white/90 leading-tight uppercase italic mb-8 border-l-4 border-orange-600 pl-6"
+              >
+                IL TUO PARTNER <br className="hidden md:block" /> IDEALE
+              </motion.h2>
+
+              <motion.p
+                variants={fadeInLeft}
+                className="text-lg text-zinc-400 mb-10 leading-relaxed font-medium max-w-lg"
+              >
+                Vendita, noleggio e assistenza di macchine movimento terra. Oltre 40 anni di esperienza per garantire la massima produttività al tuo cantiere.
+              </motion.p>
+
+              <motion.div
+                variants={fadeInUp}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <Link to="/vendita" className="group bg-orange-600 hover:bg-orange-700 text-black px-10 py-5 rounded-lg font-black text-lg flex items-center justify-center gap-3 transition-all">
+                  SCOPRI LA VENDITA
+                  <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                </Link>
+                <Link to="/noleggio" className="group border-2 border-white/20 hover:border-white text-white px-10 py-5 rounded-lg font-black text-lg flex items-center justify-center gap-3 transition-all backdrop-blur-sm">
+                  NOLEGGIO MEZZI
+                </Link>
+              </motion.div>
             </motion.div>
-          </motion.div>
+
+            {/* Right Column: Card Stack */}
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="relative py-12 lg:py-0"
+            >
+              <MachineCardStack machines={MACHINES_DATA} />
+            </motion.div>
+          </div>
         </div>
       </section>
 
