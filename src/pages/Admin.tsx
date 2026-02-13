@@ -287,7 +287,7 @@ const Admin: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen pt-20 pb-12 bg-[#f8fafc] text-gray-900">
+        <div className="min-h-screen pt-16 pb-8 bg-[#f8fafc] text-gray-900">
             {/* Desktop Navigation */}
             <FloatingAdminNav
                 activeTab={activeTab}
@@ -343,39 +343,39 @@ const Admin: React.FC = () => {
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-12">
-                <div className="flex justify-between items-center mb-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-8">
+                <div className="flex justify-between items-center mb-8">
                     <div className="hidden sm:block">
-                        <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase italic">
-                            Pannello <span className="text-amber-500 underline decoration-8 decoration-amber-500/10">Controllo</span>
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">
+                            Pannello <span className="text-amber-500 underline decoration-4 decoration-amber-500/10">Controllo</span>
                         </h1>
-                        <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">Gestione Contenuti in tempo reale</p>
+                        <p className="text-slate-400 font-bold mt-1 uppercase tracking-widest text-[10px]">Gestione Contenuti</p>
                     </div>
 
                     <button
                         onClick={handleLogout}
-                        className="hidden sm:flex items-center gap-2 px-8 py-4 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 rounded-3xl text-slate-600 hover:text-red-500 font-black tracking-widest text-xs uppercase transition-all active:scale-95"
+                        className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 rounded-2xl text-slate-600 hover:text-red-500 font-black tracking-widest text-[10px] uppercase transition-all active:scale-95"
                     >
-                        <LogOut size={16} /> Logout
+                        <LogOut size={14} /> Logout
                     </button>
                 </div>
 
                 {!isAdding && !editingItem ? (
-                    <div className="space-y-12">
+                    <div className="space-y-10">
                         {activeTab === 'excavators' && (
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Parco Macchine</h2>
+                                    <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Parco Macchine</h2>
                                     <button
                                         onClick={() => startAdd('excavator')}
-                                        className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
+                                        className="bg-amber-500 text-white w-12 h-12 sm:w-auto sm:h-auto sm:px-6 sm:py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-2 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                     >
-                                        <Plus size={24} className="sm:hidden" />
+                                        <Plus size={20} className="sm:hidden" />
                                         <span className="hidden sm:inline">+AGGIUNGI</span>
                                     </button>
                                 </div>
-                                <div className="grid gap-6">
-                                    <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 bg-slate-100/50 rounded-3xl font-black text-[10px] uppercase text-slate-400 tracking-widest">
+                                <div className="grid gap-4">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-100/50 rounded-2xl font-black text-[9px] uppercase text-slate-400 tracking-widest">
                                         <div className="col-span-1 text-center">Preview</div>
                                         <div className="col-span-3">Modello</div>
                                         <div className="col-span-2 text-center">Marca</div>
@@ -385,7 +385,7 @@ const Admin: React.FC = () => {
                                         <div className="col-span-2 text-right px-4">Azioni</div>
                                     </div>
                                     {excavators.map(excavator => (
-                                        <div key={excavator.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-5 sm:p-6 bg-white rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-slate-200/30 transition-all items-start md:items-center group">
+                                        <div key={excavator.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-4 sm:p-5 bg-white rounded-[24px] shadow-sm border border-slate-100 hover:shadow-lg hover:shadow-slate-200/30 transition-all items-start md:items-center group">
                                             <div className="flex items-center gap-4 w-full md:contents">
                                                 <div className="md:col-span-1 shrink-0">
                                                     <img
@@ -442,21 +442,21 @@ const Admin: React.FC = () => {
                         )}
 
                         {activeTab === 'services' && (
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Servizi Aziendali</h2>
+                                    <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Servizi Aziendali</h2>
                                     <button
                                         onClick={() => startAdd('service')}
-                                        className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
+                                        className="bg-amber-500 text-white w-12 h-12 sm:w-auto sm:h-auto sm:px-6 sm:py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-2 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                     >
-                                        <Plus size={24} className="sm:hidden" />
+                                        <Plus size={20} className="sm:hidden" />
                                         <span className="hidden sm:inline">+AGGIUNGI</span>
                                     </button>
                                 </div>
-                                <div className="grid gap-6">
+                                <div className="grid gap-4">
                                     {services.map(attr => (
-                                        <div key={attr.id} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-6 group">
-                                            <img src={attr.image} alt={attr.title} className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded-2xl shadow-sm border border-slate-100" />
+                                        <div key={attr.id} className="bg-white p-4 rounded-[24px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 group">
+                                            <img src={attr.image} alt={attr.title} className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-xl shadow-sm border border-slate-100" />
                                             <div className="flex-grow text-center sm:text-left">
                                                 <h3 className="font-black text-xl italic uppercase text-slate-900 group-hover:text-amber-500 transition-colors">{attr.title}</h3>
                                                 <p className="text-sm font-medium text-slate-400 mt-2 line-clamp-2 leading-relaxed">{attr.description}</p>
@@ -476,14 +476,14 @@ const Admin: React.FC = () => {
                         )}
 
                         {activeTab === 'contacts' && (
-                            <div className="space-y-8">
-                                <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800 italic underline decoration-4 decoration-amber-500/10">Gestione Contatti</h2>
-                                <div className="grid sm:grid-cols-2 gap-6">
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 italic underline decoration-4 decoration-amber-500/10">Gestione Contatti</h2>
+                                <div className="grid sm:grid-cols-2 gap-4">
                                     {contacts.map(contact => (
-                                        <div key={contact.id} className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-start gap-6 relative group overflow-hidden">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-all duration-700"></div>
-                                            <div className="w-16 h-16 rounded-3xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0 shadow-sm border border-amber-500/10">
-                                                <span className="material-icons-outlined text-3xl">{contact.icon}</span>
+                                        <div key={contact.id} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex items-start gap-4 relative group overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -translate-y-12 translate-x-12 group-hover:scale-150 transition-all duration-700"></div>
+                                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0 shadow-sm border border-amber-500/10">
+                                                <span className="material-icons-outlined text-2xl">{contact.icon}</span>
                                             </div>
                                             <div className="flex-grow">
                                                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{contact.label}</p>
@@ -500,23 +500,23 @@ const Admin: React.FC = () => {
                         )}
 
                         {activeTab === 'gallery' && (
-                            <div className="space-y-8">
-                                <section className="space-y-8">
+                            <div className="space-y-6">
+                                <section className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Galleria Foto</h2>
+                                        <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Galleria Foto</h2>
                                         <button
                                             onClick={() => startAdd('gallery' as any)}
-                                            className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
+                                            className="bg-amber-500 text-white w-12 h-12 sm:w-auto sm:h-auto sm:px-6 sm:py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-2 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                         >
-                                            <Plus size={24} className="sm:hidden" />
+                                            <Plus size={20} className="sm:hidden" />
                                             <span className="hidden sm:inline">+AGGIUNGI</span>
                                         </button>
                                     </div>
 
-                                    <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-6">
+                                    <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-4">
                                         {homeGallery.items?.map(item => (
-                                            <Reorder.Item key={item.id} value={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-6 cursor-move group">
-                                                <div className="relative shrink-0 w-full sm:w-32 h-48 sm:h-32 rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                                            <Reorder.Item key={item.id} value={item} className="bg-white p-4 rounded-[24px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 cursor-move group">
+                                                <div className="relative shrink-0 w-full sm:w-24 h-40 sm:h-24 rounded-xl overflow-hidden border border-slate-100 shadow-sm">
                                                     <img src={item.image} alt={item.title} className="w-full h-full object-cover pointer-events-none group-hover:scale-110 transition-transform duration-700" />
                                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                                                 </div>
@@ -550,8 +550,8 @@ const Admin: React.FC = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[48px] shadow-2xl border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-500">
-                        <div className="flex justify-between items-center mb-10">
+                    <div className="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-[32px] shadow-2xl border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-500">
+                        <div className="flex justify-between items-center mb-8">
                             <div>
                                 <h2 className="text-3xl font-black text-slate-900 uppercase italic">
                                     {isAdding ? 'Crea' : 'Aggiorna'} <span className="text-amber-500">{editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : 'Elemento'}</span>

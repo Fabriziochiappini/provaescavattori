@@ -106,43 +106,33 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            {/* Header */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 p-4 md:p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                    <button onClick={onCancel} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
-                        <ArrowLeft size={20} className="text-gray-500" />
-                    </button>
-                    <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate">
-                        {initialData ? `Modifica ${initialData.name}` : 'Nuova Macchina'}
-                    </h2>
-                </div>
-                <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
-                    <button
-                        type="button"
-                        onClick={() => setActiveSection(1)}
-                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 1 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
-                    >
-                        1. Info
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveSection(2)}
-                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 2 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
-                    >
-                        2. Galleria
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveSection(3)}
-                        className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 3 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
-                    >
-                        3. Dati
-                    </button>
-                </div>
+        <div className="w-full">
+            {/* Compact Header for Tab Navigation */}
+            <div className="flex gap-2 w-full overflow-x-auto no-scrollbar pb-4 mb-6 border-b border-gray-100 dark:border-gray-700">
+                <button
+                    type="button"
+                    onClick={() => setActiveSection(1)}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 1 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                >
+                    1. Info
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveSection(2)}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 2 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                >
+                    2. Galleria
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveSection(3)}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 3 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+                >
+                    3. Dati
+                </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 md:p-6">
+            <form onSubmit={handleSubmit}>
 
                 {/* SECTION 1: MAIN INFO */}
                 {activeSection === 1 && (
