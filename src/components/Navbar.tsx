@@ -11,8 +11,8 @@ const Navbar: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'Vendita', path: '/vendita' },
     { name: 'Noleggio', path: '/noleggio' },
-    { name: 'Chi Siamo', path: '/chi-siamo' },
     { name: 'Assistenza', path: '/assistenza' },
+    { name: 'Chi Siamo', path: '/chi-siamo' },
     { name: 'Contatti', path: '/contatti' },
   ];
 
@@ -43,13 +43,6 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
-            <Link
-              to="/contatti"
-              className="bg-orange-600 hover:bg-orange-700 text-black font-bold py-2 px-6 rounded flex items-center gap-2 transition-transform active:scale-95"
-            >
-              <Phone className="w-4 h-4" />
-              RICHIEDI PREVENTIVO
-            </Link>
           </div>
 
           {/* Mobile menu button */}
