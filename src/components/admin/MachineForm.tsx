@@ -146,7 +146,6 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
             </div>
 
             <form onSubmit={handleSubmit}>
-
                 {/* SECTION 1: ESSENTIAL INFO */}
                 {activeSection === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
@@ -251,6 +250,18 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                             </div>
                         </div>
 
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Descrizione Commerciale</label>
+                            <textarea
+                                name="description"
+                                value={formData.description || ''}
+                                onChange={handleChange}
+                                rows={4}
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white text-sm"
+                                placeholder="Descrivi i punti di forza della macchina..."
+                            />
+                        </div>
+
                         <div className="pt-4 flex justify-end">
                             <button
                                 type="button"
@@ -329,41 +340,6 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                 {/* SECTION 3: DETTAGLI AVANZATI */}
                 {activeSection === 3 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Descrizione Commerciale</label>
-                            <textarea
-                                name="description"
-                                value={formData.description || ''}
-                                onChange={handleChange}
-                                rows={4}
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white text-sm"
-                                placeholder="Descrivi i punti di forza della macchina..."
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Massa (t)</label>
-                                <input name="weight" type="number" step="0.1" value={formData.weight || ''} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Anno</label>
-                                <input name="year" type="number" value={formData.year || ''} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Ore</label>
-                                <input name="hours" type="number" value={formData.hours || ''} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Alimentazione</label>
-                                <select name="powerType" value={formData.powerType} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl">
-                                    <option value="Termico">Termico</option>
-                                    <option value="Elettrico">Elettrico</option>
-                                </select>
-                            </div>
-                        </div>
-
                         {specCategories.length > 0 && (
                             <div className="space-y-4 pt-4 border-t border-gray-100">
                                 <div className="flex items-center gap-2">
