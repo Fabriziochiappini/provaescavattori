@@ -4,14 +4,14 @@
   --font-display: "Oswald", sans-serif;
   --font-body: "Inter", sans-serif;
 
-  --color-primary: #f59e0b; /* Amber 500 - Excavator Yellow */
-  --color-secondary: #27272a; /* Zinc 800 */
-  --color-background-light: #fafafa; /* Zinc 50 */
-  --color-background-dark: #18181b; /* Zinc 900 */
+  --color-primary: #ea580c; /* Orange 600 - More solid than yellow */
+  --color-secondary: #0f172a; /* Slate 900 - Deep navy for professionalism */
+  --color-background-light: #f8fafc; /* Slate 50 */
+  --color-background-dark: #020617; /* Slate 950 */
   --color-surface-light: #ffffff;
-  --color-surface-dark: #27272a; /* Zinc 800 */
-  --color-text-light: #18181b; /* Zinc 900 */
-  --color-text-dark: #f4f4f5; /* Zinc 100 */
+  --color-surface-dark: #0f172a; /* Slate 900 */
+  --color-text-light: #0f172a; /* Slate 900 */
+  --color-text-dark: #f8fafc; /* Slate 50 */
 
   --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
   

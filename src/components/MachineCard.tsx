@@ -24,72 +24,76 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
   };
   return (
     <>
-      <div className="group bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <div className="group bg-white border border-slate-200 rounded-none overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
         <div
-          className="relative h-64 overflow-hidden cursor-pointer"
+          className="relative h-72 overflow-hidden cursor-pointer"
           onClick={handleImageClick}
         >
           <img
             src={machine.imageUrl}
             alt={machine.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+          <div className="absolute top-0 left-0 flex flex-col z-10">
             {machine.type === 'sale' || machine.type === 'both' ? (
-              <span className="bg-black text-white text-[10px] font-bold px-3 py-1 rounded uppercase tracking-wider shadow-lg">In Vendita</span>
+              <span className="bg-slate-900 text-white text-[10px] font-bold px-4 py-2 uppercase tracking-[0.2em]">In Vendita</span>
             ) : null}
             {machine.type === 'rental' || machine.type === 'both' ? (
-              <span className="bg-orange-500 text-black text-[10px] font-bold px-3 py-1 rounded uppercase tracking-wider shadow-lg">Disponibile a Noleggio</span>
+              <span className="bg-orange-600 text-white text-[10px] font-bold px-4 py-2 uppercase tracking-[0.2em]">Disponibile a Noleggio</span>
             ) : null}
           </div>
 
-          {/* Gallery Indicator / Zoom Icon */}
-          <div className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 p-2 rounded-full text-white backdrop-blur-sm transition-colors z-10 opacity-0 group-hover:opacity-100">
-            <Maximize2 size={20} />
+          <div className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 p-3 rounded-none text-white backdrop-blur-md transition-colors z-10 opacity-0 group-hover:opacity-100 border border-white/20">
+            <Maximize2 size={18} />
           </div>
 
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <p className="text-zinc-300 text-xs italic line-clamp-2">{machine.description}</p>
+          <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+            <span className="text-white font-bold tracking-widest text-xs uppercase border-b-2 border-orange-600 pb-1">Visualizza Gallery</span>
           </div>
         </div>
 
-        <div className="p-5">
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <p className="text-orange-600 text-xs font-bold uppercase tracking-widest mb-1">{machine.brand}</p>
-              <h3 className="text-xl font-bold text-zinc-900 leading-tight group-hover:text-orange-600 transition-colors">{machine.name}</h3>
-            </div>
+        <div className="p-6 border-t-4 border-transparent group-hover:border-orange-600 transition-all duration-500">
+          <div className="mb-4">
+            <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">{machine.brand}</p>
+            <h3 className="text-2xl font-bold text-slate-900 leading-tight tracking-tight uppercase">{machine.name}</h3>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 my-4">
-            <div className="flex items-center gap-2 text-zinc-500 text-sm">
-              <Scale size={16} className="text-orange-500" />
-              <span>{machine.weight} Tonnellate</span>
-            </div>
-            <div className="flex items-center gap-2 text-zinc-500 text-sm">
-              <Zap size={16} className="text-orange-500" />
-              <span>{machine.category}</span>
-            </div>
-            {machine.hours && (
-              <div className="flex items-center gap-2 text-zinc-500 text-sm">
-                <Clock size={16} className="text-orange-500" />
-                <span>{machine.hours} h</span>
+          <div className="grid grid-cols-2 gap-4 my-6">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Peso Operativo</span>
+              <div className="flex items-center gap-2 text-slate-700 font-bold">
+                <Scale size={14} className="text-orange-600" />
+                <span>{machine.weight} T</span>
               </div>
-            )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Categoria</span>
+              <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                <Zap size={14} className="text-orange-600" />
+                <span>{machine.category}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+          <div className="pt-6 border-t border-slate-100 flex items-end justify-between">
             <div>
-              <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-tighter">A partire da</p>
-              <p className="text-xl font-extrabold text-zinc-900">
-                {machine.type === 'rental' ? machine.rentalPrice : `€ ${machine.price?.toLocaleString()}`}
+              <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Quotazione</p>
+              <p className="text-2xl font-black text-slate-900 tracking-tighter">
+                {machine.type === 'rental' ? (
+                  <span className="text-lg">{machine.rentalPrice}</span>
+                ) : (
+                  <>
+                    <span className="text-sm font-bold mr-1">€</span>
+                    {machine.price?.toLocaleString()}
+                  </>
+                )}
               </p>
             </div>
             <Link
               to={`/macchina/${machine.id}`}
-              className="bg-zinc-950 hover:bg-orange-600 text-white hover:text-black p-3 rounded-full transition-all duration-300"
+              className="bg-slate-900 hover:bg-orange-600 text-white p-4 transition-all duration-300 group/btn"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
