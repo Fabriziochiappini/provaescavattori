@@ -8,7 +8,7 @@ import MachineCategoriesManager from '../components/admin/MachineCategoriesManag
 import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree, Trash2, Edit2 } from 'lucide-react';
 
 const Admin: React.FC = () => {
     const {
@@ -161,28 +161,33 @@ const Admin: React.FC = () => {
 
     const handleDelete = async (id: string, type: 'excavator' | 'service' | 'gallery' | 'contact') => {
         if (window.confirm('Sei sicuro di voler cancellare questo elemento?')) {
-            if (type === 'excavator') {
-                const item = excavators.find(r => r.id === id);
-                if (item && item.images) {
-                    for (const imgUrl of item.images) {
-                        try { await deleteImage(imgUrl); } catch (e) { console.error(e); }
+            try {
+                if (type === 'excavator') {
+                    const item = excavators.find(r => r.id === id);
+                    if (item && item.images) {
+                        for (const imgUrl of item.images) {
+                            try { await deleteImage(imgUrl); } catch (e) { console.error(e); }
+                        }
                     }
+                    await deleteExcavator(id);
                 }
-                await deleteExcavator(id);
-            }
-            else if (type === 'service') {
-                const item = services.find(a => a.id === id);
-                if (item && item.image) await deleteImage(item.image);
-                deleteService(id);
-            }
-            else if (type === 'gallery') {
-                const item = homeGallery.items.find(i => i.id === id);
-                if (item && item.image) await deleteImage(item.image);
-                const newItems = homeGallery.items.filter(i => i.id !== id);
-                await updateHomeGallery({ ...homeGallery, items: newItems });
-            }
-            else if (type === 'contact') {
-                await deleteContact(id);
+                else if (type === 'service') {
+                    const item = services.find(a => a.id === id);
+                    if (item && item.image) await deleteImage(item.image);
+                    await deleteService(id);
+                }
+                else if (type === 'gallery') {
+                    const item = homeGallery.items.find(i => i.id === id);
+                    if (item && item.image) await deleteImage(item.image);
+                    const newItems = homeGallery.items.filter(i => i.id !== id);
+                    await updateHomeGallery({ ...homeGallery, items: newItems });
+                }
+                else if (type === 'contact') {
+                    await deleteContact(id);
+                }
+            } catch (error) {
+                console.error("Delete failed:", error);
+                alert("Errore durante la cancellazione. Riprova.");
             }
         }
     };
@@ -450,10 +455,10 @@ const Admin: React.FC = () => {
 
                                             <div className="md:col-span-2 flex justify-end gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
                                                 <button onClick={() => startEdit(excavator, 'excavator')} className="flex-1 md:flex-none p-3 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
-                                                    <X size={18} className="rotate-45" /> <span className="md:hidden font-bold">Modifica</span>
+                                                    <Edit2 size={18} /> <span className="md:hidden font-bold">Modifica</span>
                                                 </button>
                                                 <button onClick={() => handleDelete(excavator.id, 'excavator')} className="flex-1 md:flex-none p-3 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
-                                                    <LogOut size={18} /> <span className="md:hidden font-bold">Elimina</span>
+                                                    <Trash2 size={18} /> <span className="md:hidden font-bold">Elimina</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -487,7 +492,7 @@ const Admin: React.FC = () => {
                                                     <Menu size={20} />
                                                 </button>
                                                 <button onClick={() => handleDelete(attr.id, 'service')} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
-                                                    <LogOut size={20} />
+                                                    <Trash2 size={20} />
                                                 </button>
                                             </div>
                                         </div>
@@ -525,7 +530,7 @@ const Admin: React.FC = () => {
                                                     <Menu size={18} />
                                                 </button>
                                                 <button onClick={() => handleDelete(contact.id, 'contact')} className="p-3 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-xl active:scale-95 transition-all flex justify-center">
-                                                    <LogOut size={18} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </div>
@@ -564,7 +569,7 @@ const Admin: React.FC = () => {
                                                         <Menu size={20} />
                                                     </button>
                                                     <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
-                                                        <LogOut size={20} />
+                                                        <Trash2 size={20} />
                                                     </button>
                                                 </div>
                                             </Reorder.Item>

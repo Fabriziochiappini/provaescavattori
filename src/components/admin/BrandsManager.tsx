@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData, BrandsBannerData, BrandLogo } from '../../context/DataContext';
+import { Trash2 } from 'lucide-react';
 import ImageUploader from '../ImageUploader';
 import { Reorder, AnimatePresence, motion } from 'framer-motion';
 
@@ -172,7 +173,7 @@ const BrandsManager: React.FC = () => {
                                     onClick={(e) => { e.stopPropagation(); handleDeleteLogo(logo.id); }}
                                     className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                                 >
-                                    <span className="material-icons-outlined text-sm">close</span>
+                                    <Trash2 size={14} />
                                 </button>
                             </Reorder.Item>
                         ))}

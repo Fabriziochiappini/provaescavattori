@@ -127,7 +127,6 @@ interface DataContextType {
     updateBrandsBanner: (data: BrandsBannerData) => Promise<void>;
     refreshData: () => void;
 }
-}
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 

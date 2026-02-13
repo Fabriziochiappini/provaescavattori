@@ -78,9 +78,9 @@ const SpecCategoriesManager: React.FC = () => {
                             <span className="font-black text-slate-900 uppercase italic text-lg">{cat.name}</span>
                         </div>
                         <button
-                            onClick={() => {
+                            onClick={async () => {
                                 if (window.confirm(`Sei sicuro di voler eliminare "${cat.name}"? Questo non cancellerà i dati già salvati nelle macchine, ma non saranno più gestibili.`)) {
-                                    deleteSpecCategory(cat.id);
+                                    await deleteSpecCategory(cat.id);
                                 }
                             }}
                             className="p-3 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all active:scale-90 opacity-0 group-hover:opacity-100"
