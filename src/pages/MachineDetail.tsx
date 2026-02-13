@@ -8,7 +8,7 @@ import GalleryModal from '../components/GalleryModal';
 const MachineDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { excavators } = useData();
+    const { excavators, specCategories } = useData(); // Added specCategories
     const [machine, setMachine] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'features'>('desc');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -36,6 +36,12 @@ const MachineDetail: React.FC = () => {
     const galleryImages = machine.images && machine.images.length > 0
         ? machine.images
         : [machine.imageUrl];
+
+    const hasWeight = machine.weight && machine.weight > 0;
+    const hasYear = machine.year && machine.year > 0;
+    const hasHours = machine.hours && machine.hours > 0;
+    const hasCondition = machine.condition && machine.condition > 0;
+    const showKeyStats = hasWeight || hasYear || hasHours || hasCondition;
 
     return (
         <div className="min-h-screen pt-24 pb-12 bg-zinc-50">
@@ -119,37 +125,47 @@ const MachineDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Key Stats Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><Scale size={20} /></div>
-                                <div>
-                                    <p className="text-xs text-zinc-500 uppercase font-bold">Peso</p>
-                                    <p className="font-semibold">{machine.weight} ton</p>
-                                </div>
+                        {/* Key Stats Grid - Conditional Rendering */}
+                        {showKeyStats && (
+                            <div className="grid grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-2xl border border-zinc-100 shadow-sm">
+                                {hasWeight && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><Scale size={20} /></div>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 uppercase font-bold">Peso</p>
+                                            <p className="font-semibold">{machine.weight} ton</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {hasYear && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Calendar size={20} /></div>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 uppercase font-bold">Anno</p>
+                                            <p className="font-semibold">{machine.year}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {hasHours && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-green-100 text-green-600 rounded-lg"><Clock size={20} /></div>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 uppercase font-bold">Ore</p>
+                                            <p className="font-semibold">{machine.hours} h</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {hasCondition && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><Wrench size={20} /></div>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 uppercase font-bold">Stato</p>
+                                            <p className="font-semibold">Verificato ({machine.condition}/5)</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Calendar size={20} /></div>
-                                <div>
-                                    <p className="text-xs text-zinc-500 uppercase font-bold">Anno</p>
-                                    <p className="font-semibold">{machine.year || 'N/A'}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-green-100 text-green-600 rounded-lg"><Clock size={20} /></div>
-                                <div>
-                                    <p className="text-xs text-zinc-500 uppercase font-bold">Ore</p>
-                                    <p className="font-semibold">{machine.hours || '0'} h</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><Wrench size={20} /></div>
-                                <div>
-                                    <p className="text-xs text-zinc-500 uppercase font-bold">Stato</p>
-                                    <p className="font-semibold">Verificato</p>
-                                </div>
-                            </div>
-                        </div>
+                        )}
 
                         {/* Tabs */}
                         <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 overflow-hidden flex-grow flex flex-col">
@@ -195,17 +211,20 @@ const MachineDetail: React.FC = () => {
                                                 <td className="py-2 text-zinc-900 font-bold text-right">{machine.name}</td>
                                             </tr>
                                             <tr className="border-b border-zinc-100">
-                                                <td className="py-2 text-zinc-500 font-medium">Peso Operativo</td>
-                                                <td className="py-2 text-zinc-900 font-bold text-right">{machine.weight} t</td>
-                                            </tr>
-                                            <tr className="border-b border-zinc-100">
                                                 <td className="py-2 text-zinc-500 font-medium">Categoria</td>
                                                 <td className="py-2 text-zinc-900 font-bold text-right">{machine.category}</td>
                                             </tr>
-                                            <tr>
-                                                <td className="py-2 text-zinc-500 font-medium">Matricola</td>
-                                                <td className="py-2 text-zinc-900 font-bold text-right">{machine.serialNumber || '-'}</td>
-                                            </tr>
+                                            {/* Dynamic Specs */}
+                                            {specCategories.map(cat => {
+                                                const val = machine.specs?.[cat.id];
+                                                if (!val) return null;
+                                                return (
+                                                    <tr key={cat.id} className="border-b border-zinc-100">
+                                                        <td className="py-2 text-zinc-500 font-medium">{cat.name}</td>
+                                                        <td className="py-2 text-zinc-900 font-bold text-right">{val}</td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 )}
