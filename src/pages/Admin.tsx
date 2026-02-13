@@ -329,9 +329,10 @@ const Admin: React.FC = () => {
                                     <h2 className="text-xl font-bold">Gestione Escavatori</h2>
                                     <button
                                         onClick={() => startAdd('excavator')}
-                                        className="bg-amber-500 text-white px-6 py-2 rounded-full font-bold hover:bg-amber-600 flex items-center gap-2"
+                                        className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
                                     >
-                                        <span className="material-icons-outlined">add</span> Aggiungi Macchina
+                                        <span className="material-icons-outlined">add</span>
+                                        <span className="hidden sm:inline">AGGIUNGI</span>
                                     </button>
                                 </div>
                                 <div className="grid gap-4">
@@ -416,9 +417,10 @@ const Admin: React.FC = () => {
                                     <h2 className="text-xl font-bold">I Nostri Servizi</h2>
                                     <button
                                         onClick={() => startAdd('service')}
-                                        className="bg-amber-500 text-white px-6 py-2 rounded-full font-bold hover:bg-amber-600 flex items-center gap-2 text-sm"
+                                        className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
                                     >
-                                        <span className="material-icons-outlined">add</span> Aggiungi Servizio
+                                        <span className="material-icons-outlined">add</span>
+                                        <span className="hidden sm:inline">AGGIUNGI</span>
                                     </button>
                                 </div>
                                 <div className="grid gap-4">
@@ -473,9 +475,10 @@ const Admin: React.FC = () => {
                                         <h2 className="text-xl font-bold">Foto Gallery Homepage</h2>
                                         <button
                                             onClick={() => startAdd('gallery' as any)}
-                                            className="bg-amber-500 text-white px-6 py-2 rounded-full font-bold hover:bg-amber-600 flex items-center gap-2 text-sm"
+                                            className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
                                         >
-                                            <span className="material-icons-outlined">add</span> Aggiungi Foto
+                                            <span className="material-icons-outlined">add</span>
+                                            <span className="hidden sm:inline">AGGIUNGI</span>
                                         </button>
                                     </div>
 
