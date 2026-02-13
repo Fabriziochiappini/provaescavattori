@@ -12,7 +12,7 @@ const Admin: React.FC = () => {
     const {
         excavators, addExcavator, updateExcavator, deleteExcavator,
         services, addService, updateService, deleteService,
-        contacts, updateContact,
+        contacts, addContact, updateContact, deleteContact,
         homeGallery, updateHomeGallery,
         uploadImage, deleteImage
     } = useData();
@@ -143,10 +143,19 @@ const Admin: React.FC = () => {
                 subtitle: '',
                 image: "https://via.placeholder.com/800x600"
             });
+        } else if (type === 'contact') {
+            setFormData({
+                id: Date.now().toString(),
+                label: '',
+                value: '',
+                sub: '',
+                icon: 'phone',
+                href: ''
+            });
         }
     };
 
-    const handleDelete = async (id: string, type: 'excavator' | 'service' | 'gallery') => {
+    const handleDelete = async (id: string, type: 'excavator' | 'service' | 'gallery' | 'contact') => {
         if (window.confirm('Sei sicuro di voler cancellare questo elemento?')) {
             if (type === 'excavator') {
                 const item = excavators.find(r => r.id === id);
@@ -168,6 +177,9 @@ const Admin: React.FC = () => {
                 const newItems = homeGallery.items.filter(i => i.id !== id);
                 await updateHomeGallery({ ...homeGallery, items: newItems });
             }
+            else if (type === 'contact') {
+                await deleteContact(id);
+            }
         }
     };
 
@@ -187,7 +199,11 @@ const Admin: React.FC = () => {
                 updateService(editingItem.id, formData as Service);
             }
         } else if (editType === 'contact') {
-            updateContact(editingItem.id, formData as ContactInfo);
+            if (isAdding) {
+                await addContact(formData as ContactInfo);
+            } else {
+                await updateContact(editingItem.id, formData as ContactInfo);
+            }
         } else if (editType === 'gallery') {
             if (!formData.image) return alert('Immagine obbligatoria');
             let newItems = [...homeGallery.items];
@@ -477,7 +493,16 @@ const Admin: React.FC = () => {
 
                         {activeTab === 'contacts' && (
                             <div className="space-y-6">
-                                <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 italic underline decoration-4 decoration-amber-500/10">Gestione Contatti</h2>
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-black uppercase tracking-tight text-slate-800 italic underline decoration-4 decoration-amber-500/10">Gestione Contatti</h2>
+                                    <button
+                                        onClick={() => startAdd('contact')}
+                                        className="bg-amber-500 text-white w-12 h-12 sm:w-auto sm:h-auto sm:px-6 sm:py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-2 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
+                                    >
+                                        <Plus size={20} className="sm:hidden" />
+                                        <span className="hidden sm:inline">+AGGIUNGI</span>
+                                    </button>
+                                </div>
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     {contacts.map(contact => (
                                         <div key={contact.id} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex items-start gap-4 relative group overflow-hidden">
@@ -490,9 +515,14 @@ const Admin: React.FC = () => {
                                                 <h3 className="text-xl font-black text-slate-900 break-all leading-tight italic">{contact.value}</h3>
                                                 <p className="text-xs font-bold text-slate-400 mt-2 flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity uppercase">{contact.sub}</p>
                                             </div>
-                                            <button onClick={() => startEdit(contact, 'contact')} className="absolute bottom-6 right-6 p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-2xl active:scale-95 transition-all flex justify-center">
-                                                <Menu size={20} />
-                                            </button>
+                                            <div className="absolute bottom-6 right-6 flex gap-2">
+                                                <button onClick={() => startEdit(contact, 'contact')} className="p-3 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-xl active:scale-95 transition-all flex justify-center">
+                                                    <Menu size={18} />
+                                                </button>
+                                                <button onClick={() => handleDelete(contact.id, 'contact')} className="p-3 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-xl active:scale-95 transition-all flex justify-center">
+                                                    <LogOut size={18} />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -554,7 +584,7 @@ const Admin: React.FC = () => {
                         <div className="flex justify-between items-center mb-8">
                             <div>
                                 <h2 className="text-3xl font-black text-slate-900 uppercase italic">
-                                    {isAdding ? 'Crea' : 'Aggiorna'} <span className="text-amber-500">{editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : 'Elemento'}</span>
+                                    {isAdding ? 'Crea' : 'Aggiorna'} <span className="text-amber-500">{editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : editType === 'contact' ? 'Contatto' : 'Elemento'}</span>
                                 </h2>
                                 <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Dati archiviati in cloud</p>
                             </div>
@@ -620,6 +650,65 @@ const Admin: React.FC = () => {
                                                     />
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {editType === 'contact' && (
+                                    <div className="space-y-6">
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Etichetta (es. Telefono)</label>
+                                                <input
+                                                    name="label"
+                                                    value={formData.label || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                    placeholder="es. Telefono"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Valore (es. +39...)</label>
+                                                <input
+                                                    name="value"
+                                                    value={formData.value || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                    placeholder="es. +39 0823..."
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Sottotitolo (es. Orari)</label>
+                                                <input
+                                                    name="sub"
+                                                    value={formData.sub || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                    placeholder="es. Lun - Ven: 08:30 - 18:30"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Link (href) (es. tel:..., https://...)</label>
+                                                <input
+                                                    name="href"
+                                                    value={formData.href || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                    placeholder="es. tel:+390823982162"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Icona (Material Icon name: phone, email, place, schedule)</label>
+                                            <input
+                                                name="icon"
+                                                value={formData.icon || ''}
+                                                onChange={handleInputChange}
+                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                placeholder="es. phone"
+                                            />
                                         </div>
                                     </div>
                                 )}

@@ -1,11 +1,29 @@
 
 import React from 'react';
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, HelpCircle } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const Contact: React.FC = () => {
+  const { contacts } = useData();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Messaggio inviato con successo! Ti ricontatteremo a breve.');
+  };
+
+  // Helper function to map icon names to Lucide icons
+  const getIcon = (iconName: string) => {
+    switch (iconName?.toLowerCase()) {
+      case 'phone': return Phone;
+      case 'email':
+      case 'mail': return Mail;
+      case 'place':
+      case 'map':
+      case 'map-pin': return MapPin;
+      case 'schedule':
+      case 'clock': return Clock;
+      default: return HelpCircle;
+    }
   };
 
   return (
@@ -30,40 +48,31 @@ const Contact: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Info Side */}
           <div className="space-y-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <div className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200">
-                <Phone className="text-orange-600 mb-6" size={32} />
-                <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">Telefono</h4>
-                <p className="text-zinc-600">+39 06 1234567</p>
-                <p className="text-zinc-600">+39 333 4567890</p>
-              </div>
-              <div className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200">
-                <Mail className="text-orange-600 mb-6" size={32} />
-                <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">Email</h4>
-                <p className="text-zinc-600">info@contegroup.it</p>
-                <p className="text-zinc-600">commerciale@contegroup.it</p>
-              </div>
-              {[
-                { icon: Phone, title: 'TELEFONO', content: '0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
-                { icon: Mail, title: 'EMAIL', content: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
-                { icon: MapPin, title: 'SEDE', content: 'SP330, 24, 81016', sub: 'Pietravairano (CE)', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
-                { icon: Clock, title: 'ORARI', content: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' },
-              ].map((item, i) => (
-                <a
-                  key={i}
-                  href={item.href}
-                  target={item.href?.startsWith('http') ? '_blank' : '_self'}
-                  rel={item.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200 flex flex-col justify-between hover:border-orange-600 transition-all duration-300"
-                >
-                  <item.icon className="text-orange-600 mb-6" size={32} />
-                  <div>
-                    <h4 className="font-bold text-lg mb-2 uppercase tracking-widest">{item.title}</h4>
-                    <p className="text-zinc-600">{item.content}</p>
-                    {item.sub && <p className="text-zinc-600 text-sm mt-1">{item.sub}</p>}
-                  </div>
-                </a>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {contacts.map((item, i) => {
+                const Icon = getIcon(item.icon);
+                return (
+                  <a
+                    key={item.id || i}
+                    href={item.href || '#'}
+                    target={item.href?.startsWith('http') ? '_blank' : '_self'}
+                    rel={item.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200 flex flex-col justify-between hover:border-orange-600 transition-all duration-300 group"
+                  >
+                    <Icon className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" size={32} />
+                    <div>
+                      <h4 className="font-bold text-lg mb-2 uppercase tracking-widest text-zinc-400 text-xs">{item.label}</h4>
+                      <p className="text-zinc-900 font-black text-xl italic break-all">{item.value}</p>
+                      {item.sub && <p className="text-zinc-600 text-sm mt-1 font-bold">{item.sub}</p>}
+                    </div>
+                  </a>
+                );
+              })}
+              {contacts.length === 0 && (
+                <div className="col-span-2 py-10 text-center text-zinc-400 font-bold uppercase tracking-widest">
+                  Nessuna informazione di contatto disponibile
+                </div>
+              )}
             </div>
 
             <section className="h-[500px] rounded-3xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl">

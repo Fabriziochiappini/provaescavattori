@@ -84,7 +84,9 @@ interface DataContextType {
     deleteService: (id: string) => Promise<void>;
 
     contacts: ContactInfo[];
+    addContact: (contact: ContactInfo) => Promise<void>;
     updateContact: (id: string, updated: ContactInfo) => Promise<void>;
+    deleteContact: (id: string) => Promise<void>;
 
     homeGallery: HomeGalleryData;
     updateHomeGallery: (data: HomeGalleryData) => Promise<void>;
@@ -133,9 +135,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (contacts.length === 0) {
                 console.log("Seeding default contacts...");
                 const defaultContacts = [
-                    { icon: 'phone', label: 'Telefono', value: '+39 06 1234567', sub: 'Lun-Ven 9:00-18:00' },
-                    { icon: 'email', label: 'Email', value: 'info@contegroup.it', sub: 'Rispondiamo entro 24h' },
-                    { icon: 'place', label: 'Sede Centrale', value: 'Via Roma 123, Roma', sub: 'Showroom e Officina' }
+                    { icon: 'phone', label: 'Telefono', value: '+39 0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
+                    { icon: 'email', label: 'Email', value: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
+                    { icon: 'place', label: 'Sede Centrale', value: 'SP330, 24, 81016 Pietravairano (CE)', sub: 'Sede Legale e Operativa', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
+                    { icon: 'schedule', label: 'Orari', value: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' }
                 ];
                 for (const c of defaultContacts) {
                     await addDoc(collection(db, 'contacts'), c);
@@ -244,9 +247,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     // CRUD Operations - CONTACTS
+    const addContact = async (item: ContactInfo) => {
+        const { id, ...rest } = item;
+        await addDoc(collection(db, 'contacts'), rest);
+    };
     const updateContact = async (id: string, updated: ContactInfo) => {
         const { id: _, ...rest } = updated;
         await updateDoc(doc(db, 'contacts', id), rest as any);
+    };
+    const deleteContact = async (id: string) => {
+        await deleteDoc(doc(db, 'contacts', id));
     };
 
     // Home Gallery
@@ -307,7 +317,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         <DataContext.Provider value={{
             excavators, addExcavator, updateExcavator, deleteExcavator,
             services, addService, updateService, deleteService,
-            contacts, updateContact,
+            contacts, addContact, updateContact, deleteContact,
             homeGallery, updateHomeGallery,
             stats, incrementVisit, incrementFooterClick,
             uploadImage, deleteImage,
