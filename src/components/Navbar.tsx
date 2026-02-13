@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-4 rounded-md text-base font-medium transition-colors ${isActive(link.path) ? 'bg-orange-600 text-black' : 'text-zinc-300 hover:bg-zinc-800'
+                className={`block px-3 py-4 rounded-md text-base font-medium transition-colors text-center ${isActive(link.path) ? 'bg-orange-600 text-black' : 'text-zinc-300 hover:bg-zinc-800'
                   }`}
               >
                 {link.name}
