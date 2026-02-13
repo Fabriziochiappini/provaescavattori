@@ -6,7 +6,7 @@ import MachineCard from '../components/MachineCard';
 import { Filter, Search } from 'lucide-react';
 
 const Sales: React.FC = () => {
-  const { excavators, specCategories } = useData();
+  const { excavators, specCategories, machineCategories } = useData();
   const [activeCategory, setActiveCategory] = useState<string>('Tutti');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('Tutte');
@@ -26,7 +26,8 @@ const Sales: React.FC = () => {
 
   const brands = ['Tutte', ...new Set(saleMachines.map(m => m.brand).filter(Boolean))];
 
-  const filteredMachines = saleMachines.filter(m => {
+  // Pre-filter for Category/Brand/Power/Search to determine which SPEC FILTERS to show
+  const machinesInView = saleMachines.filter(m => {
     const matchesCategory = activeCategory === 'Tutti' || m.category === activeCategory;
     const matchesBrand = selectedBrand === 'Tutte' || m.brand === selectedBrand;
     const matchesPower = selectedPower === 'Tutte' || m.powerType === selectedPower;
@@ -35,21 +36,27 @@ const Sales: React.FC = () => {
       m.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.model.toLowerCase().includes(searchQuery.toLowerCase());
 
+    return matchesCategory && matchesBrand && matchesPower && matchesSearch;
+  });
+
+  const filteredMachines = machinesInView.filter(m => {
     // Check dynamic specs
     const matchesSpecs = Object.entries(selectedSpecs).every(([catId, value]) => {
       if (!value || value === 'Tutte') return true;
       return m.specs?.[catId] === value;
     });
 
-    return matchesCategory && matchesBrand && matchesPower && matchesSearch && matchesSpecs;
+    return matchesSpecs;
   });
 
-  const categories = ['Tutti', 'Mini', 'Medio', 'Pesante', 'Specialistico'];
+  const categories = ['Tutti', ...machineCategories.map(c => c.name)];
 
   // Get unique values for each spec category to build filter selects
   const getSpecOptions = (catId: string) => {
-    const options = saleMachines.map(m => m.specs?.[catId]).filter(Boolean);
-    return ['Tutte', ...new Set(options)];
+    // Only look at machines currently in view (respecting category/search)
+    const options = machinesInView.map(m => m.specs?.[catId]).filter(Boolean);
+    const uniqueOptions = Array.from(new Set(options)).sort((a, b) => parseFloat(a as string) - parseFloat(b as string));
+    return ['Tutte', ...uniqueOptions];
   };
 
   return (

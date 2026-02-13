@@ -4,10 +4,11 @@ import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
 import BrandsManager from '../components/admin/BrandsManager';
 import SpecCategoriesManager from '../components/admin/SpecCategoriesManager';
+import MachineCategoriesManager from '../components/admin/MachineCategoriesManager';
 import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree } from 'lucide-react';
 
 const Admin: React.FC = () => {
     const {
@@ -47,11 +48,12 @@ const Admin: React.FC = () => {
         checkAuth();
     }, []);
 
-    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs'>('excavators');
+    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs' | 'categories'>('excavators');
 
     const adminTabs = [
         { id: 'excavators', label: 'Parco', icon: LayoutDashboard },
-        { id: 'specs', label: 'Variabili', icon: Settings },
+        { id: 'categories', label: 'Categorie', icon: FolderTree },
+        { id: 'specs', label: 'Specifiche', icon: Settings },
         { id: 'services', label: 'Servizi', icon: Briefcase },
         { id: 'gallery', label: 'Galleria', icon: ImageIcon },
         { id: 'brands', label: 'Marchi', icon: Award },
@@ -584,6 +586,10 @@ const Admin: React.FC = () => {
 
                         {activeTab === 'specs' && (
                             <SpecCategoriesManager />
+                        )}
+
+                        {activeTab === 'categories' && (
+                            <MachineCategoriesManager />
                         )}
                     </div>
                 ) : (

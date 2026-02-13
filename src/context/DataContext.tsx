@@ -25,12 +25,18 @@ export interface Excavator {
     available?: boolean;
     powerType?: 'Elettrico' | 'Termico'; // Added powerType
     specs?: Record<string, string>; // Added dynamic specs
+    imageUrl?: string;
 }
 
 export interface SpecCategory {
     id: string;
     name: string;
     order: number;
+}
+
+export interface MachineCategory {
+    id: string;
+    name: string;
 }
 
 export interface Service {
@@ -91,6 +97,11 @@ interface DataContextType {
     updateSpecCategory: (id: string, updated: SpecCategory) => Promise<void>;
     deleteSpecCategory: (id: string) => Promise<void>;
 
+    machineCategories: MachineCategory[];
+    addMachineCategory: (cat: MachineCategory) => Promise<void>;
+    updateMachineCategory: (id: string, updated: MachineCategory) => Promise<void>;
+    deleteMachineCategory: (id: string) => Promise<void>;
+
     services: Service[];
     addService: (service: Service) => Promise<void>;
     updateService: (id: string, updated: Service) => Promise<void>;
@@ -114,6 +125,8 @@ interface DataContextType {
 
     brandsBanner: BrandsBannerData;
     updateBrandsBanner: (data: BrandsBannerData) => Promise<void>;
+    refreshData: () => void;
+}
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -121,6 +134,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [excavators, setExcavators] = useState<Excavator[]>([]);
     const [specCategories, setSpecCategories] = useState<SpecCategory[]>([]);
+    const [machineCategories, setMachineCategories] = useState<MachineCategory[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [contacts, setContacts] = useState<ContactInfo[]>([]);
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
@@ -154,6 +168,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 ];
                 for (const cat of defaultCats) {
                     await addDoc(collection(db, 'spec_categories'), cat);
+                }
+            }
+
+            // Seed default machine categories if empty
+            if (machineCategories.length === 0) {
+                const defaultMachineCats = [
+                    { name: 'Mini Escavatori' },
+                    { name: 'Escavatori Cingolati' },
+                    { name: 'Piattaforme Aeree' },
+                    { name: 'Gru' },
+                    { name: 'Sollevatori Telescopici' }
+                ];
+                for (const cat of defaultMachineCats) {
+                    await addDoc(collection(db, 'categories'), cat);
                 }
             }
 
@@ -207,6 +235,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as SpecCategory))
                 .sort((a, b) => a.order - b.order);
             setSpecCategories(data);
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, 'categories'), (snap) => {
+            const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as MachineCategory));
+            setMachineCategories(data);
         });
         return () => unsub();
     }, []);
@@ -280,6 +316,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     const deleteSpecCategory = async (id: string) => {
         await deleteDoc(doc(db, 'spec_categories', id));
+    };
+
+    // CRUD Operations - MACHINE CATEGORIES
+    const addMachineCategory = async (cat: MachineCategory) => {
+        const { id, ...rest } = cat;
+        await addDoc(collection(db, 'categories'), rest);
+    };
+    const updateMachineCategory = async (id: string, updated: MachineCategory) => {
+        const { id: _, ...rest } = updated;
+        await updateDoc(doc(db, 'categories', id), rest as any);
+    };
+    const deleteMachineCategory = async (id: string) => {
+        await deleteDoc(doc(db, 'categories', id));
     };
 
     // CRUD Operations - SERVICES
@@ -371,6 +420,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         <DataContext.Provider value={{
             excavators, addExcavator, updateExcavator, deleteExcavator,
             specCategories, addSpecCategory, updateSpecCategory, deleteSpecCategory,
+            machineCategories, addMachineCategory, updateMachineCategory, deleteMachineCategory,
             services, addService, updateService, deleteService,
             contacts, addContact, updateContact, deleteContact,
             homeGallery, updateHomeGallery,
@@ -378,7 +428,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             uploadImage, deleteImage,
             siteData: initialSiteData,
             brandsBanner,
-            updateBrandsBanner
+            updateBrandsBanner,
+            refreshData: () => {
+                // Force a re-render or re-fetch if needed, though onSnapshot handles it
+                console.log("Refreshing data...");
+            }
         }}>
             {children}
         </DataContext.Provider>

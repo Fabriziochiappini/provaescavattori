@@ -11,10 +11,10 @@ interface MachineFormProps {
 }
 
 const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel }) => {
-    const { uploadImage, deleteImage, specCategories } = useData();
+    const { uploadImage, deleteImage, specCategories, machineCategories } = useData();
     const [formData, setFormData] = useState<Partial<Excavator>>({
         type: 'sale',
-        category: 'Mini',
+        category: '',
         features: [],
         images: [],
         available: true,
@@ -127,27 +127,27 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                     onClick={() => setActiveSection(1)}
                     className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 1 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                 >
-                    1. Info
+                    1. Essenziali
                 </button>
                 <button
                     type="button"
                     onClick={() => setActiveSection(2)}
                     className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 2 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                 >
-                    2. Galleria
+                    2. Foto
                 </button>
                 <button
                     type="button"
                     onClick={() => setActiveSection(3)}
                     className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeSection === 3 ? 'bg-amber-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
                 >
-                    3. Dati
+                    3. Specifiche
                 </button>
             </div>
 
             <form onSubmit={handleSubmit}>
 
-                {/* SECTION 1: MAIN INFO */}
+                {/* SECTION 1: ESSENTIAL INFO */}
                 {activeSection === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,16 +175,80 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Descrizione Commerciale</label>
-                            <textarea
-                                name="description"
-                                value={formData.description || ''}
-                                onChange={handleChange}
-                                rows={6}
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
-                                placeholder="Descrivi i punti di forza della macchina..."
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Categoria *</label>
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
+                                    required
+                                >
+                                    <option value="">Seleziona Categoria</option>
+                                    {machineCategories.map(cat => (
+                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Tipo Offerta *</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(p => ({ ...p, type: 'sale' }))}
+                                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.type === 'sale' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-500'}`}
+                                    >
+                                        Vendita
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(p => ({ ...p, type: 'rent' }))}
+                                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.type === 'rent' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500'}`}
+                                    >
+                                        Noleggio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">
+                                    {formData.type === 'sale' ? 'Prezzo Vendita (€)' : 'Prezzo Noleggio (Testo libero)'}
+                                </label>
+                                {formData.type === 'sale' ? (
+                                    <input
+                                        name="price"
+                                        type="number"
+                                        value={formData.price || ''}
+                                        onChange={handleChange}
+                                        className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
+                                        placeholder="0.00"
+                                    />
+                                ) : (
+                                    <input
+                                        name="rentalPrice"
+                                        type="text"
+                                        value={formData.rentalPrice || ''}
+                                        onChange={handleChange}
+                                        placeholder="es. 150€ / giorno"
+                                        className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                    />
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Stato / Condizione (1-5)</label>
+                                <input
+                                    name="condition"
+                                    type="number"
+                                    min="1"
+                                    max="5"
+                                    value={formData.condition || 5}
+                                    onChange={handleChange}
+                                    className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
+                                />
+                            </div>
                         </div>
 
                         <div className="pt-4 flex justify-end">
@@ -193,7 +257,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 onClick={() => setActiveSection(2)}
                                 className="w-full md:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
                             >
-                                Avanti: Galleria
+                                Avanti: Foto
                             </button>
                         </div>
                     </div>
@@ -256,60 +320,26 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 onClick={() => setActiveSection(3)}
                                 className="w-full md:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-colors"
                             >
-                                Avanti: Dati Tecnici
+                                Avanti: Specifiche
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* SECTION 3: TECH DATA */}
+                {/* SECTION 3: DETTAGLI AVANZATI */}
                 {activeSection === 3 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Tipo Offerta *</label>
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData(p => ({ ...p, type: 'sale' }))}
-                                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.type === 'sale' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-500'}`}
-                                    >
-                                        Vendita
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData(p => ({ ...p, type: 'rent' }))}
-                                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.type === 'rent' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500'}`}
-                                    >
-                                        Noleggio
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">
-                                    {formData.type === 'sale' ? 'Prezzo Vendita (€)' : 'Prezzo Noleggio (Testo libero)'}
-                                </label>
-                                {formData.type === 'sale' ? (
-                                    <input
-                                        name="price"
-                                        type="number"
-                                        value={formData.price || ''}
-                                        onChange={handleChange}
-                                        className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
-                                    />
-                                ) : (
-                                    <input
-                                        name="rentalPrice"
-                                        type="text"
-                                        value={formData.rentalPrice || ''}
-                                        onChange={handleChange}
-                                        placeholder="es. 150€ / giorno"
-                                        className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-blue-500 dark:text-white"
-                                    />
-                                )}
-                            </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Descrizione Commerciale</label>
+                            <textarea
+                                name="description"
+                                value={formData.description || ''}
+                                onChange={handleChange}
+                                rows={4}
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white text-sm"
+                                placeholder="Descrivi i punti di forza della macchina..."
+                            />
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -326,51 +356,36 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 <input name="hours" type="number" value={formData.hours || ''} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl" />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Categoria</label>
-                                <select name="category" value={formData.category} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl">
-                                    <option value="Mini">Mini (0-5t)</option>
-                                    <option value="Medio">Medio (6-20t)</option>
-                                    <option value="Pesante">Pesante (&gt;20t)</option>
-                                    <option value="Specialistico">Specialistico</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
                                 <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Alimentazione</label>
-                                <div className="flex gap-2">
-                                    {['Termico', 'Elettrico'].map(type => (
-                                        <button
-                                            key={type}
-                                            type="button"
-                                            onClick={() => setFormData(p => ({ ...p, powerType: type as any }))}
-                                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${formData.powerType === type ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-500'}`}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
+                                <select name="powerType" value={formData.powerType} onChange={handleChange} className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl">
+                                    <option value="Termico">Termico</option>
+                                    <option value="Elettrico">Elettrico</option>
+                                </select>
                             </div>
                         </div>
 
                         {specCategories.length > 0 && (
                             <div className="space-y-4 pt-4 border-t border-gray-100">
-                                <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest">Caratteristiche Variabili</h4>
+                                <div className="flex items-center gap-2">
+                                    <Settings size={14} className="text-amber-500" />
+                                    <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest">Specifiche Aggiuntive (Filtri)</h4>
+                                </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {specCategories.map(cat => (
                                         <div key={cat.id}>
                                             <label className="block text-xs font-bold uppercase text-gray-500 mb-1">{cat.name}</label>
                                             <input
                                                 name={`spec_${cat.id}`}
+                                                type="number"
                                                 value={formData.specs?.[cat.id] || ''}
                                                 onChange={handleChange}
                                                 className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
-                                                placeholder={`Inserisci ${cat.name}`}
+                                                placeholder="0"
                                             />
                                         </div>
                                     ))}
                                 </div>
+                                <p className="text-[10px] italic text-slate-400">Lascia vuoto se non applicabile. I campi compilati appariranno automaticamente come filtri nel sito.</p>
                             </div>
                         )}
 
