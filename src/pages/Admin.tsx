@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData, type Excavator, type Service, type ContactInfo } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
 import BrandsManager from '../components/admin/BrandsManager';
+import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus } from 'lucide-react';
 
 const Admin: React.FC = () => {
     const {
@@ -20,12 +22,13 @@ const Admin: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // PWA Install Hook
     const { install: installPWA, canInstall, isInstalled } = usePWAInstall();
 
     // Check auth state on mount
-    React.useEffect(() => {
+    useEffect(() => {
         const checkAuth = async () => {
             try {
                 const { auth } = await import('../firebase');
@@ -37,15 +40,21 @@ const Admin: React.FC = () => {
                 });
             } catch (e) {
                 console.error("Firebase Auth not initialized, running in demo mode.", e);
-                // In a real app, you might want to set isAuthenticated to true for a demo user
-                // or handle this more gracefully, e.g., disable auth features.
-                setIsAuthenticated(true); // For demo purposes, assume authenticated if Firebase fails
+                setIsAuthenticated(true);
             }
         };
         checkAuth();
     }, []);
 
-    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery'>('excavators');
+    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands'>('excavators');
+
+    const adminTabs = [
+        { id: 'excavators', label: 'Parco', icon: LayoutDashboard },
+        { id: 'services', label: 'Servizi', icon: Briefcase },
+        { id: 'gallery', label: 'Galleria', icon: ImageIcon },
+        { id: 'brands', label: 'Marchi', icon: Award },
+        { id: 'contacts', label: 'Contatti', icon: Phone },
+    ];
 
     // CMS State
     const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -56,7 +65,7 @@ const Admin: React.FC = () => {
     const [formData, setFormData] = useState<any>({});
     const [galleryHeader, setGalleryHeader] = useState({ title: '', subtitle: '' });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (activeTab === 'gallery' && homeGallery) {
             setGalleryHeader({ title: homeGallery.title || '', subtitle: homeGallery.subtitle || '' });
         }
@@ -142,8 +151,6 @@ const Admin: React.FC = () => {
             if (type === 'excavator') {
                 const item = excavators.find(r => r.id === id);
                 if (item && item.images) {
-                    // Delete images from storage
-                    // Note: This matches original logic. In prod, maybe keep them or soft delete.
                     for (const imgUrl of item.images) {
                         try { await deleteImage(imgUrl); } catch (e) { console.error(e); }
                     }
@@ -168,7 +175,6 @@ const Admin: React.FC = () => {
         e.preventDefault();
 
         if (editType === 'excavator') {
-            // Handled by MachineForm now
             return;
         } else if (editType === 'service') {
             if (!formData.title) return alert('Titolo obbligatorio');
@@ -216,37 +222,37 @@ const Admin: React.FC = () => {
 
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
-                    <h1 className="text-2xl font-bold mb-6 text-center text-primary font-oswald text-amber-500">Admin Area</h1>
-                    <form onSubmit={handleLogin} className="space-y-4">
+            <div className="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 text-center px-4">
+                <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-700">
+                    <h1 className="text-3xl font-black mb-8 text-amber-500 uppercase tracking-tighter italic">Admin Access</h1>
+                    <form onSubmit={handleLogin} className="space-y-4 text-left">
                         <div>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Email Amministratore"
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-lg focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white mb-4"
+                                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border-none rounded-2xl focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white mb-4 transition-all outline-none"
                             />
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Password"
-                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-lg focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white"
+                                className="w-full p-4 bg-gray-50 dark:bg-gray-700 border-none rounded-2xl focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white transition-all outline-none"
                             />
                         </div>
-                        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-                        <div className="flex flex-col gap-3">
+                        {error && <p className="text-red-500 text-sm font-bold text-center bg-red-50 py-2 rounded-xl">{error}</p>}
+                        <div className="flex flex-col gap-3 pt-4">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors flex justify-center items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`w-full bg-amber-500 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 transition-all flex justify-center items-center shadow-lg shadow-amber-500/30 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'active:scale-95'}`}
                             >
                                 {isLoading ? (
-                                    <span className="material-icons-outlined animate-spin">refresh</span>
+                                    <Menu className="animate-spin" />
                                 ) : (
-                                    "Entra"
+                                    "Entra nel Pannello"
                                 )}
                             </button>
                             <button
@@ -261,7 +267,6 @@ const Admin: React.FC = () => {
                                         const { auth } = await import('../firebase');
                                         const { createUserWithEmailAndPassword } = await import('firebase/auth');
                                         await createUserWithEmailAndPassword(auth, email, password);
-                                        // Auto login happens on success
                                     } catch (err: any) {
                                         console.error(err);
                                         setError('Errore registrazione: ' + err.message);
@@ -270,9 +275,9 @@ const Admin: React.FC = () => {
                                     }
                                 }}
                                 disabled={isLoading}
-                                className={`w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition-colors flex justify-center items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className="w-full bg-zinc-100 text-zinc-600 py-3 rounded-2xl font-bold hover:bg-zinc-200 transition-all text-xs"
                             >
-                                Registrati come Admin (Temp)
+                                REGISTRAZIONE ADMIN
                             </button>
                         </div>
                     </form>
@@ -282,127 +287,152 @@ const Admin: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen pt-24 pb-12 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-                <div className="flex flex-col xl:flex-row justify-between items-center mb-6 gap-4">
-                    <h1 className="text-2xl md:text-3xl font-bold font-oswald text-amber-500 w-full text-center xl:text-left">Pannello di Controllo</h1>
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-                        <nav className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto w-full sm:w-auto no-scrollbar">
-                            {(['excavators', 'services', 'contacts', 'gallery', 'brands'] as const).map((tab) => (
+        <div className="min-h-screen pt-20 pb-12 bg-[#f8fafc] text-gray-900">
+            {/* Desktop Navigation */}
+            <FloatingAdminNav
+                activeTab={activeTab}
+                onTabChange={(tab) => { setActiveTab(tab); resetForm(); }}
+                tabs={adminTabs}
+            />
+
+            {/* Mobile Header Menu */}
+            <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 z-[110] flex items-center justify-between px-4 sm:hidden">
+                <h1 className="text-xl font-black text-amber-500 uppercase italic">Admin</h1>
+                <div className="flex items-center gap-2">
+                    {canInstall && !isInstalled && (
+                        <button onClick={installPWA} className="p-3 text-amber-500 bg-amber-50 rounded-xl active:scale-95 transition-all">
+                            <Download size={20} />
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="p-3 text-gray-500 bg-gray-50 rounded-xl active:scale-95 transition-all"
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
+            </header>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] sm:hidden pt-16">
+                    <div className="bg-white p-6 rounded-b-[40px] shadow-2xl space-y-2 animate-in slide-in-from-top duration-300">
+                        <p className="text-[10px] uppercase font-black text-gray-400 px-3 mb-2 tracking-widest">
+                            Navigazione
+                        </p>
+                        {adminTabs.map((tab) => {
+                            const Icon = tab.icon;
+                            return (
                                 <button
-                                    key={tab}
-                                    onClick={() => { setActiveTab(tab as any); resetForm(); }}
-                                    className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab
-                                        ? 'bg-white dark:bg-gray-700 shadow-sm text-amber-500'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                    key={tab.id}
+                                    onClick={() => { setActiveTab(tab.id as any); resetForm(); setIsMobileMenuOpen(false); }}
+                                    className={`w-full flex items-center gap-4 p-4 rounded-3xl font-bold transition-all ${activeTab === tab.id ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'text-gray-600 active:bg-gray-100'
                                         }`}
                                 >
-                                    {tab === 'excavators' ? 'Parco' : tab === 'services' ? 'Servizi' : tab === 'gallery' ? 'Galleria' : tab === 'brands' ? 'Marchi' : 'Contatti'}
+                                    <Icon size={20} className={activeTab === tab.id ? 'text-white' : 'text-gray-400'} />
+                                    <span>{tab.label}</span>
                                 </button>
-                            ))}
-                        </nav>
-
-                        <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start">
-                            {/* PWA Install Button - Only visible for admin users when installable */}
-                            {canInstall && !isInstalled && (
-                                <button
-                                    onClick={installPWA}
-                                    className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg font-bold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md flex items-center gap-2 text-xs uppercase"
-                                >
-                                    <span className="material-icons-outlined text-base">download</span>
-                                    <span>App</span>
-                                </button>
-                            )}
-                            <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500 font-bold px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                                <span className="material-icons-outlined align-middle sm:hidden">logout</span>
-                                <span className="hidden sm:inline">Log Out</span>
+                            );
+                        })}
+                        <div className="pt-4 mt-4 border-t border-gray-100 flex gap-2">
+                            <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="flex-1 p-4 bg-red-50 text-red-500 rounded-[28px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all">
+                                <LogOut size={20} /> Esci
                             </button>
                         </div>
                     </div>
                 </div>
+            )}
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-12">
+                <div className="flex justify-between items-center mb-12">
+                    <div className="hidden sm:block">
+                        <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase italic">
+                            Pannello <span className="text-amber-500 underline decoration-8 decoration-amber-500/10">Controllo</span>
+                        </h1>
+                        <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">Gestione Contenuti in tempo reale</p>
+                    </div>
+
+                    <button
+                        onClick={handleLogout}
+                        className="hidden sm:flex items-center gap-2 px-8 py-4 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 rounded-3xl text-slate-600 hover:text-red-500 font-black tracking-widest text-xs uppercase transition-all active:scale-95"
+                    >
+                        <LogOut size={16} /> Logout
+                    </button>
+                </div>
 
                 {!isAdding && !editingItem ? (
-                    <div className="space-y-8">
+                    <div className="space-y-12">
                         {activeTab === 'excavators' && (
-                            <div className="space-y-6">
+                            <div className="space-y-8">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold">Gestione Escavatori</h2>
+                                    <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Parco Macchine</h2>
                                     <button
                                         onClick={() => startAdd('excavator')}
-                                        className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
+                                        className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                     >
-                                        <span className="material-icons-outlined">add</span>
-                                        <span className="hidden sm:inline">AGGIUNGI</span>
+                                        <Plus size={24} className="sm:hidden" />
+                                        <span className="hidden sm:inline">+AGGIUNGI</span>
                                     </button>
                                 </div>
-                                <div className="grid gap-4">
-                                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg font-bold text-xs uppercase text-gray-500">
-                                        <div className="col-span-1">Foto</div>
+                                <div className="grid gap-6">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 bg-slate-100/50 rounded-3xl font-black text-[10px] uppercase text-slate-400 tracking-widest">
+                                        <div className="col-span-1 text-center">Preview</div>
                                         <div className="col-span-3">Modello</div>
-                                        <div className="col-span-2">Marca</div>
-                                        <div className="col-span-2">Prezzo</div>
+                                        <div className="col-span-2 text-center">Marca</div>
+                                        <div className="col-span-2 text-center">Valore</div>
                                         <div className="col-span-1 text-center">Tipo</div>
-                                        <div className="col-span-1 text-center">Status</div>
-                                        <div className="col-span-2 text-right">Azioni</div>
+                                        <div className="col-span-1 text-center">Stato</div>
+                                        <div className="col-span-2 text-right px-4">Azioni</div>
                                     </div>
                                     {excavators.map(excavator => (
-                                        <div key={excavator.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 items-start md:items-center relative">
-                                            {/* Header Section for Mobile (Image + Name) */}
-                                            <div className="flex items-center gap-3 w-full md:contents">
-                                                {/* Image */}
+                                        <div key={excavator.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-5 sm:p-6 bg-white rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-slate-200/30 transition-all items-start md:items-center group">
+                                            <div className="flex items-center gap-4 w-full md:contents">
                                                 <div className="md:col-span-1 shrink-0">
                                                     <img
                                                         src={excavator.images?.[0] || 'https://via.placeholder.com/150'}
                                                         alt={excavator.name}
-                                                        className="w-16 h-16 md:w-12 md:h-12 object-cover rounded-lg bg-gray-100"
+                                                        className="w-20 h-20 md:w-14 md:h-14 object-cover rounded-2xl bg-slate-50 border border-slate-100 shadow-sm"
                                                     />
                                                 </div>
 
-                                                {/* Model */}
-                                                <div className="md:col-span-3 font-bold text-gray-900 dark:text-gray-100 truncate flex-grow">
-                                                    <span className="text-lg md:text-sm">{excavator.name}</span>
-                                                    <div className="text-[10px] text-gray-400 font-normal">{excavator.id}</div>
+                                                <div className="md:col-span-3">
+                                                    <h3 className="font-black text-slate-900 text-lg md:text-base leading-tight group-hover:text-amber-500 transition-colors uppercase italic">{excavator.name}</h3>
+                                                    <div className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">ID: {excavator.id}</div>
                                                 </div>
                                             </div>
 
-                                            {/* Details Grid for Mobile */}
-                                            <div className="card-details grid grid-cols-2 gap-y-2 w-full md:contents text-sm">
-                                                {/* Brand */}
-                                                <div className="md:col-span-2 text-gray-600 dark:text-gray-400 flex items-center justify-between md:block">
-                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Marca</span>
-                                                    <span>{excavator.brand || '-'}</span>
+                                            <div className="grid grid-cols-2 gap-y-3 w-full md:contents">
+                                                <div className="md:col-span-2 text-center">
+                                                    <span className="md:hidden text-[10px] font-black uppercase text-slate-300 block mb-1">Marca</span>
+                                                    <span className="font-bold text-slate-600 bg-slate-50 px-3 py-1 rounded-xl text-sm uppercase">{excavator.brand || '-'}</span>
                                                 </div>
 
-                                                {/* Price */}
-                                                <div className="md:col-span-2 font-medium flex items-center justify-between md:block">
-                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Prezzo</span>
-                                                    <span>{excavator.type === 'rent' ? excavator.rentalPrice : `€ ${excavator.price?.toLocaleString()}`}</span>
+                                                <div className="md:col-span-2 text-center">
+                                                    <span className="md:hidden text-[10px] font-black uppercase text-slate-300 block mb-1">Prezzo</span>
+                                                    <span className="font-black text-slate-900 text-base md:text-sm italic">
+                                                        {excavator.type === 'rent' ? excavator.rentalPrice : `€ ${excavator.price?.toLocaleString()}`}
+                                                    </span>
                                                 </div>
 
-                                                {/* Type */}
-                                                <div className="md:col-span-1 text-center flex items-center justify-between md:justify-center">
-                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Tipo</span>
-                                                    <span className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${excavator.type === 'sale' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                <div className="md:col-span-1 text-center">
+                                                    <span className="md:hidden text-[10px] font-black uppercase text-slate-300 block mb-1">Categoria</span>
+                                                    <span className={`text-[10px] tracking-widest px-3 py-1 rounded-full font-black ${excavator.type === 'sale' ? 'bg-emerald-50 text-emerald-600' : 'bg-sky-50 text-sky-600'}`}>
                                                         {excavator.type === 'sale' ? 'VENDITA' : 'NOLEGGIO'}
                                                     </span>
                                                 </div>
 
-                                                {/* Availability */}
-                                                <div className="md:col-span-1 text-center flex items-center justify-between md:justify-center">
-                                                    <span className="md:hidden text-xs font-bold uppercase text-gray-400">Status</span>
-                                                    <div className={`w-3 h-3 rounded-full ${excavator.available !== false ? 'bg-green-500' : 'bg-red-500'}`} title={excavator.available !== false ? 'Disponibile' : 'Non disponibile'}></div>
+                                                <div className="md:col-span-1 text-center flex flex-col items-center">
+                                                    <span className="md:hidden text-[10px] font-black uppercase text-slate-300 block mb-1">Status</span>
+                                                    <div className={`w-3 h-3 rounded-full shadow-sm ${excavator.available !== false ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} title={excavator.available !== false ? 'Disponibile' : 'Non disponibile'}></div>
                                                 </div>
                                             </div>
 
-                                            {/* Actions */}
-                                            <div className="md:col-span-2 flex justify-end gap-2 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-gray-700">
-                                                <button onClick={() => startEdit(excavator, 'excavator')} className="flex-1 md:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 dark:hover:bg-blue-900/20 rounded-lg flex justify-center items-center gap-1">
-                                                    <span className="material-icons-outlined text-lg">edit</span>
-                                                    <span className="md:hidden text-xs font-bold">Modifica</span>
+                                            <div className="md:col-span-2 flex justify-end gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
+                                                <button onClick={() => startEdit(excavator, 'excavator')} className="flex-1 md:flex-none p-3 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                                                    <X size={18} className="rotate-45" /> <span className="md:hidden font-bold">Modifica</span>
                                                 </button>
-                                                <button onClick={() => handleDelete(excavator.id, 'excavator')} className="flex-1 md:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-lg flex justify-center items-center gap-1">
-                                                    <span className="material-icons-outlined text-lg">delete</span>
-                                                    <span className="md:hidden text-xs font-bold">Elimina</span>
+                                                <button onClick={() => handleDelete(excavator.id, 'excavator')} className="flex-1 md:flex-none p-3 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                                                    <LogOut size={18} /> <span className="md:hidden font-bold">Elimina</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -412,31 +442,31 @@ const Admin: React.FC = () => {
                         )}
 
                         {activeTab === 'services' && (
-                            <div className="space-y-6">
+                            <div className="space-y-8">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-bold">I Nostri Servizi</h2>
+                                    <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Servizi Aziendali</h2>
                                     <button
                                         onClick={() => startAdd('service')}
-                                        className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
+                                        className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                     >
-                                        <span className="material-icons-outlined">add</span>
-                                        <span className="hidden sm:inline">AGGIUNGI</span>
+                                        <Plus size={24} className="sm:hidden" />
+                                        <span className="hidden sm:inline">+AGGIUNGI</span>
                                     </button>
                                 </div>
-                                <div className="grid gap-4">
+                                <div className="grid gap-6">
                                     {services.map(attr => (
-                                        <div key={attr.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4">
-                                            <img src={attr.image} alt={attr.title} className="w-full sm:w-16 h-32 sm:h-16 object-cover rounded-lg" />
-                                            <div className="flex-grow text-center sm:text-left w-full">
-                                                <h3 className="font-bold">{attr.title}</h3>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{attr.description}</p>
+                                        <div key={attr.id} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-6 group">
+                                            <img src={attr.image} alt={attr.title} className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded-2xl shadow-sm border border-slate-100" />
+                                            <div className="flex-grow text-center sm:text-left">
+                                                <h3 className="font-black text-xl italic uppercase text-slate-900 group-hover:text-amber-500 transition-colors">{attr.title}</h3>
+                                                <p className="text-sm font-medium text-slate-400 mt-2 line-clamp-2 leading-relaxed">{attr.description}</p>
                                             </div>
-                                            <div className="flex gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 dark:border-gray-700">
-                                                <button onClick={() => startEdit(attr, 'service')} className="flex-1 sm:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 rounded-lg flex justify-center items-center">
-                                                    <span className="material-icons-outlined">edit</span>
+                                            <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
+                                                <button onClick={() => startEdit(attr, 'service')} className="flex-1 sm:flex-none p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                    <Menu size={20} />
                                                 </button>
-                                                <button onClick={() => handleDelete(attr.id, 'service')} className="flex-1 sm:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 rounded-lg flex justify-center items-center">
-                                                    <span className="material-icons-outlined">delete</span>
+                                                <button onClick={() => handleDelete(attr.id, 'service')} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                    <LogOut size={20} />
                                                 </button>
                                             </div>
                                         </div>
@@ -446,21 +476,22 @@ const Admin: React.FC = () => {
                         )}
 
                         {activeTab === 'contacts' && (
-                            <div className="space-y-6">
-                                <h2 className="text-xl font-bold">Gestione Contatti</h2>
-                                <div className="grid gap-4">
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800 italic underline decoration-4 decoration-amber-500/10">Gestione Contatti</h2>
+                                <div className="grid sm:grid-cols-2 gap-6">
                                     {contacts.map(contact => (
-                                        <div key={contact.id} className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4 md:gap-6">
-                                            <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
-                                                <span className="material-icons-outlined">{contact.icon}</span>
+                                        <div key={contact.id} className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-start gap-6 relative group overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-all duration-700"></div>
+                                            <div className="w-16 h-16 rounded-3xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0 shadow-sm border border-amber-500/10">
+                                                <span className="material-icons-outlined text-3xl">{contact.icon}</span>
                                             </div>
-                                            <div className="flex-grow text-center sm:text-left">
-                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{contact.label}</p>
-                                                <h3 className="text-lg font-bold break-all">{contact.value}</h3>
-                                                <p className="text-sm text-gray-500 italic">{contact.sub}</p>
+                                            <div className="flex-grow">
+                                                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{contact.label}</p>
+                                                <h3 className="text-xl font-black text-slate-900 break-all leading-tight italic">{contact.value}</h3>
+                                                <p className="text-xs font-bold text-slate-400 mt-2 flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity uppercase">{contact.sub}</p>
                                             </div>
-                                            <button onClick={() => startEdit(contact, 'contact')} className="w-full sm:w-auto p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/10 rounded-lg flex justify-center">
-                                                <span className="material-icons-outlined">edit</span>
+                                            <button onClick={() => startEdit(contact, 'contact')} className="absolute bottom-6 right-6 p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-2xl active:scale-95 transition-all flex justify-center">
+                                                <Menu size={20} />
                                             </button>
                                         </div>
                                     ))}
@@ -470,56 +501,65 @@ const Admin: React.FC = () => {
 
                         {activeTab === 'gallery' && (
                             <div className="space-y-8">
-                                <section className="space-y-6">
+                                <section className="space-y-8">
                                     <div className="flex justify-between items-center">
-                                        <h2 className="text-xl font-bold">Foto Gallery Homepage</h2>
+                                        <h2 className="text-2xl font-black uppercase tracking-tight text-slate-800">Galleria Foto</h2>
                                         <button
                                             onClick={() => startAdd('gallery' as any)}
-                                            className="bg-amber-500 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-6 sm:py-2 rounded-full font-bold hover:bg-amber-600 flex items-center justify-center gap-1 transition-all shadow-md"
+                                            className="bg-amber-500 text-white w-14 h-14 sm:w-auto sm:h-auto sm:px-8 sm:py-4 rounded-full font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-3 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                         >
-                                            <span className="material-icons-outlined">add</span>
-                                            <span className="hidden sm:inline">AGGIUNGI</span>
+                                            <Plus size={24} className="sm:hidden" />
+                                            <span className="hidden sm:inline">+AGGIUNGI</span>
                                         </button>
                                     </div>
 
-                                    <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-4">
+                                    <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-6">
                                         {homeGallery.items?.map(item => (
-                                            <Reorder.Item key={item.id} value={item} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center gap-4 cursor-move">
-                                                <img src={item.image} alt={item.title} className="w-full sm:w-16 h-48 sm:h-16 object-cover rounded-lg pointer-events-none" />
-                                                <div className="flex-grow pointer-events-none text-center sm:text-left w-full">
-                                                    <h3 className="font-bold">{item.title}</h3>
-                                                    <p className="text-xs text-gray-500 line-clamp-1">{item.subtitle}</p>
+                                            <Reorder.Item key={item.id} value={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-6 cursor-move group">
+                                                <div className="relative shrink-0 w-full sm:w-32 h-48 sm:h-32 rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+                                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                                                 </div>
-                                                <div className="flex gap-2 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
-                                                    <button onClick={(e) => { e.stopPropagation(); startEdit(item, 'gallery'); }} className="flex-1 sm:flex-none p-2 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-lg flex justify-center">
-                                                        <span className="material-icons-outlined">edit</span>
+                                                <div className="flex-grow pointer-events-none text-center sm:text-left w-full">
+                                                    <h3 className="font-black text-xl italic uppercase text-slate-900">{item.title}</h3>
+                                                    <p className="text-sm font-bold text-slate-400 mt-2 uppercase tracking-widest opacity-70">{item.subtitle}</p>
+                                                </div>
+                                                <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
+                                                    <button onClick={(e) => { e.stopPropagation(); startEdit(item, 'gallery'); }} className="flex-1 sm:flex-none p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                        <Menu size={20} />
                                                     </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="flex-1 sm:flex-none p-2 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg flex justify-center">
-                                                        <span className="material-icons-outlined">delete</span>
+                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                        <LogOut size={20} />
                                                     </button>
                                                 </div>
                                             </Reorder.Item>
                                         ))}
                                     </Reorder.Group>
                                     {(!homeGallery.items || homeGallery.items.length === 0) && (
-                                        <p className="text-center text-gray-500 py-8 italic border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-2xl">Nessuna foto in galleria.</p>
+                                        <div className="text-center py-20 bg-slate-50/50 rounded-[40px] border-4 border-dashed border-slate-100">
+                                            <ImageIcon size={48} className="mx-auto text-slate-200 mb-4" />
+                                            <p className="text-slate-400 font-bold uppercase tracking-widest">Nessuna foto presente</p>
+                                        </div>
                                     )}
                                 </section>
                             </div>
                         )}
 
-                        {activeTab === ('brands' as any) && (
+                        {activeTab === 'brands' && (
                             <BrandsManager />
                         )}
                     </div>
                 ) : (
-                    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-bottom-4">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">
-                                {isAdding ? 'Aggiungi' : 'Modifica'} {editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : 'Elemento'}
-                            </h2>
-                            <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">
-                                <span className="material-icons-outlined">close</span>
+                    <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[48px] shadow-2xl border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-500">
+                        <div className="flex justify-between items-center mb-10">
+                            <div>
+                                <h2 className="text-3xl font-black text-slate-900 uppercase italic">
+                                    {isAdding ? 'Crea' : 'Aggiorna'} <span className="text-amber-500">{editType === 'excavator' ? 'Macchina' : editType === 'service' ? 'Servizio' : 'Elemento'}</span>
+                                </h2>
+                                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Dati archiviati in cloud</p>
+                            </div>
+                            <button onClick={resetForm} className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:text-slate-600 active:scale-90 transition-all">
+                                <X size={24} />
                             </button>
                         </div>
 
@@ -537,31 +577,55 @@ const Admin: React.FC = () => {
                                 }}
                             />
                         ) : (
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                {/* Machine Form handled above */}
-
+                            <form onSubmit={handleSubmit} className="space-y-8">
                                 {editType === 'gallery' && (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Titolo</label>
-                                            <input name="title" value={formData.title || ''} onChange={handleInputChange} className="w-full p-2 bg-gray-50 dark:bg-gray-700 border-none rounded-lg dark:text-white" />
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Titolo Gallery</label>
+                                                <input
+                                                    name="title"
+                                                    value={formData.title || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-5 bg-slate-50 border-none rounded-3xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Sottotitolo / Info</label>
+                                                <input
+                                                    name="subtitle"
+                                                    value={formData.subtitle || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-5 bg-slate-50 border-none rounded-3xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                />
+                                            </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Immagine</label>
-                                            {formData.image && <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-lg mb-2" />}
-                                            <ImageUploader
-                                                onUpload={async (file) => {
-                                                    const url = await uploadImage(file, 'gallery');
-                                                    setFormData((prev: any) => ({ ...prev, image: url }));
-                                                }}
-                                            />
+                                            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Sorgente Immagine</label>
+                                            <div className="relative rounded-[32px] overflow-hidden border-2 border-dashed border-slate-200 p-2 group">
+                                                {formData.image ? (
+                                                    <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-[24px] shadow-sm" />
+                                                ) : (
+                                                    <div className="h-48 flex flex-col items-center justify-center bg-slate-50 text-slate-300 rounded-[24px]">
+                                                        <ImageIcon size={40} className="mb-2" />
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">No Preview</span>
+                                                    </div>
+                                                )}
+                                                <div className="mt-4 px-2 pb-2">
+                                                    <ImageUploader
+                                                        onUpload={async (file) => {
+                                                            const url = await uploadImage(file, 'gallery');
+                                                            setFormData((prev: any) => ({ ...prev, image: url }));
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
-                                {/* Similar forms for Services if needed */}
 
-                                <button type="submit" className="w-full bg-amber-500 text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors">
-                                    Salva Modifiche
+                                <button type="submit" className="w-full bg-slate-900 text-white py-6 rounded-[32px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-2xl active:scale-[0.98] mt-4">
+                                    Pubblica Modifiche
                                 </button>
                             </form>
                         )}
