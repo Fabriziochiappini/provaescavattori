@@ -72,6 +72,13 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
+            <Link
+              to="/admin"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-4 rounded-md text-base font-black transition-colors text-center text-orange-500 border-t border-zinc-800 mt-2 hover:bg-zinc-800"
+            >
+              AREA ADMIN
+            </Link>
           </div>
         </div>
       )}

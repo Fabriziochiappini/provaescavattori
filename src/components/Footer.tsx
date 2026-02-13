@@ -35,10 +35,17 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-bold font-oswald uppercase tracking-wider mb-6">Menu Rapido</h4>
             <ul className="space-y-4">
-              {['Home', 'Vendita', 'Noleggio', 'Chi Siamo', 'Contatti'].map((item) => (
-                <li key={item}>
-                  <Link to={`/${item.toLowerCase().replace(' ', '-')}`} className="text-zinc-400 hover:text-orange-500 transition-colors">
-                    {item}
+              {[
+                { name: 'Home', path: '/' },
+                { name: 'Vendita', path: '/vendita' },
+                { name: 'Noleggio', path: '/noleggio' },
+                { name: 'Chi Siamo', path: '/chi-siamo' },
+                { name: 'Contatti', path: '/contatti' },
+                { name: 'Area Admin', path: '/admin' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link to={link.path} className="text-zinc-400 hover:text-orange-500 transition-colors">
+                    {link.name}
                   </Link>
                 </li>
               ))}
