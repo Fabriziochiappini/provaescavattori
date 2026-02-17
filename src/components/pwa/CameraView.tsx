@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { X, Camera, RotateCcw, Check, ZoomIn, ZoomOut, Smartphone, Trash2 } from 'lucide-react';
-import { savePhoto, deletePhoto } from '../../services/pwaStorage';
+import { savePhoto, deletePhoto, clearPhotos, getAllPhotos } from '../../services/pwaStorage';
 
 interface CapturedPhoto {
     id: string;
@@ -29,6 +29,32 @@ export const CameraView: React.FC = () => {
     const [isConfirming, setIsConfirming] = useState(false);
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Check if returning from gallery (adding more photos) vs fresh session
+    const isFromGallery = location.state?.fromGallery === true;
+
+    // On mount: clear old photos for fresh sessions, or reload existing photos if returning from gallery
+    useEffect(() => {
+        const initPhotos = async () => {
+            if (isFromGallery) {
+                // Returning from gallery - reload existing photos from DB
+                const storedPhotos = await getAllPhotos();
+                storedPhotos.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                const photosWithUrls = storedPhotos.map(p => ({
+                    id: p.id,
+                    blob: p.blob,
+                    url: URL.createObjectURL(p.blob)
+                }));
+                setCapturedPhotos(photosWithUrls);
+            } else {
+                // Fresh session from dashboard - clear all old photos
+                await clearPhotos();
+                setCapturedPhotos([]);
+            }
+        };
+        initPhotos();
+    }, []);
 
     // Detect iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -219,7 +245,7 @@ export const CameraView: React.FC = () => {
         const sourceY = (videoHeight - squareSize) / 2;
 
         // Calculate output size with max dimension limit
-        const maxDimension = 3072; // Increased from 1536 for better quality
+        const maxDimension = 2048; // Good quality while keeping blob size manageable on mobile
         const outputSize = Math.min(squareSize, maxDimension);
 
         canvas.width = outputSize;
@@ -256,7 +282,7 @@ export const CameraView: React.FC = () => {
                 setIsCapturing(false);
             },
             'image/jpeg',
-            1.0 // Maximum quality
+            0.92 // High quality with much smaller blob size (~3-4MB vs 10-15MB)
         );
 
         // Safety timeout
@@ -279,19 +305,7 @@ export const CameraView: React.FC = () => {
         if (isConfirming) return;
         setIsConfirming(true);
         stopCamera();
-        // Cleanup URLs handled by page unmount usually, but good practice
-        // Navigate with just orderedIds, SimpleDetailsForm will load from DB if needed? 
-        // Actually SimpleDetailsForm loads photos? No, it uploads them.
-        // It needs orderedIds.
-        const orderedIds = capturedPhotos.map(p => p.id);
-        navigate('/admin/pwa/details', { state: { orderedIds } }); // Was navigating to /details in old flow? Let's check. 
-        // Previous code: navigate('/admin/pwa/gallery') -> then gallery -> details.
-        // AutoGenPro flow was distinct.
-        // Let's stick to the previous flow if possible or shortcut.
-        // The user asked for "Elimina instead of Int/Est".
-        // If we have delete here, we might not need the gallery management page?
-        // But the previous code went to '/admin/pwa/gallery'.
-        // Let's go to '/admin/pwa/gallery' to be safe and consistent with existing app flow.
+        // Navigate to gallery for reorder/review, then gallery goes to details
         navigate('/admin/pwa/gallery');
     };
 

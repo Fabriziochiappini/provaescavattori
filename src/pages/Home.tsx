@@ -2,12 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, ShieldCheck, Truck, Clock, Award, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, ShieldCheck, Truck, Clock, Award, Users, HardHat, Maximize2 } from 'lucide-react';
 import { MACHINES_DATA } from '../constants';
 import MachineCard from '../components/MachineCard';
 import BrandsBanner from '../components/BrandsBanner';
 import MachineCardStack from '../components/MachineCardStack';
-import { useData } from '../context/DataContext';
+import { useData, type Gallery } from '../context/DataContext';
+import GalleryModal from '../components/GalleryModal';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -35,8 +36,19 @@ const staggerContainer = {
 };
 
 const Home: React.FC = () => {
-  const { brandsBanner } = useData();
+  const { brandsBanner, galleries, services } = useData();
   const [activeTab, setActiveTab] = React.useState<'sale' | 'rental'>('sale');
+  const [selectedGallery, setSelectedGallery] = React.useState<Gallery | null>(null);
+  const [initialIndex, setInitialIndex] = React.useState(0);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const featuredGalleries = galleries.filter(g => g.showInHome);
+
+  const openGallery = (gallery: Gallery, index: number) => {
+    setSelectedGallery(gallery);
+    setInitialIndex(index);
+    setIsModalOpen(true);
+  };
 
   const filteredMachines = MACHINES_DATA.filter(machine =>
     activeTab === 'sale'
@@ -288,6 +300,62 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* NEW: HOME SERVICES SECTION */}
+      {services.filter(s => s.showInHome).length > 0 && (
+        <section className="py-32 bg-white relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInLeft}
+              className="mb-16"
+            >
+              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.3em] mb-4 block">Cosa Facciamo</span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase leading-tight tracking-tighter text-slate-900 italic">
+                I NOSTRI <span className="text-orange-600">SERVIZI</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.filter(s => s.showInHome).map((service, idx) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group relative bg-slate-50 rounded-[32px] overflow-hidden border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500"
+                >
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-black text-slate-900 uppercase italic mb-4 group-hover:text-orange-600 transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="text-slate-500 text-sm font-medium line-clamp-3 mb-6">
+                      {service.description}
+                    </p>
+                    <Link
+                      to="/servizi"
+                      className="inline-flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-widest hover:text-orange-600 transition-colors group/btn"
+                    >
+                      Dettagli Servizio
+                      <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 5. TESTIMONIALS */}
       <section className="py-32 bg-slate-950 text-white overflow-hidden relative border-t border-white/5">
         <div className="absolute inset-0 z-0">
@@ -345,6 +413,91 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* NEW: GALLERY CAROUSEL SECTION */}
+      {featuredGalleries.length > 0 && (
+        <section className="py-32 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInLeft}
+              className="mb-16"
+            >
+              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.3em] mb-4 block">Esperienza sul campo</span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase leading-tight tracking-tighter text-slate-900 italic">
+                I NOSTRI <span className="text-orange-600">PROGETTI</span>
+              </h2>
+            </motion.div>
+
+            <div className="space-y-24">
+              {featuredGalleries.map((gallery) => (
+                <div key={gallery.id} className="space-y-8">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-4 border-orange-600 pl-8">
+                    <div className="max-w-xl">
+                      <h3 className="text-2xl font-black text-slate-900 uppercase italic mb-2">{gallery.title}</h3>
+                      <p className="text-slate-500 font-medium text-sm leading-relaxed">{gallery.description}</p>
+                    </div>
+                    <Link to="/galleria" className="flex items-center gap-2 text-orange-600 font-black text-xs uppercase tracking-widest hover:translate-x-2 transition-transform whitespace-nowrap group">
+                      Guarda tutta la galleria
+                      <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                    </Link>
+                  </div>
+
+                  {/* Horizontal Scroll Carousel */}
+                  <div className="relative group">
+                    <motion.div
+                      className="flex gap-4 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory px-4 md:px-0"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      {gallery.images?.map((img, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: idx * 0.1 }}
+                          whileHover={{ y: -10 }}
+                          className="flex-shrink-0 w-[300px] md:w-[450px] aspect-[16/10] bg-slate-100 rounded-[32px] overflow-hidden cursor-pointer shadow-xl shadow-slate-200/50 snap-center relative"
+                          onClick={() => openGallery(gallery, idx)}
+                        >
+                          <img
+                            src={img}
+                            alt={`${gallery.title} ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                            <div className="bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/20">
+                              <Maximize2 className="text-white" size={20} />
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+
+                    {/* Decorative Carousel Hint */}
+                    <div className="flex items-center justify-center gap-2 text-slate-300 pointer-events-none mt-4">
+                      <div className="h-[2px] w-12 bg-slate-100"></div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">Sfoglia Foto</span>
+                      <div className="h-[2px] w-12 bg-slate-100"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedGallery && (
+        <GalleryModal
+          images={selectedGallery.images}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          initialIndex={initialIndex}
+        />
+      )}
+
       {/* 6. CALL TO ACTION */}
       <section className="py-32 bg-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -389,8 +542,5 @@ const Home: React.FC = () => {
     </div>
   );
 };
-
-// Helper for consistency
-import { HardHat } from 'lucide-react';
 
 export default Home;

@@ -149,7 +149,7 @@ export const LocalGalleryEditor: React.FC = () => {
 
                             {/* Add More Photos Tile */}
                             <button
-                                onClick={() => navigate('/admin/pwa/camera')}
+                                onClick={() => navigate('/admin/pwa/camera', { state: { fromGallery: true } })}
                                 className="aspect-square rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-2 text-gray-400 active:bg-gray-100 active:border-amber-500 active:text-amber-500 transition-all"
                             >
                                 <Camera className="w-8 h-8" />
@@ -163,7 +163,7 @@ export const LocalGalleryEditor: React.FC = () => {
                     <div className="flex flex-col items-center justify-center h-64 text-center text-gray-400">
                         <p>Nessuna foto disponibile.</p>
                         <button
-                            onClick={() => navigate('/admin/pwa/camera')}
+                            onClick={() => navigate('/admin/pwa/camera', { state: { fromGallery: true } })}
                             className="mt-4 text-blue-600 font-semibold"
                         >
                             Torna alla fotocamera

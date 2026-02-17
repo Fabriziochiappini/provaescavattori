@@ -40,7 +40,7 @@ const MachineDetail: React.FC = () => {
     const hasWeight = machine.weight && machine.weight > 0;
     const hasYear = machine.year && machine.year > 0;
     const hasHours = machine.hours && machine.hours > 0;
-    const hasCondition = machine.condition && machine.condition > 0;
+    const hasCondition = !!machine.condition;
     const showKeyStats = hasWeight || hasYear || hasHours || hasCondition;
 
     return (
@@ -160,7 +160,7 @@ const MachineDetail: React.FC = () => {
                                         <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><Wrench size={20} /></div>
                                         <div>
                                             <p className="text-xs text-zinc-500 uppercase font-bold">Stato</p>
-                                            <p className="font-semibold">Verificato ({machine.condition}/5)</p>
+                                            <p className="font-semibold">{machine.condition}</p>
                                         </div>
                                     </div>
                                 )}

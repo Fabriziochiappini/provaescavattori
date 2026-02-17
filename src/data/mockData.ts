@@ -13,7 +13,7 @@ export const siteData = {
             description: "Escavatore cingolato affidabile e performante. Ideale per cantieri di medie e grandi dimensioni.",
             weight: 20.5,
             price: 85000,
-            condition: 5,
+            condition: "NUOVO",
             images: ["https://s7d2.scene7.com/is/image/Caterpillar/CM20180404-36526-28267"],
             features: ["Aria Condizionata", "Attacco Rapido", "Benna Scavo", "Impianto Martello"],
             serialNumber: "CAT320GC-001",
@@ -27,7 +27,7 @@ export const siteData = {
             description: "Miniescavatore compatto per spazi ristretti. Versatile e potente.",
             weight: 1.9,
             price: 120, // Daily rental price
-            condition: 4,
+            condition: "OTTIME CONDIZIONI",
             images: ["https://assets.bobcat.com/is/image/Doosan/E19_Hero?wid=1600"],
             features: ["Carro Allargabile", "Tettuccio", "3 Benne"],
             serialNumber: "BOB-E19-88",

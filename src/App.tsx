@@ -13,6 +13,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Admin from './pages/Admin';
 import MachineDetail from './pages/MachineDetail';
+import Services from './pages/Services';
+import Galleria from './pages/Galleria';
 import CookieBanner from './components/CookieBanner';
 import { PWADashboard } from './components/pwa/PWADashboard';
 import { CameraView } from './components/pwa/CameraView';
@@ -43,8 +45,10 @@ const LayoutContent: React.FC = () => {
           <Route path="/chi-siamo" element={<About />} />
           <Route path="/contatti" element={<Contact />} />
           <Route path="/assistenza" element={<Assistance />} />
+          <Route path="/servizi" element={<Services />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/termini-e-condizioni" element={<Terms />} />
+          <Route path="/galleria" element={<Galleria />} />
           <Route path="/admin" element={<Admin />} />
 
           {/* PWA Routes */}

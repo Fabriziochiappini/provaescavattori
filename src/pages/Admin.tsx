@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useData, type Excavator, type Service, type ContactInfo, type SpecCategory } from '../context/DataContext';
+import { useData, type Excavator, type Service, type ContactInfo, type SpecCategory, type Gallery } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
 import BrandsManager from '../components/admin/BrandsManager';
@@ -15,6 +15,7 @@ const Admin: React.FC = () => {
         excavators, addExcavator, updateExcavator, deleteExcavator,
         services, addService, updateService, deleteService,
         contacts, addContact, updateContact, deleteContact,
+        galleries, addGallery, updateGallery, deleteGallery,
         homeGallery, updateHomeGallery,
         uploadImage, deleteImage
     } = useData();
@@ -127,7 +128,7 @@ const Admin: React.FC = () => {
             setFormData({
                 id: Date.now().toString(),
                 features: [],
-                condition: 5,
+                condition: 'NUOVO',
                 weight: 0,
                 price: 0,
                 type: 'sale',
@@ -138,14 +139,17 @@ const Admin: React.FC = () => {
                 id: Date.now().toString(),
                 title: '',
                 description: '',
-                image: "https://via.placeholder.com/800x600"
+                image: "https://via.placeholder.com/800x600",
+                bulletPoints: [],
+                showInHome: false
             });
         } else if (type === 'gallery') {
             setFormData({
                 id: Date.now().toString(),
                 title: '',
-                subtitle: '',
-                image: "https://via.placeholder.com/800x600"
+                description: '',
+                images: [],
+                showInHome: false
             });
         } else if (type === 'contact') {
             setFormData({
@@ -177,10 +181,13 @@ const Admin: React.FC = () => {
                     await deleteService(id);
                 }
                 else if (type === 'gallery') {
-                    const item = homeGallery.items.find(i => i.id === id);
-                    if (item && item.image) await deleteImage(item.image);
-                    const newItems = homeGallery.items.filter(i => i.id !== id);
-                    await updateHomeGallery({ ...homeGallery, items: newItems });
+                    const item = galleries.find(i => i.id === id);
+                    if (item && item.images) {
+                        for (const imgUrl of item.images) {
+                            try { await deleteImage(imgUrl); } catch (e) { console.error(e); }
+                        }
+                    }
+                    await deleteGallery(id);
                 }
                 else if (type === 'contact') {
                     await deleteContact(id);
@@ -215,17 +222,14 @@ const Admin: React.FC = () => {
                 await updateContact(editingItem.id, formData as ContactInfo);
             }
         } else if (editType === 'gallery') {
-            if (!formData.image) return alert('Immagine obbligatoria');
-            let newItems = [...homeGallery.items];
+            if (!formData.images || formData.images.length === 0) return alert('Carica almeno un\'immagine');
             if (isAdding) {
-                newItems.push(formData);
+                await addGallery(formData as Gallery);
             } else {
-                if (editingItem && editingItem.image && editingItem.image !== formData.image) {
-                    deleteImage(editingItem.image).catch(console.error);
-                }
-                newItems = newItems.map(item => item.id === editingItem.id ? formData : item);
+                // Image cleanup logic could be added here if needed, 
+                // but usually handled by specific delete actions in the form
+                await updateGallery(editingItem.id, formData as Gallery);
             }
-            await updateHomeGallery({ ...homeGallery, items: newItems });
         }
         resetForm();
     };
@@ -234,15 +238,15 @@ const Admin: React.FC = () => {
         const { name, value } = e.target;
         setFormData((prev: any) => ({
             ...prev,
-            [name]: name === 'price' || name === 'weight' || name === 'hours' || name === 'year' || name === 'condition' ? parseFloat(value) : value
+            [name]: name === 'price' || name === 'weight' || name === 'hours' || name === 'year' ? parseFloat(value) : value
         }));
     };
 
     const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
+        const { value, name } = e.target;
         setFormData((prev: any) => ({
             ...prev,
-            features: val.split(',').map(s => s.trim())
+            [name || 'features']: value.split(',').map(s => s.trim())
         }));
     };
 
@@ -484,7 +488,12 @@ const Admin: React.FC = () => {
                                         <div key={attr.id} className="bg-white p-4 rounded-[24px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 group">
                                             <img src={attr.image} alt={attr.title} className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-xl shadow-sm border border-slate-100" />
                                             <div className="flex-grow text-center sm:text-left">
-                                                <h3 className="font-black text-xl italic uppercase text-slate-900 group-hover:text-amber-500 transition-colors">{attr.title}</h3>
+                                                <div className="flex items-center justify-center sm:justify-start gap-2">
+                                                    <h3 className="font-black text-xl italic uppercase text-slate-900 group-hover:text-amber-500 transition-colors">{attr.title}</h3>
+                                                    {attr.showInHome && (
+                                                        <span className="text-[9px] font-black bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full tracking-tighter">HOME</span>
+                                                    )}
+                                                </div>
                                                 <p className="text-sm font-medium text-slate-400 mt-2 line-clamp-2 leading-relaxed">{attr.description}</p>
                                             </div>
                                             <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
@@ -543,42 +552,60 @@ const Admin: React.FC = () => {
                             <div className="space-y-6">
                                 <section className="space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Galleria Foto</h2>
+                                        <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Gallerie Fotografiche</h2>
                                         <button
                                             onClick={() => startAdd('gallery' as any)}
                                             className="bg-amber-500 text-white w-12 h-12 sm:w-auto sm:h-auto sm:px-6 sm:py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-amber-600 flex items-center justify-center gap-2 transition-all shadow-xl shadow-amber-500/30 active:scale-95"
                                         >
                                             <Plus size={20} className="sm:hidden" />
-                                            <span className="hidden sm:inline">+AGGIUNGI</span>
+                                            <span className="hidden sm:inline">+AGGIUNGI GALLERIA</span>
                                         </button>
                                     </div>
 
-                                    <Reorder.Group axis="y" values={homeGallery.items || []} onReorder={(newOrder) => updateHomeGallery({ ...homeGallery, items: newOrder })} className="grid gap-4">
-                                        {homeGallery.items?.map(item => (
-                                            <Reorder.Item key={item.id} value={item} className="bg-white p-4 rounded-[24px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 cursor-move group">
-                                                <div className="relative shrink-0 w-full sm:w-24 h-40 sm:h-24 rounded-xl overflow-hidden border border-slate-100 shadow-sm">
-                                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover pointer-events-none group-hover:scale-110 transition-transform duration-700" />
-                                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
+                                    <div className="grid gap-4">
+                                        {galleries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).map(gallery => (
+                                            <div key={gallery.id} className="bg-white p-4 rounded-[24px] shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 group">
+                                                <div className="relative shrink-0 w-full sm:w-24 h-40 sm:h-24 rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50">
+                                                    {gallery.images && gallery.images[0] ? (
+                                                        <img src={gallery.images[0]} alt={gallery.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                            <ImageIcon size={24} />
+                                                        </div>
+                                                    )}
+                                                    {gallery.showInHome && (
+                                                        <div className="absolute top-2 right-2 bg-amber-500 text-white p-1 rounded-full shadow-lg" title="In Home">
+                                                            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="flex-grow pointer-events-none text-center sm:text-left w-full">
-                                                    <h3 className="font-black text-xl italic uppercase text-slate-900">{item.title}</h3>
-                                                    <p className="text-sm font-bold text-slate-400 mt-2 uppercase tracking-widest opacity-70">{item.subtitle}</p>
+                                                <div className="flex-grow text-center sm:text-left w-full">
+                                                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                                                        <h3 className="font-black text-xl italic uppercase text-slate-900">{gallery.title}</h3>
+                                                        {gallery.showInHome && (
+                                                            <span className="text-[9px] font-black bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full tracking-tighter">HOME</span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-70">
+                                                        {gallery.images?.length || 0} Foto
+                                                    </p>
+                                                    <p className="text-xs text-slate-400 mt-1 line-clamp-1">{gallery.description}</p>
                                                 </div>
                                                 <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-50">
-                                                    <button onClick={(e) => { e.stopPropagation(); startEdit(item, 'gallery'); }} className="flex-1 sm:flex-none p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
-                                                        <Menu size={20} />
+                                                    <button onClick={() => startEdit(gallery, 'gallery')} className="flex-1 sm:flex-none p-4 text-sky-500 bg-sky-50 hover:bg-sky-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                        <Edit2 size={20} />
                                                     </button>
-                                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'gallery'); }} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
+                                                    <button onClick={() => handleDelete(gallery.id, 'gallery')} className="flex-1 sm:flex-none p-4 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[24px] active:scale-95 transition-all flex justify-center">
                                                         <Trash2 size={20} />
                                                     </button>
                                                 </div>
-                                            </Reorder.Item>
+                                            </div>
                                         ))}
-                                    </Reorder.Group>
-                                    {(!homeGallery.items || homeGallery.items.length === 0) && (
+                                    </div>
+                                    {galleries.length === 0 && (
                                         <div className="text-center py-20 bg-slate-50/50 rounded-[40px] border-4 border-dashed border-slate-100">
                                             <ImageIcon size={48} className="mx-auto text-slate-200 mb-4" />
-                                            <p className="text-slate-400 font-bold uppercase tracking-widest">Nessuna foto presente</p>
+                                            <p className="text-slate-400 font-bold uppercase tracking-widest">Nessuna galleria presente</p>
                                         </div>
                                     )}
                                 </section>
@@ -672,11 +699,93 @@ const Admin: React.FC = () => {
                                     </div>
                                 )}
 
+                                {editType === 'service' && (
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Titolo Servizio</label>
+                                                <input
+                                                    name="title"
+                                                    value={formData.title || ''}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-5 bg-slate-50 border-none rounded-3xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                    placeholder="es. Assistenza Tecnica"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Descrizione</label>
+                                                <textarea
+                                                    name="description"
+                                                    value={formData.description || ''}
+                                                    onChange={handleInputChange}
+                                                    rows={4}
+                                                    className="w-full p-5 bg-slate-50 border-none rounded-3xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none resize-none"
+                                                    placeholder="Descrivi il servizio..."
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Immagine Servizio</label>
+                                            <div className="relative rounded-[32px] overflow-hidden border-2 border-dashed border-slate-200 p-2 group">
+                                                {formData.image ? (
+                                                    <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-[24px] shadow-sm" />
+                                                ) : (
+                                                    <div className="h-48 flex flex-col items-center justify-center bg-slate-50 text-slate-300 rounded-[24px]">
+                                                        <ImageIcon size={40} className="mb-2" />
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">No Preview</span>
+                                                    </div>
+                                                )}
+                                                <div className="mt-4 px-2 pb-2">
+                                                    <ImageUploader
+                                                        onUpload={async (file) => {
+                                                            const url = await uploadImage(file, 'services');
+                                                            setFormData((prev: any) => ({ ...prev, image: url }));
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-6 p-6 bg-amber-50 rounded-[32px] border border-amber-100">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <h4 className="font-black text-amber-900 uppercase italic tracking-tighter">Mostra in Home</h4>
+                                                        <p className="text-[10px] font-bold text-amber-600 uppercase">Apparirà nella homepage</p>
+                                                    </div>
+                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="sr-only peer"
+                                                            checked={formData.showInHome || false}
+                                                            onChange={(e) => setFormData((prev: any) => ({ ...prev, showInHome: e.target.checked }))}
+                                                        />
+                                                        <div className="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-6 after:transition-all peer-checked:bg-amber-500"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {editType === 'service' && (
+                                    <div className="mt-8 pt-8 border-t border-slate-100">
+                                        <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Punti Bullet (separati da virgola)</label>
+                                        <div className="relative">
+                                            <input
+                                                name="bulletPoints"
+                                                value={formData.bulletPoints?.join(', ') || ''}
+                                                onChange={handleFeaturesChange}
+                                                className="w-full p-5 bg-slate-50 border-none rounded-3xl text-slate-900 font-bold focus:ring-4 focus:ring-amber-500/10 transition-all outline-none"
+                                                placeholder="es. Prezzi Competitivi, Staff Qualificato, Assistenza H24"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {editType === 'contact' && (
                                     <div className="space-y-6">
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Etichetta (es. Telefono)</label>
+                                                <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Etichetta (es. Assistenza)</label>
                                                 <input
                                                     name="label"
                                                     value={formData.label || ''}
@@ -737,7 +846,6 @@ const Admin: React.FC = () => {
                             </form>
                         )}
                     </div>
-                )}
             </div>
         </div>
     );

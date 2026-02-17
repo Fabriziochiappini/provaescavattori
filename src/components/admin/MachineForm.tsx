@@ -18,7 +18,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         features: [],
         images: [],
         available: true,
-        condition: 5,
+        condition: 'NUOVO',
         powerType: 'Termico',
         specs: {}
     });
@@ -52,7 +52,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         }
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'price' || name === 'weight' || name === 'hours' || name === 'year' || name === 'condition'
+            [name]: name === 'price' || name === 'weight' || name === 'hours' || name === 'year'
                 ? parseFloat(value) || 0
                 : value
         }));
@@ -237,16 +237,18 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                 )}
                             </div>
                             <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Stato / Condizione (1-5)</label>
-                                <input
+                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Stato / Condizione *</label>
+                                <select
                                     name="condition"
-                                    type="number"
-                                    min="1"
-                                    max="5"
-                                    value={formData.condition || 5}
+                                    value={formData.condition}
                                     onChange={handleChange}
                                     className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
-                                />
+                                    required
+                                >
+                                    <option value="NUOVO">NUOVO</option>
+                                    <option value="USATO">USATO</option>
+                                    <option value="OTTIME CONDIZIONI">OTTIME CONDIZIONI</option>
+                                </select>
                             </div>
                         </div>
 

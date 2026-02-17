@@ -14,6 +14,7 @@ export const MACHINES_DATA: Machine[] = [
     category: 'Carrelli Diesel',
     price: 28500,
     rentalPrice: '80€ / giorno',
+    condition: 'NUOVO',
     imageUrl: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?q=80&w=2070&auto=format&fit=crop',
     features: ['Trasmissione Idrostatica', 'Cabina Ergonomica', 'Doppio Pedale'],
     description: 'Carrello elevatore diesel Linde ad alte prestazioni, affidabile e preciso per ogni tipo di carico.'
@@ -30,6 +31,7 @@ export const MACHINES_DATA: Machine[] = [
     category: 'Carrelli Elettrici',
     price: 32000,
     rentalPrice: '95€ / giorno',
+    condition: 'USATO',
     imageUrl: 'https://images.unsplash.com/photo-1621259182978-f09e5e2ca09a?q=80&w=2072&auto=format&fit=crop',
     features: ['Motore AC', 'Batteria al Litio', 'Dimensioni Compatte'],
     description: 'Innovazione elettrica Cesab per magazzini che richiedono agilità e sostenibilità.'
@@ -46,6 +48,7 @@ export const MACHINES_DATA: Machine[] = [
     category: 'Piattaforme Aeree',
     price: 65000,
     rentalPrice: '150€ / giorno',
+    condition: 'OTTIME CONDIZIONI',
     imageUrl: 'https://images.unsplash.com/photo-1579412690850-bd41cd0ca397?q=80&w=2070&auto=format&fit=crop',
     features: ['Sbraccio 7m', 'Cabina FOPS/ROPS', 'Gancio Traino'],
     description: 'Sollevatore telescopico Merlo perfetto per edilizia e agricoltura.'
@@ -62,6 +65,7 @@ export const MACHINES_DATA: Machine[] = [
     category: 'Mini Escavatori',
     price: 24500,
     rentalPrice: '120€ / giorno',
+    condition: 'NUOVO',
     imageUrl: 'https://images.unsplash.com/photo-1517520287167-4bda64282b54?q=80&w=2070&auto=format&fit=crop',
     features: ['Sottocarro Allargabile', 'Braccio Lungo', 'Cingoli in Gomma'],
     description: 'Mini escavatore versatile per lavori di precisione in spazi ristretti.'
@@ -76,6 +80,7 @@ export const MACHINES_DATA: Machine[] = [
     type: 'rental',
     category: 'Carrelli Elettrici',
     rentalPrice: '110€ / giorno',
+    condition: 'NUOVO',
     imageUrl: 'https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=1978&auto=format&fit=crop',
     features: ['Inviluppo di Sterzo', 'Gestione Batteria Intelligente', 'Sicurezza Attiva'],
     description: 'Il top della gamma elettrica Linde, disponibile ora per il noleggio a breve e lungo termine.'
@@ -91,6 +96,7 @@ export const MACHINES_DATA: Machine[] = [
     type: 'sale',
     category: 'Carrelli Diesel',
     price: 22000,
+    condition: 'USATO',
     imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2070&auto=format&fit=crop',
     features: ['Motore Stage V', 'Montante Visibilità Totale', 'Sedile Ammortizzato'],
     description: 'Potenza e comfort Cesab in un carrello diesel robusto per carichi pesanti.'

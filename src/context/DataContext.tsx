@@ -15,7 +15,7 @@ export interface Excavator {
     weight: number;
     price: number;
     rentalPrice?: string;
-    condition: number;
+    condition: 'NUOVO' | 'USATO' | 'OTTIME CONDIZIONI';
     images: string[];
     features: string[];
     serialNumber: string;
@@ -44,6 +44,8 @@ export interface Service {
     title: string;
     description: string;
     image: string;
+    bulletPoints?: string[];
+    showInHome?: boolean;
 }
 
 export interface ContactInfo {
@@ -55,17 +57,19 @@ export interface ContactInfo {
     sub: string;
 }
 
-export interface GalleryItem {
+export interface Gallery {
     id: string;
     title: string;
-    subtitle: string;
-    image: string;
+    description: string;
+    images: string[];
+    showInHome: boolean;
+    createdAt?: number;
 }
 
 export interface HomeGalleryData {
     title: string;
     subtitle: string;
-    items: GalleryItem[];
+    items: Gallery[];
 }
 
 export interface Stats {
@@ -115,6 +119,11 @@ interface DataContextType {
     homeGallery: HomeGalleryData;
     updateHomeGallery: (data: HomeGalleryData) => Promise<void>;
 
+    galleries: Gallery[];
+    addGallery: (gallery: Gallery) => Promise<void>;
+    updateGallery: (id: string, updated: Gallery) => Promise<void>;
+    deleteGallery: (id: string) => Promise<void>;
+
     stats: Stats;
     incrementVisit: () => void;
     incrementFooterClick: () => void;
@@ -136,6 +145,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [machineCategories, setMachineCategories] = useState<MachineCategory[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [contacts, setContacts] = useState<ContactInfo[]>([]);
+    const [galleries, setGalleries] = useState<Gallery[]>([]);
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
     const [stats, setStats] = useState<Stats>({ visits: 0, footerClicks: 0 });
     const [brandsBanner, setBrandsBanner] = useState<BrandsBannerData>({
@@ -279,6 +289,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
+        const unsub = onSnapshot(collection(db, 'galleries'), (snap) => {
+            const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Gallery));
+            setGalleries(data);
+        });
+        return () => unsub();
+    }, []);
+
+    useEffect(() => {
         const unsub = onSnapshot(doc(db, 'settings', 'brands_banner'), (snap) => {
             if (snap.exists()) {
                 setBrandsBanner(snap.data() as BrandsBannerData);
@@ -368,6 +386,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await deleteDoc(doc(db, 'contacts', id));
     };
 
+    // Galleries
+    const addGallery = async (item: Gallery) => {
+        const { id, ...rest } = item;
+        await addDoc(collection(db, 'galleries'), { ...rest, createdAt: Date.now() });
+    };
+    const updateGallery = async (id: string, updated: Gallery) => {
+        const { id: _, ...rest } = updated;
+        await updateDoc(doc(db, 'galleries', id), rest as any);
+    };
+    const deleteGallery = async (id: string) => {
+        await deleteDoc(doc(db, 'galleries', id));
+    };
+
     // Home Gallery
     const updateHomeGallery = async (data: HomeGalleryData) => {
         await setDoc(doc(db, 'settings', 'home_gallery'), data);
@@ -429,6 +460,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             machineCategories, addMachineCategory, updateMachineCategory, deleteMachineCategory,
             services, addService, updateService, deleteService,
             contacts, addContact, updateContact, deleteContact,
+            galleries, addGallery, updateGallery, deleteGallery,
             homeGallery, updateHomeGallery,
             stats, incrementVisit, incrementFooterClick,
             uploadImage, deleteImage,

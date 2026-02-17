@@ -7,27 +7,35 @@ import { getAllPhotos } from './pwaStorage';
 interface MachineData {
     model: string;
     brand: string;
-    type: 'sale' | 'rental';
+    type: 'sale' | 'rent' | 'rental';
     price: number;
+    category: string;
+    condition: 'NUOVO' | 'USATO' | 'OTTIME CONDIZIONI';
+    rentalPrice?: string;
+    description?: string;
+    features?: string[];
+    specs?: Record<string, string>;
 }
 
 export const uploadMachine = async (data: MachineData, orderedIds: string[]) => {
     const allPhotos = await getAllPhotos();
     const photosMap = new Map(allPhotos.map(p => [p.id, p]));
 
-    const uploadPromises = orderedIds.map(async (id, index) => {
+    const uploadedImages: string[] = [];
+
+    // Process photos SEQUENTIALLY to avoid overwhelming mobile browsers
+    for (const id of orderedIds) {
         const photo = photosMap.get(id);
-        if (!photo) return null;
+        if (!photo) continue;
 
         const options = {
-            maxSizeMB: 4,               // Increased from 1MB
-            maxWidthOrHeight: 4096,     // Increased from 1920px
+            maxSizeMB: 2,               // Reasonable for web delivery
+            maxWidthOrHeight: 2048,     // Matches capture dimensions
             useWebWorker: true,
-            initialQuality: 0.9         // Ensure high quality starting point
+            initialQuality: 0.85        // Good quality, faster compression
         };
 
         try {
-            // Compress the image
             const compressedFile = await imageCompression(photo.blob as File, options);
 
             const fileName = `machines/${Date.now()}_${id}.jpg`;
@@ -35,49 +43,34 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
 
             await uploadBytes(storageRef, compressedFile);
             const url = await getDownloadURL(storageRef);
-
-            return { url, index };
+            uploadedImages.push(url);
         } catch (error) {
             console.error('Error uploading image:', error);
-            return null;
         }
-    });
-
-    const uploadedImages = (await Promise.all(uploadPromises))
-        .filter((img): img is { url: string; index: number } => img !== null)
-        .sort((a, b) => a.index - b.index)
-        .map(img => img.url);
+    }
 
     if (uploadedImages.length === 0 && orderedIds.length > 0) {
         throw new Error('Failed to upload any images');
     }
 
-    // Create document in Firestore
-    // Note: 'machines' is the collection name used in other parts of the app?
-    // I should check consistent naming, but 'machines' or 'vehicles' is likely.
-    // The user request mentions "nuovo documento su Firestore", doesn't specify collection.
-    // I'll assume 'vehicles' as per previous context or check later. 
-    // Wait, I should check existing code.
-    // I'll stick with 'vehicles' as it's more common in this context, or maybe 'products'.
-    // Let me check 'src/services' for existing upload logic if possible or just use 'vehicles'.
-    // Actually, I'll use 'machines' providing I can change it easily.
-    // Let's quickly check 'src/services' content references in next step or use 'vehicles' which is generic.
-    // Actually, I'll search for collection usage in 'src' to be sure.
+    // Map 'rental' to 'rent' for consistency in DB if needed
+    const finalType = data.type === 'rental' ? 'rent' : data.type;
 
+    // Create document in Firestore
     await addDoc(collection(db, 'excavators'), {
         name: `${data.brand} ${data.model}`,
-        model: data.model, // Keep model for reference even if not in main interface
+        model: data.model,
         brand: data.brand,
-        type: data.type === 'rental' ? 'rent' : data.type, // Map 'rental' to 'rent'
+        type: finalType,
         price: Number(data.price),
         images: uploadedImages,
-        category: 'Mini Escavatori', // Default for PWA uploads for now
-        // Optional fields filling
-        rentalPrice: data.type === 'rental' ? 'Contattaci per prezzo' : null,
-        condition: 5, // Default to new/excellent
-        features: [],
-        serialNumber: `PWA-${Date.now()}`, // Generate a temporary serial
-        description: 'Inserito da App Mobile',
+        category: data.category || 'Generale',
+        rentalPrice: data.rentalPrice || (finalType === 'rent' ? 'Contattaci per prezzo' : null),
+        condition: data.condition || 'NUOVO',
+        features: data.features || [],
+        specs: data.specs || {},
+        serialNumber: `PWA-${Date.now()}`,
+        description: data.description || 'Inserito da App Mobile',
         year: new Date().getFullYear(),
         weight: 0,
         hours: 0,

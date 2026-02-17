@@ -14,6 +14,7 @@ export interface Machine {
   price?: number;
   rentalPrice?: string; // e.g. "200€ / giorno"
   imageUrl: string;
+  condition?: 'NUOVO' | 'USATO' | 'OTTIME CONDIZIONI' | string;
   features: string[];
   description: string;
 }
