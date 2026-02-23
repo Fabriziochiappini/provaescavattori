@@ -4,7 +4,10 @@
   --font-display: "Oswald", sans-serif;
   --font-body: "Inter", sans-serif;
 
-  --color-primary: #ea580c; /* Orange 600 - More solid than yellow */
+  --color-primary: #e69138; /* Client's custom orange */
+  --color-orange-500: #e69138; /* Override Tailwind orange-500 */
+  --color-orange-600: #e69138; /* Override Tailwind orange-600 */
+  --color-orange-700: #cc7d2b; /* Darker variant for hover states */
   --color-secondary: #0f172a; /* Slate 900 - Deep navy for professionalism */
   --color-background-light: #f8fafc; /* Slate 50 */
   --color-background-dark: #020617; /* Slate 950 */
