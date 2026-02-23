@@ -19,11 +19,24 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
 
   const showPrices = adminSettings?.showPrices ?? true;
   
+  // Safety checks for numeric values
+  const getSafeNumber = (val: any) => {
+    if (typeof val === 'number') return isNaN(val) ? 0 : val;
+    if (typeof val === 'string') {
+        const num = Number(val.replace(',', '.')); // Handle comma decimals if any
+        return isNaN(num) ? 0 : num;
+    }
+    return 0;
+  };
+
+  const safeWeight = getSafeNumber(machine.weight);
+  const safeHours = getSafeNumber(machine.hours);
+  const safePrice = getSafeNumber(machine.price);
+  
   const mainImage = machine.imageUrl || 'https://placehold.co/600x400?text=No+Image';
 
-  const galleryImages = machine.images && machine.images.length > 0
-    ? machine.images
-    : [mainImage];
+  const rawImages = Array.isArray(machine.images) ? machine.images : [];
+  const galleryImages = rawImages.length > 0 ? rawImages : [mainImage];
 
   const handleImageClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -87,13 +100,13 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-8 border-y border-slate-100 py-6">
             
             {/* Weight - Only show if > 0 */}
-            {(machine.weight && machine.weight > 0) ? (
+            {(safeWeight > 0) ? (
               <div className="flex items-center gap-3">
                 <Scale size={16} className="text-slate-400" />
                 <div>
                   <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Peso</span>
                   <span className="font-bold text-slate-700 text-sm">
-                    {machine.weight > 1000 ? `${(machine.weight / 1000).toFixed(1)} t` : `${machine.weight} kg`}
+                    {safeWeight > 1000 ? `${(safeWeight / 1000).toFixed(1)} t` : `${safeWeight} kg`}
                   </span>
                 </div>
               </div>
@@ -122,12 +135,12 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
             </div>
 
             {/* Hours */}
-            {machine.hours !== undefined && machine.hours > 0 ? (
+            {safeHours > 0 ? (
               <div className="flex items-center gap-3">
                 <Clock size={16} className="text-slate-400" />
                 <div>
                   <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Ore</span>
-                  <span className="font-bold text-slate-700 text-sm">{machine.hours} h</span>
+                  <span className="font-bold text-slate-700 text-sm">{safeHours} h</span>
                 </div>
               </div>
             ) : null}
@@ -136,14 +149,14 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
 
           <div className="mt-auto space-y-4">
             {/* Price */}
-            {showPrices && (machine.price || machine.rentalPrice) && (
+            {showPrices && (safePrice > 0 || machine.rentalPrice) && (
               <div className="flex items-baseline gap-1">
                 <span className="text-sm font-bold text-slate-400">da</span>
                 <span className="text-2xl font-black text-slate-900 tracking-tight">
                   {(machine.type === 'rental' || machine.type === 'rent') && machine.rentalPrice 
                     ? machine.rentalPrice 
-                    : machine.price 
-                      ? `€ ${machine.price.toLocaleString('it-IT')}`
+                    : safePrice > 0
+                      ? `€ ${safePrice.toLocaleString('it-IT')}`
                       : 'Trattativa Riservata'}
                 </span>
               </div>

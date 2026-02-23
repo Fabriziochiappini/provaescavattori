@@ -172,90 +172,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Seeding Logic: If database is empty, seed with mock data
     useEffect(() => {
-        const seedData = async () => {
-            // Check excavators - Use fixed IDs from mock data to prevent duplicates
-            // Disable auto-seeding if it causes conflicts with real data loading
-            // Only seed if we are SURE it's empty and not just loading
-            // For now, we increase the timeout or remove it to rely on manual seeding if needed
-            // But to respect the user's "mock data conflict" suspicion, let's comment out the auto-seeding for excavators
-            /* 
-            if (excavators.length === 0 && initialSiteData.excavators.length > 0) {
-                console.log("Seeding excavators...");
-                for (const item of initialSiteData.excavators) {
-                    const { id, ...rest } = item;
-                    const seedId = id || `seed_${rest.name.replace(/\s+/g, '_').toLowerCase()}`;
-                    await setDoc(doc(db, 'excavators', seedId), rest);
-                }
-            }
-            */
-
-            // Seed default spec categories if empty
-            if (specCategories.length === 0) {
-                console.log("Seeding spec categories...");
-                const defaultCats = [
-                    { name: 'Portata (kg)', order: 1 },
-                    { name: 'Carico (kg)', order: 2 },
-                    { name: 'Altezza Sollevamento (mm)', order: 3 }
-                ];
-                for (const cat of defaultCats) {
-                    const catId = `spec_${cat.order}`;
-                    await setDoc(doc(db, 'spec_categories', catId), cat);
-                }
-            }
-
-            // Seed default machine categories if empty
-            if (machineCategories.length === 0) {
-                console.log("Seeding machine categories...");
-                const defaultMachineCats = [
-                    { name: 'Mini Escavatori' },
-                    { name: 'Escavatori Cingolati' },
-                    { name: 'Piattaforme Aeree' },
-                    { name: 'Gru' },
-                    { name: 'Sollevatori Telescopici' }
-                ];
-                let idx = 1;
-                for (const cat of defaultMachineCats) {
-                    const catId = `cat_${idx}`;
-                    await setDoc(doc(db, 'categories', catId), cat);
-                    idx++;
-                }
-            }
-
-            // Seed default contacts if empty
-            if (contacts.length === 0) {
-                console.log("Seeding default contacts...");
-                const defaultContacts = [
-                    { id: 'phone_1', icon: 'phone', label: 'Telefono', value: '+39 0823 982162', sub: 'LUN - VEN: 08:30 - 18:30', href: 'tel:+390823982162' },
-                    { id: 'email_1', icon: 'email', label: 'Email', value: 'info@contegroup.com', sub: 'Rispondiamo entro 24h', href: 'mailto:info@contegroup.com' },
-                    { id: 'place_1', icon: 'place', label: 'Sede Centrale', value: 'SP330, 24, 81016 Pietravairano (CE)', sub: 'Sede Legale e Operativa', href: 'https://maps.app.goo.gl/uXvV7yXWzQZ' },
-                    { id: 'schedule_1', icon: 'schedule', label: 'Orari', value: '08:00 - 18:30', sub: 'Sabato: 08:00 - 13:00' }
-                ];
-                for (const c of defaultContacts) {
-                    const { id, ...rest } = c;
-                    await setDoc(doc(db, 'contacts', id), rest);
-                }
-            }
-
-            // Seed default gallery if empty
-            if (homeGallery.items.length === 0) {
-                console.log("Seeding default gallery...");
-                await setDoc(doc(db, 'settings', 'home_gallery'), {
-                    title: 'Il nostro Parco Macchine',
-                    subtitle: 'Eccellenza e potenza per ogni cantiere',
-                    items: [
-                        { id: '1', title: 'Scavo Fondamenta', subtitle: 'Utilizzo Caterpillar 320', image: 'https://picsum.photos/seed/ex1/1200/800' },
-                        { id: '2', title: 'Terrazzamento', subtitle: 'Precisione con Bobcat E19', image: 'https://picsum.photos/seed/ex2/1200/800' }
-                    ]
-                });
-            }
-        };
-
-        // Run seed check after a short delay to allow snapshots to initialize
-        if (excavators.length === 0 && services.length === 0) {
-            const timer = setTimeout(seedData, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [excavators.length, services.length, contacts.length, homeGallery.items.length]);
+        // Auto-seeding is disabled to give user full control.
+        // If needed, manual seeding can be implemented here or via a dedicated admin tool.
+    }, []);
 
     // Real-time Listeners
     useEffect(() => {
