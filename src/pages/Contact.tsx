@@ -121,6 +121,7 @@ const Contact: React.FC = () => {
                   />
                 </div>
               </div>
+            </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-zinc-400">Interessato a:</label>
                 <select className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all appearance-none">
