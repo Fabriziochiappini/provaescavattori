@@ -33,7 +33,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
   const safeHours = getSafeNumber(machine.hours);
   const safePrice = getSafeNumber(machine.price);
   
-  const mainImage = machine.imageUrl || 'https://placehold.co/600x400?text=No+Image';
+  const mainImage = machine.imageUrl || (Array.isArray(machine.images) && machine.images.length > 0 ? machine.images[0] : 'https://placehold.co/600x400?text=No+Image');
 
   const rawImages = Array.isArray(machine.images) ? machine.images : [];
   const galleryImages = rawImages.length > 0 ? rawImages : [mainImage];

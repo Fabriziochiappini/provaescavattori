@@ -65,6 +65,7 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
         type: finalType,
         price: Number(data.price) || 0,
         images: uploadedImages,
+        imageUrl: uploadedImages.length > 0 ? uploadedImages[0] : null,
         category: data.category || 'Generale',
         rentalPrice: data.rentalPrice || (finalType === 'rent' ? 'Contattaci per prezzo' : null),
         condition: data.condition || 'NUOVO',
