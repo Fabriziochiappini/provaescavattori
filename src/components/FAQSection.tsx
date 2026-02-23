@@ -9,7 +9,7 @@ const faqData = [
     items: [
       { q: "Quali sono i principali servizi offerti da Conte Group?", a: "Conte Group (Venus S.r.l.) è specializzata in tre aree principali: vendita di macchine movimento terra e carrelli elevatori (nuovi e usati garantiti), noleggio a breve e lungo termine, e assistenza tecnica specializzata con officine mobili e un vasto magazzino ricambi." },
       { q: "Dove si trova la vostra sede?", a: "La nostra sede operativa e il nostro showroom si trovano in Via Campo di Santo, 38 - Pietravairano (CE). Siamo un punto di riferimento per tutta la Campania." },
-      { q: "Quali sono i vostri orari di apertura?", a: "Siamo aperti dal Lunedì al Sabato, dalle 08:30 alle 18:30. Per emergenze e richieste di assistenza urgenti, è attivo un numero dedicato." },
+      { q: "Quali sono i vostri orari di apertura?", a: "Siamo aperti dal Lunedì al Sabato, dalle 08:00 alle 19:00. Per emergenze e richieste di assistenza urgenti, è attivo un numero dedicato." },
       { q: "Quali marchi trattate?", a: "Siamo orgogliosi di trattare alcuni dei migliori marchi del settore per garantire affidabilità e performance, tra cui Linde, Cesab, Merlo, JLG, Genie e molti altri. Contattaci per verificare la disponibilità di un marchio o modello specifico." }
     ]
   },

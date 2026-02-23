@@ -88,7 +88,7 @@ const Assistance: React.FC = () => {
                                 <h3 className="text-3xl font-black uppercase italic">Ricambi Originali</h3>
                             </div>
                             <p className="text-zinc-500 mb-8 leading-relaxed">
-                                RICRICAMBI ORIGINALI E COMPATIBILI. Ampio magazzino di componenti per ogni modello. Garantiamo massima durata e performance.
+                                RICAMBI ORIGINALI E COMPATIBILI. Ampio magazzino di componenti per ogni modello. Garantiamo massima durata e performance.
                             </p>
                             <button
                                 onClick={scrollToForm}
