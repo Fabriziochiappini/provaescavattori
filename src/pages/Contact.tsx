@@ -111,6 +111,14 @@ const Contact: React.FC = () => {
                     className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
                     placeholder="mario.rossi@email.com"
                   />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-zinc-400">Telefono</label>
+                  <input
+                    required
+                    type="tel"
+                    className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
+                    placeholder="+39 333 1234567"
+                  />
                 </div>
               </div>
               <div className="space-y-2">

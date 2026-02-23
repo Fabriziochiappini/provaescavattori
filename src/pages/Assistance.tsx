@@ -96,28 +96,31 @@ const Assistance: React.FC = () => {
                 </div>
 
                 {/* Emergency Section */}
-                <section className="bg-orange-600 rounded-[3rem] p-12 md:p-20 text-black mb-24 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-12 opacity-10">
-                        <AlertTriangle size={300} strokeWidth={1} />
+                <section className="bg-orange-600 rounded-[2rem] p-8 md:p-12 text-black mb-24 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-orange-600/20">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                        <AlertTriangle size={200} strokeWidth={1} />
                     </div>
-                    <div className="relative z-10 max-w-3xl">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="bg-black p-4 rounded-2xl text-orange-500">
-                                <Phone size={40} className="animate-pulse" />
-                            </div>
-                            <span className="text-sm font-black uppercase tracking-[0.3em]">Pronto Intervento</span>
+                    
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="bg-black text-orange-500 p-5 rounded-2xl shadow-lg shrink-0">
+                            <Phone size={32} className="animate-pulse" />
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase italic mb-8 leading-tight">
-                            PRONTO <br /> INTERVENTO
-                        </h2>
-                        <a
-                            href="tel:+393518349368"
-                            className="text-6xl md:text-9xl font-black tracking-tighter hover:text-white transition-colors block break-all"
-                        >
-                            351 8349368
-                        </a>
-                        <p className="mt-8 text-xl font-bold uppercase">Disponibile 24 ore su 24, 7 giorni su 7</p>
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-black uppercase italic leading-none mb-2">
+                                Pronto Intervento H24
+                            </h2>
+                            <p className="font-bold text-black/80 text-sm uppercase tracking-wide">
+                                Disponibile 7 giorni su 7 per emergenze
+                            </p>
+                        </div>
                     </div>
+
+                    <a
+                        href="tel:+393518349368"
+                        className="relative z-10 bg-white hover:bg-black hover:text-orange-500 text-black px-8 py-4 rounded-xl font-black text-xl md:text-2xl tracking-tighter transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                    >
+                        351 8349368
+                    </a>
                 </section>
 
                 {/* Form Section */}
@@ -141,6 +144,16 @@ const Assistance: React.FC = () => {
 
                     <div className="bg-zinc-950 p-10 md:p-16 rounded-[2.5rem] text-white shadow-2xl">
                         <form onSubmit={handleSubmit} className="space-y-8">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-zinc-400">Telefono</label>
+                                <input
+                                    required
+                                    type="tel"
+                                    className="w-full bg-zinc-900 border-none rounded-2xl py-5 px-8 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
+                                    placeholder="+39 333 1234567"
+                                />
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-zinc-400">Nome e Cognome / Ragione Sociale</label>
                                 <input
