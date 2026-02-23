@@ -5,7 +5,7 @@ import { useData } from '../context/DataContext';
 import FAQSection from '../components/FAQSection';
 
 const Contact: React.FC = () => {
-  const { contacts } = useData();
+  const { contacts, trackInteraction } = useData();
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',
@@ -35,6 +35,7 @@ const Contact: React.FC = () => {
 
       if (response.ok) {
         setStatus('success');
+        trackInteraction();
         setFormData({ name: '', email: '', phone: '', interest: 'Vendita Escavatore', message: '' });
         alert('Messaggio inviato con successo! Ti abbiamo inviato una email di conferma.');
       } else {
@@ -96,6 +97,7 @@ const Contact: React.FC = () => {
                     href={item.href || '#'}
                     target={item.href?.startsWith('http') ? '_blank' : '_self'}
                     rel={item.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    onClick={() => trackInteraction()}
                     className="bg-zinc-100 p-8 rounded-2xl border border-zinc-200 flex flex-col justify-between hover:border-orange-600 transition-all duration-300 group"
                   >
                     <Icon className="text-orange-600 mb-6 group-hover:scale-110 transition-transform" size={32} />

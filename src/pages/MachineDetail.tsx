@@ -8,7 +8,7 @@ import GalleryModal from '../components/GalleryModal';
 const MachineDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { excavators, specCategories, adminSettings } = useData(); // Added specCategories
+    const { excavators, specCategories, adminSettings, trackInteraction } = useData(); // Added specCategories and trackInteraction
     const showPrices = adminSettings?.showPrices !== false;
     const [machine, setMachine] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'features'>('desc');
@@ -271,19 +271,22 @@ const MachineDetail: React.FC = () => {
                             <Link
                                 to="/contatti"
                                 state={{ prefill: `Richiesta info per: ${machine.name} (${machine.brand})` }}
+                                onClick={() => trackInteraction()}
                                 className="flex-1 bg-zinc-900 text-white py-4 rounded-xl font-bold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
                             >
                                 <Mail size={20} />
                                 Richiedi Informazioni
                             </Link>
                             <a
-                                href="tel:+39061234567"
+                                href="tel:+390823982162"
+                                onClick={() => trackInteraction()}
                                 className="px-6 py-4 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-colors flex items-center justify-center"
                             >
                                 <Phone size={24} />
                             </a>
                             <button
                                 onClick={() => {
+                                    trackInteraction();
                                     navigator.share({
                                         title: `Conte Group - ${machine.name}`,
                                         text: `Guarda questo mezzo: ${machine.name}`,

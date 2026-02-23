@@ -75,7 +75,7 @@ export interface HomeGalleryData {
 
 export interface Stats {
     visits: number;
-    footerClicks: number;
+    interactions: number; // Renamed from footerClicks for broader usage
 }
 
 export interface BrandLogo {
@@ -131,7 +131,7 @@ interface DataContextType {
     deleteGallery: (id: string) => Promise<void>;
 
     stats: Stats;
-    incrementFooterClick: () => void;
+    trackInteraction: () => void;
 
     uploadImage: (file: File, folder: string) => Promise<string>;
     deleteImage: (url: string) => Promise<void>;
@@ -156,7 +156,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [contacts, setContacts] = useState<ContactInfo[]>([]);
     const [galleries, setGalleries] = useState<Gallery[]>([]);
     const [homeGallery, setHomeGallery] = useState<HomeGalleryData>({ title: '', subtitle: '', items: [] });
-    const [stats, setStats] = useState<Stats>({ visits: 0, footerClicks: 0 });
+    const [stats, setStats] = useState<Stats>({ visits: 0, interactions: 0 });
     const [brandsBanner, setBrandsBanner] = useState<BrandsBannerData>({
         logos: [],
         mode: 'dynamic',
@@ -248,7 +248,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (snap.exists()) {
                 setStats(snap.data() as Stats);
             } else {
-                setDoc(doc(db, 'stats', 'global'), { visits: 0, footerClicks: 0 });
+                setDoc(doc(db, 'stats', 'global'), { visits: 0, interactions: 0 });
             }
         });
         return () => unsub();
@@ -382,8 +382,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     // Stats
-    const incrementFooterClick = async () => {
-        await setDoc(doc(db, 'stats', 'global'), { footerClicks: increment(1) }, { merge: true });
+    const trackInteraction = async () => {
+        await setDoc(doc(db, 'stats', 'global'), { interactions: increment(1) }, { merge: true });
     };
 
     // Images
@@ -426,7 +426,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             contacts, addContact, updateContact, deleteContact,
             galleries, addGallery, updateGallery, deleteGallery,
             homeGallery, updateHomeGallery,
-            stats, incrementFooterClick,
+            stats, trackInteraction,
             uploadImage, deleteImage,
             siteData: initialSiteData,
             brandsBanner,

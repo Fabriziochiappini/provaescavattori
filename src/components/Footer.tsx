@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, HardHat, Eye } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, HardHat, Eye, MousePointerClick } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 const Footer: React.FC = () => {
-  const { stats } = useData();
+  const { stats, trackInteraction } = useData();
   
   return (
     <footer className="bg-zinc-950 text-white pt-16 pb-8 border-t border-zinc-800">
@@ -77,11 +77,11 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-3 text-zinc-400">
                 <Phone className="text-orange-500 shrink-0" size={18} />
-                <a href="tel:+390823982162" className="hover:text-orange-500">+39 0823 982162</a>
+                <a onClick={trackInteraction} href="tel:+390823982162" className="hover:text-orange-500">+39 0823 982162</a>
               </li>
               <li className="flex items-center space-x-3 text-zinc-400">
                 <Mail className="text-orange-500 shrink-0" size={18} />
-                <a href="mailto:info@contegroup.com" className="hover:text-orange-500">info@contegroup.com</a>
+                <a onClick={trackInteraction} href="mailto:info@contegroup.com" className="hover:text-orange-500">info@contegroup.com</a>
               </li>
             </ul>
           </div>
@@ -92,9 +92,15 @@ const Footer: React.FC = () => {
             © 2026 Venus S.r.l. - P.IVA 03030410611 - Tutti i diritti riservati.
           </p>
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex items-center gap-2 text-zinc-600 bg-zinc-900 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">
-                <Eye size={12} />
-                <span>{stats?.visits ? stats.visits.toLocaleString() : '0'} Visite</span>
+            <div className="flex gap-4">
+                <div className="flex items-center gap-2 text-zinc-600 bg-zinc-900 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                    <Eye size={12} />
+                    <span>{stats?.visits ? stats.visits.toLocaleString() : '0'} Visite</span>
+                </div>
+                <div className="flex items-center gap-2 text-zinc-600 bg-zinc-900 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                    <MousePointerClick size={12} />
+                    <span>{stats?.interactions ? stats.interactions.toLocaleString() : '0'} Click</span>
+                </div>
             </div>
             <div className="flex gap-6 uppercase tracking-widest font-bold text-xs">
               <Link to="/privacy-policy" className="hover:text-orange-500 transition-colors">Privacy Policy</Link>

@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
 import { Settings, Truck, Phone, Send, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const Assistance: React.FC = () => {
+    const { trackInteraction } = useData();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -32,6 +34,7 @@ const Assistance: React.FC = () => {
 
             if (response.ok) {
                 setStatus('success');
+                trackInteraction();
                 setFormData({ name: '', email: '', phone: '', serviceType: 'ricambi', message: '' });
                 alert(`Richiesta inviata con successo! Ti abbiamo inviato una email di conferma.`);
             } else {
@@ -147,6 +150,7 @@ const Assistance: React.FC = () => {
 
                     <a
                         href="tel:+393518349368"
+                        onClick={() => trackInteraction()}
                         className="relative z-10 bg-white hover:bg-black hover:text-orange-500 text-black px-8 py-4 rounded-xl font-black text-xl md:text-2xl tracking-tighter transition-all shadow-lg active:scale-95 whitespace-nowrap"
                     >
                         351 8349368
