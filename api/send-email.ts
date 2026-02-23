@@ -25,10 +25,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         emailSubject = `✉️ Messaggio dal sito: ${name}`;
     }
 
-    const msg = {
-        to: toEmail, // Dove arriva la mail (info@contegroup.com)
-        from: fromEmail, // Chi la invia tecnicamente (es. noreply@ o info@, deve essere verificato su SendGrid)
-        replyTo: email, // <--- LA SOLUZIONE: Cliccando rispondi, rispondi al cliente!
+    // Send email to Conte Group (with Reply-To set to customer)
+    const msgToAdmin = {
+        to: 'info@contegroup.com', // Always to Conte Group
+        from: fromEmail, 
+        replyTo: email, 
         subject: emailSubject,
         text: `
       Nuova richiesta dal sito web:
@@ -66,9 +67,69 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `,
     };
 
+    // Send confirmation email to Customer
+    const msgToCustomer = {
+        to: email, // To the customer
+        from: fromEmail,
+        subject: 'Abbiamo ricevuto la tua richiesta - Conte Group',
+        text: `
+      Gentile ${name},
+      
+      Abbiamo ricevuto la tua richiesta e ti ringraziamo per averci contattato.
+      Un nostro operatore prenderà in carico la tua richiesta e ti risponderà il prima possibile.
+      
+      Riepilogo della tua richiesta:
+      ${message}
+      
+      Cordiali saluti,
+      Team Conte Group
+      
+      Tel: +39 0823 982162
+      Email: info@contegroup.com
+      Sito: www.contegroup.com
+    `,
+        html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 30px;">
+           <h1 style="color: #ea580c; font-style: italic;">CONTE GROUP</h1>
+        </div>
+
+        <p>Gentile <strong>${name}</strong>,</p>
+        
+        <p>Abbiamo ricevuto la tua richiesta e ti ringraziamo per averci contattato.</p>
+        
+        <p>Un nostro operatore ha già preso in carico la tua segnalazione e ti risponderà il prima possibile.</p>
+        
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ea580c;">
+          <p style="margin: 0; color: #6b7280; font-size: 14px;">Il tuo messaggio:</p>
+          <p style="margin-top: 5px; font-style: italic;">"${message || ''}"</p>
+        </div>
+
+        <p>Se hai urgenza, puoi contattarci direttamente ai seguenti recapiti:</p>
+        
+        <div style="display: flex; gap: 20px; margin-top: 20px;">
+            <a href="tel:+390823982162" style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">📞 Chiama 0823 982162</a>
+            <a href="https://wa.me/393518349368" style="background-color: #25D366; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 WhatsApp</a>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid #e5e7eb;" />
+        
+        <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+          Conte Group S.r.l.<br>
+          Via SP330, 24, 81016 Pietravairano (CE)<br>
+          <a href="https://www.contegroup.com" style="color: #ea580c;">www.contegroup.com</a>
+        </p>
+      </div>
+    `,
+    };
+
     try {
-        await sgMail.send(msg);
-        res.status(200).json({ message: 'Email sent successfully' });
+        // Send both emails in parallel
+        await Promise.all([
+            sgMail.send(msgToAdmin),
+            sgMail.send(msgToCustomer)
+        ]);
+        res.status(200).json({ message: 'Emails sent successfully' });
     } catch (error: any) {
         console.error('SendGrid Error:', error);
         if (error.response) {
