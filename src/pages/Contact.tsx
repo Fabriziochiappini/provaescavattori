@@ -6,10 +6,47 @@ import FAQSection from '../components/FAQSection';
 
 const Contact: React.FC = () => {
   const { contacts } = useData();
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    phone: '',
+    interest: 'Vendita Escavatore',
+    message: ''
+  });
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Messaggio inviato con successo! Ti ricontatteremo a breve.');
+    setStatus('loading');
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'contact',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: `Nuovo Contatto: ${formData.interest}`,
+          message: `Interessato a: ${formData.interest}\n\nMessaggio:\n${formData.message}`
+        }),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', phone: '', interest: 'Vendita Escavatore', message: '' });
+        alert('Messaggio inviato con successo! Ti abbiamo inviato una email di conferma.');
+      } else {
+        throw new Error('Errore durante l\'invio');
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus('error');
+      alert('Si è verificato un errore. Riprova più tardi.');
+    } finally {
+      setStatus('idle');
+    }
   };
 
   // Helper function to map icon names to Lucide icons
@@ -99,6 +136,8 @@ const Contact: React.FC = () => {
                   <input
                     required
                     type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
                     placeholder="Mario Rossi"
                   />
@@ -108,6 +147,8 @@ const Contact: React.FC = () => {
                   <input
                     required
                     type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
                     placeholder="mario.rossi@email.com"
                   />
@@ -117,6 +158,8 @@ const Contact: React.FC = () => {
                   <input
                     required
                     type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
                     placeholder="+39 333 1234567"
                   />
@@ -124,7 +167,11 @@ const Contact: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-zinc-400">Interessato a:</label>
-                <select className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all appearance-none">
+                <select 
+                  value={formData.interest}
+                  onChange={(e) => setFormData({ ...formData, interest: e.target.value })}
+                  className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all appearance-none"
+                >
                   <option>Vendita Escavatore</option>
                   <option>Noleggio Breve Termine</option>
                   <option>Noleggio Lungo Termine</option>
@@ -137,16 +184,23 @@ const Contact: React.FC = () => {
                 <textarea
                   required
                   rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className="w-full bg-zinc-900 border-none rounded-xl py-4 px-6 focus:ring-2 focus:ring-orange-600 outline-none transition-all resize-none"
                   placeholder="Descrivi brevemente la tua richiesta..."
                 ></textarea>
               </div>
               <button
                 type="submit"
-                className="w-full bg-orange-600 hover:bg-orange-700 text-black font-black py-5 rounded-xl text-xl flex items-center justify-center gap-3 transition-all transform active:scale-95"
+                disabled={status === 'loading'}
+                className="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black py-5 rounded-xl text-xl flex items-center justify-center gap-3 transition-all transform active:scale-95"
               >
-                <Send size={24} />
-                INVIA RICHIESTA
+                {status === 'loading' ? 'INVIO IN CORSO...' : (
+                    <>
+                        <Send size={24} />
+                        INVIA RICHIESTA
+                    </>
+                )}
               </button>
             </form>
           </div>

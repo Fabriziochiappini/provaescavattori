@@ -6,14 +6,44 @@ const Assistance: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         serviceType: 'ricambi',
         message: ''
     });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert(`Richiesta inviata! Ti ricontatteremo a breve per l'assistenza: ${formData.serviceType === 'ricambi' ? 'Ricambi' : 'Service a Domicilio'}.`);
-        setFormData({ name: '', email: '', serviceType: 'ricambi', message: '' });
+        setStatus('loading');
+
+        try {
+            const response = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'assistance',
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    subject: `Richiesta Assistenza: ${formData.serviceType.toUpperCase()}`,
+                    message: `Tipo richiesta: ${formData.serviceType.toUpperCase()}\n\nMessaggio:\n${formData.message}`
+                }),
+            });
+
+            if (response.ok) {
+                setStatus('success');
+                setFormData({ name: '', email: '', phone: '', serviceType: 'ricambi', message: '' });
+                alert(`Richiesta inviata con successo! Ti abbiamo inviato una email di conferma.`);
+            } else {
+                throw new Error('Errore durante l\'invio');
+            }
+        } catch (error) {
+            console.error(error);
+            setStatus('error');
+            alert('Si è verificato un errore durante l\'invio. Riprova più tardi o contattaci telefonicamente.');
+        } finally {
+            setStatus('idle');
+        }
     };
 
     const scrollToForm = () => {
@@ -149,6 +179,8 @@ const Assistance: React.FC = () => {
                                 <input
                                     required
                                     type="tel"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     className="w-full bg-zinc-900 border-none rounded-2xl py-5 px-8 focus:ring-2 focus:ring-orange-600 outline-none transition-all"
                                     placeholder="+39 333 1234567"
                                 />
@@ -212,10 +244,15 @@ const Assistance: React.FC = () => {
 
                             <button
                                 type="submit"
-                                className="w-full bg-orange-600 hover:bg-orange-700 text-black font-black py-6 rounded-2xl text-xl flex items-center justify-center gap-3 transition-all transform active:scale-95 group"
+                                disabled={status === 'loading'}
+                                className="w-full bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-black font-black py-6 rounded-2xl text-xl flex items-center justify-center gap-3 transition-all transform active:scale-95 group"
                             >
-                                <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                INVIA RICHIESTA TECNICA
+                                {status === 'loading' ? 'INVIO IN CORSO...' : (
+                                    <>
+                                        <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                        INVIA RICHIESTA TECNICA
+                                    </>
+                                )}
                             </button>
                         </form>
                     </div>
