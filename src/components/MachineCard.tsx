@@ -18,9 +18,12 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
   }
 
   const showPrices = adminSettings?.showPrices ?? true;
+  
+  const mainImage = machine.imageUrl || 'https://placehold.co/600x400?text=No+Image';
+
   const galleryImages = machine.images && machine.images.length > 0
     ? machine.images
-    : [machine.imageUrl];
+    : [mainImage];
 
   const handleImageClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
         {/* Image Container */}
         <div className="relative h-64 overflow-hidden cursor-pointer bg-slate-100" onClick={handleImageClick}>
           <img
-            src={machine.imageUrl}
+            src={mainImage}
             alt={machine.name}
             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           />

@@ -21,11 +21,12 @@ export interface Excavator {
     serialNumber: string;
     year?: number;
     hours?: number;
-    type: 'sale' | 'rent' | 'both';
+    type: 'sale' | 'rental' | 'rent' | 'both';
     available?: boolean;
     powerType?: 'Elettrico' | 'Termico' | string; // Added powerType
     specs?: Record<string, string>; // Added dynamic specs
     imageUrl?: string;
+    createdAt?: number | any;
 }
 
 export interface SpecCategory {

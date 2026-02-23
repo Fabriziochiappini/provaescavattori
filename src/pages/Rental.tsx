@@ -138,8 +138,10 @@ const Rental: React.FC = () => {
                 className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
               >
                 <option value="Tutte">Tutte</option>
-                <option value="Termico">Termico</option>
-                <option value="Elettrico">Elettrico</option>
+                <option value="DIESEL">Diesel</option>
+                <option value="ELETTRICO">Elettrico</option>
+                <option value="BENZINA">Benzina</option>
+                <option value="IBRIDO">Ibrido</option>
               </select>
             </div>
 

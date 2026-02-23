@@ -15,6 +15,7 @@ interface MachineData {
     description?: string;
     features?: string[];
     specs?: Record<string, string>;
+    powerType?: string;
 }
 
 export const uploadMachine = async (data: MachineData, orderedIds: string[]) => {

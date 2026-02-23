@@ -46,7 +46,9 @@ const Sales: React.FC = () => {
   const machinesInView = saleMachines.filter(m => {
     const matchesCategory = activeCategory === 'Tutti' || m.category === activeCategory;
     const matchesBrand = selectedBrand === 'Tutte' || m.brand === selectedBrand;
-    const matchesPower = selectedPower === 'Tutte' || m.powerType === selectedPower;
+    const matchesPower = selectedPower === 'Tutte' || 
+      m.powerType === selectedPower || 
+      (selectedPower === 'DIESEL' && m.powerType === 'Termico');
     const matchesSearch =
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -146,8 +148,10 @@ const Sales: React.FC = () => {
                 className="w-full bg-zinc-900 border-none rounded-xl py-3 px-3 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
               >
                 <option value="Tutte">Tutte</option>
-                <option value="Termico">Termico</option>
-                <option value="Elettrico">Elettrico</option>
+                <option value="DIESEL">Diesel</option>
+                <option value="ELETTRICO">Elettrico</option>
+                <option value="BENZINA">Benzina</option>
+                <option value="IBRIDO">Ibrido</option>
               </select>
             </div>
 

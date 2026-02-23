@@ -378,8 +378,12 @@ const Admin: React.FC = () => {
                 <h1 className="text-xl font-black text-amber-500 uppercase italic">Admin</h1>
                 <div className="flex items-center gap-2">
                     {canInstall && !isInstalled && (
-                        <button onClick={installPWA} className="p-3 text-amber-500 bg-amber-50 rounded-xl active:scale-95 transition-all">
-                            <Download size={20} />
+                        <button 
+                            onClick={installPWA} 
+                            className="flex items-center gap-2 px-3 py-2 text-white bg-amber-500 rounded-xl active:scale-95 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-amber-500/30"
+                        >
+                            <Download size={16} />
+                            <span className="hidden xs:inline">Installa App</span>
                         </button>
                     )}
                     <button
@@ -412,8 +416,13 @@ const Admin: React.FC = () => {
                                 </button>
                             );
                         })}
-                        <div className="pt-4 mt-4 border-t border-gray-100 flex gap-2">
-                            <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="flex-1 p-4 bg-red-50 text-red-500 rounded-[28px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all">
+                        <div className="pt-4 mt-4 border-t border-gray-100 flex flex-col gap-2">
+                            {canInstall && !isInstalled && (
+                                <button onClick={installPWA} className="w-full p-4 bg-amber-500 text-white rounded-[28px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xl shadow-amber-500/20">
+                                    <Download size={20} /> INSTALLA APPLICAZIONE
+                                </button>
+                            )}
+                            <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="w-full p-4 bg-red-50 text-red-500 rounded-[28px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all">
                                 <LogOut size={20} /> Esci
                             </button>
                         </div>
