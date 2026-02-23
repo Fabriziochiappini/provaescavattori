@@ -168,6 +168,13 @@ const Rental: React.FC = () => {
           </div>
         </div>
 
+        {/* Results Info */}
+        <div className="flex justify-between items-center mb-6 px-2">
+          <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">
+            {filteredMachines.length} {filteredMachines.length === 1 ? 'Risultato' : 'Risultati'}
+          </p>
+        </div>
+
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMachines.slice(0, visibleCount).map((machine) => (

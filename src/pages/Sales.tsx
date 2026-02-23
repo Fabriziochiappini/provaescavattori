@@ -211,6 +211,13 @@ const Sales: React.FC = () => {
           )}
         </div>
 
+        {/* Results Info */}
+        <div className="flex justify-between items-center mb-6 px-2">
+          <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">
+            {filteredMachines.length} {filteredMachines.length === 1 ? 'Risultato' : 'Risultati'}
+          </p>
+        </div>
+
         {/* Results */}
         {filteredMachines.length > 0 ? (
           <>
