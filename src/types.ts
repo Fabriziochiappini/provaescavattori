@@ -9,14 +9,16 @@ export interface Machine {
   year: number;
   hours?: number;
   weight: number; // in tons
-  type: 'sale' | 'rental' | 'both';
-  category: MachineCategory;
+  type: 'sale' | 'rental' | 'rent' | 'both';
+  category: MachineCategory | string;
   price?: number;
   rentalPrice?: string; // e.g. "200€ / giorno"
   imageUrl: string;
   condition?: 'NUOVO' | 'USATO' | 'OTTIME CONDIZIONI' | string;
+  powerType?: 'Elettrico' | 'Termico' | string;
   features: string[];
   description: string;
+  createdAt?: number;
 }
 
 export interface Testimonial {

@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Machine } from '../types';
-import { ChevronRight, Zap, Scale, Clock, Maximize2 } from 'lucide-react';
+import { ChevronRight, Zap, Scale, Clock, Maximize2, Tag } from 'lucide-react';
 import GalleryModal from './GalleryModal';
+import { useData } from '../context/DataContext';
 
 interface MachineCardProps {
   machine: Machine;
 }
 
 const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
+  const { adminSettings } = useData();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
-  // Use machine images if available, otherwise just use the main imageUrl
-  // We'll treat imageUrl as the first image if images array is empty/undefined
+  if (!machine || !machine.name) {
+    return null;
+  }
+
+  const showPrices = adminSettings?.showPrices ?? true;
   const galleryImages = machine.images && machine.images.length > 0
     ? machine.images
     : [machine.imageUrl];
@@ -22,82 +27,136 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
     e.stopPropagation();
     setIsGalleryOpen(true);
   };
+
   return (
     <>
-      <div className="group bg-white border border-slate-200 rounded-none overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-        <div
-          className="relative h-72 overflow-hidden cursor-pointer"
-          onClick={handleImageClick}
-        >
+      <div className="group bg-white border border-slate-200 rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
+        {/* Image Container */}
+        <div className="relative h-64 overflow-hidden cursor-pointer bg-slate-100" onClick={handleImageClick}>
           <img
             src={machine.imageUrl}
             alt={machine.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           />
-          <div className="absolute top-0 left-0 flex flex-col z-10">
-            {machine.type === 'sale' || machine.type === 'both' ? (
-              <span className="bg-slate-900 text-white text-[10px] font-bold px-4 py-2 uppercase tracking-[0.2em]">In Vendita</span>
-            ) : null}
-            {machine.type === 'rental' || machine.type === 'both' ? (
-              <span className="bg-orange-600 text-white text-[10px] font-bold px-4 py-2 uppercase tracking-[0.2em]">Disponibile a Noleggio</span>
-            ) : null}
+          
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <Maximize2 className="text-white" size={24} />
+            </div>
           </div>
 
-          <div className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 p-3 rounded-none text-white backdrop-blur-md transition-colors z-10 opacity-0 group-hover:opacity-100 border border-white/20">
-            <Maximize2 size={18} />
-          </div>
+          {/* Condition Badge */}
+          {machine.condition && (
+            <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-lg">
+              {machine.condition}
+            </div>
+          )}
 
-          <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-            <span className="text-white font-bold tracking-widest text-xs uppercase border-b-2 border-orange-600 pb-1">Visualizza Gallery</span>
+          {/* Type Badge */}
+          <div className={`absolute top-4 right-4 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg ${
+            machine.type === 'sale' 
+              ? 'bg-emerald-500 text-white' 
+              : (machine.type === 'rental' || machine.type === 'rent')
+              ? 'bg-blue-500 text-white'
+              : 'bg-orange-500 text-white'
+          }`}>
+            {machine.type === 'sale' ? 'Vendita' : (machine.type === 'rental' || machine.type === 'rent') ? 'Noleggio' : 'Vendita / Noleggio'}
           </div>
         </div>
 
-        <div className="p-6 border-t-4 border-transparent group-hover:border-orange-600 transition-all duration-500">
-          <div className="mb-4">
-            <p className="text-orange-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">{machine.brand}</p>
-            <h3 className="text-2xl font-bold text-slate-900 leading-tight tracking-tight uppercase">{machine.name}</h3>
+        {/* Content */}
+        <div className="p-8 flex flex-col flex-grow">
+          <div className="mb-6">
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.2em]">{machine.brand}</span>
+              {machine.year && (
+                <span className="text-slate-400 font-medium text-xs bg-slate-100 px-2 py-1 rounded">
+                  {machine.year}
+                </span>
+              )}
+            </div>
+            <h3 className="text-xl font-black text-slate-900 uppercase italic leading-tight group-hover:text-orange-600 transition-colors">
+              {machine.name} {machine.model}
+            </h3>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 my-6">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Peso Operativo</span>
-              <div className="flex items-center gap-2 text-slate-700 font-bold">
-                <Scale size={14} className="text-orange-600" />
-                <span>{machine.weight} T</span>
+          {/* Specs Grid */}
+          <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-8 border-y border-slate-100 py-6">
+            
+            {/* Weight - Only show if > 0 */}
+            {(machine.weight && machine.weight > 0) ? (
+              <div className="flex items-center gap-3">
+                <Scale size={16} className="text-slate-400" />
+                <div>
+                  <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Peso</span>
+                  <span className="font-bold text-slate-700 text-sm">
+                    {machine.weight > 1000 ? `${(machine.weight / 1000).toFixed(1)} t` : `${machine.weight} kg`}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Alimentazione (Power Type) */}
+            <div className="flex items-center gap-3">
+              <Zap size={16} className="text-slate-400" />
+              <div>
+                <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Alim.</span>
+                <span className="font-bold text-slate-700 text-sm">
+                  {machine.powerType === 'Termico' ? 'Diesel' : (machine.powerType || 'Diesel')}
+                </span>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Categoria</span>
-              <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
-                <Zap size={14} className="text-orange-600" />
-                <span>{machine.category}</span>
+
+            {/* Categoria */}
+            <div className="flex items-center gap-3">
+              <Tag size={16} className="text-slate-400" />
+              <div>
+                <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Cat.</span>
+                <span className="font-bold text-slate-700 text-sm truncate max-w-[100px]" title={typeof machine.category === 'string' ? machine.category : ''}>
+                  {typeof machine.category === 'string' ? machine.category : 'Standard'}
+                </span>
               </div>
             </div>
+
+            {/* Hours */}
+            {machine.hours !== undefined && machine.hours > 0 ? (
+              <div className="flex items-center gap-3">
+                <Clock size={16} className="text-slate-400" />
+                <div>
+                  <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Ore</span>
+                  <span className="font-bold text-slate-700 text-sm">{machine.hours} h</span>
+                </div>
+              </div>
+            ) : null}
+            
           </div>
 
-          <div className="pt-6 border-t border-slate-100 flex items-end justify-between">
-            <div>
-              <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Quotazione</p>
-              <p className="text-2xl font-black text-slate-900 tracking-tighter">
-                {machine.type === 'rental' ? (
-                  <span className="text-lg">{machine.rentalPrice}</span>
-                ) : (
-                  <>
-                    <span className="text-sm font-bold mr-1">€</span>
-                    {machine.price?.toLocaleString()}
-                  </>
-                )}
-              </p>
-            </div>
-            <Link
+          <div className="mt-auto space-y-4">
+            {/* Price */}
+            {showPrices && (machine.price || machine.rentalPrice) && (
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-bold text-slate-400">da</span>
+                <span className="text-2xl font-black text-slate-900 tracking-tight">
+                  {(machine.type === 'rental' || machine.type === 'rent') && machine.rentalPrice 
+                    ? machine.rentalPrice 
+                    : machine.price 
+                      ? `€ ${machine.price.toLocaleString('it-IT')}`
+                      : 'Trattativa Riservata'}
+                </span>
+              </div>
+            )}
+
+            <Link 
               to={`/macchina/${machine.id}`}
-              className="bg-slate-900 hover:bg-orange-600 text-white p-4 transition-all duration-300 group/btn"
+              className="w-full bg-slate-900 text-white hover:bg-orange-600 py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all group/btn"
             >
-              <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              Dettagli
+              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </div>
+
       <GalleryModal
         isOpen={isGalleryOpen}
         onClose={() => setIsGalleryOpen(false)}

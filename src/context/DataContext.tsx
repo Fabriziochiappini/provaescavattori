@@ -23,7 +23,7 @@ export interface Excavator {
     hours?: number;
     type: 'sale' | 'rent' | 'both';
     available?: boolean;
-    powerType?: 'Elettrico' | 'Termico'; // Added powerType
+    powerType?: 'Elettrico' | 'Termico' | string; // Added powerType
     specs?: Record<string, string>; // Added dynamic specs
     imageUrl?: string;
 }
@@ -92,6 +92,7 @@ export interface BrandsBannerData {
 
 export interface AdminSettingsData {
     navStyle: 'smart' | 'fixed';
+    showPrices: boolean;
 }
 
 interface DataContextType {
@@ -164,13 +165,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         active: true
     });
     const [adminSettings, setAdminSettings] = useState<AdminSettingsData>({
-        navStyle: 'smart'
+        navStyle: 'smart',
+        showPrices: true
     });
 
     // Seeding Logic: If database is empty, seed with mock data
     useEffect(() => {
         const seedData = async () => {
             // Check excavators - Use fixed IDs from mock data to prevent duplicates
+            // Disable auto-seeding if it causes conflicts with real data loading
+            // Only seed if we are SURE it's empty and not just loading
+            // For now, we increase the timeout or remove it to rely on manual seeding if needed
+            // But to respect the user's "mock data conflict" suspicion, let's comment out the auto-seeding for excavators
+            /* 
             if (excavators.length === 0 && initialSiteData.excavators.length > 0) {
                 console.log("Seeding excavators...");
                 for (const item of initialSiteData.excavators) {
@@ -179,6 +186,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     await setDoc(doc(db, 'excavators', seedId), rest);
                 }
             }
+            */
 
             // Seed default spec categories if empty
             if (specCategories.length === 0) {
@@ -339,7 +347,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // CRUD Operations - EXCAVATORS
     const addExcavator = async (item: Excavator) => {
         const { id, ...rest } = item;
-        await addDoc(collection(db, 'excavators'), rest);
+        await addDoc(collection(db, 'excavators'), { ...rest, createdAt: Date.now() });
     };
     const updateExcavator = async (id: string, updated: Excavator) => {
         const { id: _, ...rest } = updated;

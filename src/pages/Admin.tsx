@@ -68,6 +68,7 @@ const Admin: React.FC = () => {
     
     // Usa lo stato dal DataContext (Firebase), default a 'smart' se non caricato
     const navStyle = adminSettings?.navStyle || 'smart';
+    const showPrices = adminSettings?.showPrices !== false; // Default true if undefined
 
     const adminTabs = [
         { id: 'excavators', label: 'Parco', icon: LayoutDashboard },
@@ -695,7 +696,7 @@ const Admin: React.FC = () => {
                                         <div className="flex bg-slate-200/50 p-1.5 rounded-2xl whitespace-nowrap overflow-x-auto w-full sm:w-auto">
                                             <button
                                                 onClick={async () => {
-                                                    await updateAdminSettings({ navStyle: 'smart' });
+                                                    await updateAdminSettings({ ...adminSettings, navStyle: 'smart' });
                                                 }}
                                                 className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${navStyle === 'smart' ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
@@ -703,11 +704,42 @@ const Admin: React.FC = () => {
                                             </button>
                                             <button
                                                 onClick={async () => {
-                                                    await updateAdminSettings({ navStyle: 'fixed' });
+                                                    await updateAdminSettings({ ...adminSettings, navStyle: 'fixed' });
                                                 }}
                                                 className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${navStyle === 'fixed' ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
                                                 Fisso (In Alto)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-slate-50 rounded-[24px] mt-6">
+                                        <div>
+                                            <h4 className="font-black text-slate-900 flex items-center gap-2">
+                                                <Settings size={18} className="text-amber-500" />
+                                                Mostra Prezzi
+                                            </h4>
+                                            <p className="text-sm font-medium text-slate-500 mt-1">
+                                                Se attivo, i prezzi delle macchine in vendita saranno visibili pubblicamente. Se disattivo, verranno nascosti ovunque.
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="flex bg-slate-200/50 p-1.5 rounded-2xl whitespace-nowrap overflow-x-auto w-full sm:w-auto">
+                                            <button
+                                                onClick={async () => {
+                                                    await updateAdminSettings({ ...adminSettings, showPrices: true });
+                                                }}
+                                                className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${showPrices ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                Mostra (ON)
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    await updateAdminSettings({ ...adminSettings, showPrices: false });
+                                                }}
+                                                className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${!showPrices ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                Nascondi (OFF)
                                             </button>
                                         </div>
                                     </div>

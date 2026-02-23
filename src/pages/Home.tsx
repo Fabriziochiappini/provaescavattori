@@ -2,8 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, ShieldCheck, Truck, Clock, Award, Users, HardHat, Maximize2 } from 'lucide-react';
-import { MACHINES_DATA } from '../constants';
+import { ArrowRight, ShieldCheck, Truck, Clock, Users, Maximize2 } from 'lucide-react';
 import MachineCard from '../components/MachineCard';
 import BrandsBanner from '../components/BrandsBanner';
 import MachineCardStack from '../components/MachineCardStack';
@@ -36,7 +35,7 @@ const staggerContainer = {
 };
 
 const Home: React.FC = () => {
-  const { brandsBanner, galleries, services } = useData();
+  const { brandsBanner, galleries, services, excavators } = useData();
   const [activeTab, setActiveTab] = React.useState<'sale' | 'rental'>('sale');
   const [selectedGallery, setSelectedGallery] = React.useState<Gallery | null>(null);
   const [initialIndex, setInitialIndex] = React.useState(0);
@@ -50,11 +49,43 @@ const Home: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const filteredMachines = MACHINES_DATA.filter(machine =>
-    activeTab === 'sale'
-      ? machine.type === 'sale' || machine.type === 'both'
-      : machine.type === 'rental' || machine.type === 'both'
-  ).slice(0, 4);
+  const filteredMachines = excavators
+    .filter(machine => {
+      const isRental = activeTab === 'rental' && (machine.type === 'rental' || machine.type === 'rent');
+      const isSale = activeTab === 'sale' && machine.type === 'sale';
+      return (isSale || isRental || machine.type === 'both') && machine.available !== false;
+    })
+    .sort((a, b) => {
+      const getTime = (t: any) => {
+        if (!t) return 0;
+        if (typeof t === 'number') return t;
+        if (typeof t?.toMillis === 'function') return t.toMillis();
+        if (t?.seconds) return t.seconds * 1000;
+        return 0;
+      };
+      const timeA = getTime(a.createdAt);
+      const timeB = getTime(b.createdAt);
+      
+      // If both have timestamps, sort by timestamp
+      if (timeA > 0 && timeB > 0 && timeA !== timeB) return timeB - timeA;
+      
+      // If one has timestamp and other doesn't, prioritize the one with timestamp
+      if (timeA > 0 && timeB === 0) return -1;
+      if (timeA === 0 && timeB > 0) return 1;
+      
+      // Fallback to ID if valid number (for mock data)
+      const idA = Number(a.id);
+      const idB = Number(b.id);
+      if (!isNaN(idA) && !isNaN(idB)) return idB - idA;
+      
+      // Final fallback to string comparison of IDs to ensure stability
+      return String(b.id).localeCompare(String(a.id));
+    })
+    .slice(0, 4);
+
+  // If filteredMachines is empty, show nothing instead of crashing or showing empty space
+  // or handle it gracefully
+
 
   return (
     <div className="pt-20">
@@ -65,9 +96,9 @@ const Home: React.FC = () => {
             initial={{ scale: 1.05, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.6 }}
             transition={{ duration: 2, ease: "easeOut" }}
-            src="/images/hero-excavator.png"
+            src="/images/mulettiserie.jpg"
             className="w-full h-full object-cover"
-            alt="Hero Excavator"
+            alt="Hero Muletti Serie"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent"></div>
         </div>
@@ -206,17 +237,24 @@ const Home: React.FC = () => {
           </motion.div>
 
           <motion.div
-            key={activeTab}
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 min-h-[300px]"
           >
-            {filteredMachines.map((machine) => (
-              <motion.div key={machine.id} variants={fadeInUp}>
-                <MachineCard machine={machine} />
-              </motion.div>
-            ))}
+            {filteredMachines.length > 0 ? (
+              filteredMachines.map((machine) => (
+                <motion.div key={machine.id} variants={fadeInUp}>
+                  <MachineCard machine={machine} />
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-2 lg:col-span-4 flex flex-col items-center justify-center py-12 text-center bg-slate-50 rounded-[32px] border border-slate-100">
+                <ShieldCheck size={48} className="text-slate-300 mb-4" />
+                <h3 className="text-xl font-black text-slate-400 uppercase tracking-tight">Nessuna Macchina Disponibile</h3>
+                <p className="text-slate-400 text-sm font-medium mt-2">Al momento non ci sono mezzi in questa categoria.</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div variants={fadeInUp} className="mt-16 text-center">
@@ -232,13 +270,13 @@ const Home: React.FC = () => {
       <section className="py-32 bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-100/50 skew-x-12 translate-x-1/2"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-24 items-center">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInLeft}
-              className="space-y-12"
+              className="lg:col-span-2 space-y-12"
             >
               <div>
                 <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.3em] mb-4 block">Vantaggio Strategico</span>
@@ -275,10 +313,10 @@ const Home: React.FC = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInRight}
-              className="relative"
+              className="relative lg:col-span-3"
             >
               <div className="relative z-10 border-[20px] border-white shadow-2xl">
-                <img src="/images/service-technician.png" className="w-full grayscale hover:grayscale-0 transition-all duration-700" alt="Service Team" />
+                <img src="/images/percheconte.jpg" className="w-full transition-all duration-700 hover:scale-[1.02]" alt="Service Team" />
               </div>
 
               <div className="absolute -bottom-12 -left-12 bg-slate-900 text-white p-10 shadow-2xl z-20 hidden md:block">
@@ -356,62 +394,7 @@ const Home: React.FC = () => {
         </section>
       )}
 
-      {/* 5. TESTIMONIALS */}
-      <section className="py-32 bg-slate-950 text-white overflow-hidden relative border-t border-white/5">
-        <div className="absolute inset-0 z-0">
-          <img src="/images/excavator-action.png" className="w-full h-full object-cover opacity-10 grayscale" alt="Background" />
-          <div className="absolute inset-0 bg-slate-950/80"></div>
-        </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInLeft}
-              className="max-w-2xl"
-            >
-              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.3em] mb-4 block">Feedback</span>
-              <h2 className="text-4xl md:text-6xl font-black uppercase leading-tight tracking-tighter text-white">
-                LA FIDUCIA DEI <br />
-                <span className="text-orange-600">NOSTRI PARTNER</span>
-              </h2>
-            </motion.div>
-            <motion.div variants={fadeInRight} className="hidden md:block">
-              <HardHat size={120} className="text-white/5" />
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-10"
-          >
-            {[
-              { author: "Marco Rossi", company: "Costruzioni Generali srl", text: "Contegroup è diventato il nostro unico referente per il noleggio. Mezzi sempre nuovi e assistenza impeccabile." },
-              { author: "Luca Bianchi", company: "Terra & Co.", text: "Ho acquistato un Caterpillar usato da loro. Macchina perfetta, sembrava nuova. Consulenza d'acquisto eccellente." },
-              { author: "Elena Verdi", company: "Scavi e Urbanistica", text: "La rapidità con cui gestiscono i preventivi e la consegna in cantiere è ciò che fa la differenza." },
-            ].map((t, i) => (
-              <motion.div key={i} variants={fadeInUp} className="bg-slate-900/50 backdrop-blur-md p-10 border-l-4 border-orange-600 relative group hover:bg-slate-900 transition-all duration-500">
-                <div className="absolute -top-4 -right-4 text-orange-600 opacity-20 group-hover:opacity-40 transition-opacity">
-                  <Users size={60} />
-                </div>
-                <div className="flex gap-1 text-orange-500 mb-8">
-                  {[...Array(5)].map((_, j) => <CheckCircle key={j} size={14} fill="currentColor" />)}
-                </div>
-                <p className="text-slate-300 text-lg italic mb-10 leading-relaxed font-medium">"{t.text}"</p>
-                <div>
-                  <p className="font-black text-xl text-white uppercase tracking-tight">{t.author}</p>
-                  <p className="text-orange-600 text-xs font-bold uppercase tracking-[0.2em] mt-1">{t.company}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
 
       {/* NEW: GALLERY CAROUSEL SECTION */}
       {featuredGalleries.length > 0 && (

@@ -75,6 +75,7 @@ export const uploadMachine = async (data: MachineData, orderedIds: string[]) => 
         weight: 0,
         hours: 0,
         available: true,
-        createdAt: serverTimestamp(),
+        createdAt: Date.now(),
+        powerType: data.powerType || 'DIESEL',
     });
 };

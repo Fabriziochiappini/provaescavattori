@@ -11,7 +11,9 @@ const Sales: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('Tutte');
   const [selectedPower, setSelectedPower] = useState('Tutte');
-  const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string>>({});
+  // Dynamic Specs Filter State
+  const [activeSpecId, setActiveSpecId] = useState<string>('');
+  const [activeSpecValue, setActiveSpecValue] = useState<string>('Tutte');
 
   // Transform Excavators (DB) to Machines (UI)
   const machines: any[] = excavators.map(exc => ({
@@ -22,7 +24,21 @@ const Sales: React.FC = () => {
     model: exc.model || exc.name,
   }));
 
-  const saleMachines = machines.filter(m => m.type === 'sale' || m.type === 'both');
+  const saleMachines = machines
+    .filter(m => m.type === 'sale' || m.type === 'both')
+    .sort((a, b) => {
+      const getTime = (t: any) => {
+        if (!t) return 0;
+        if (typeof t === 'number') return t;
+        if (typeof t?.toMillis === 'function') return t.toMillis();
+        if (t?.seconds) return t.seconds * 1000;
+        return 0;
+      };
+      const timeA = getTime(a.createdAt);
+      const timeB = getTime(b.createdAt);
+      if (timeA !== timeB) return timeB - timeA;
+      return 0;
+    });
 
   const brands = ['Tutte', ...new Set(saleMachines.map(m => m.brand).filter(Boolean))];
 
@@ -40,24 +56,29 @@ const Sales: React.FC = () => {
   });
 
   const filteredMachines = machinesInView.filter(m => {
-    // Check dynamic specs
-    const matchesSpecs = Object.entries(selectedSpecs).every(([catId, value]) => {
-      if (!value || value === 'Tutte') return true;
-      return m.specs?.[catId] === value;
-    });
-
-    return matchesSpecs;
+    // Check dynamic spec filter
+    if (!activeSpecId || !activeSpecValue || activeSpecValue === 'Tutte') return true;
+    return m.specs?.[activeSpecId] === activeSpecValue;
   });
 
   const categories = ['Tutti', ...machineCategories.map(c => c.name)];
 
-  // Get unique values for each spec category to build filter selects
-  const getSpecOptions = (catId: string) => {
+  // Get unique values for the CURRENTLY SELECTED spec category
+  const getActiveSpecOptions = () => {
+    if (!activeSpecId) return [];
+    
     // Only look at machines currently in view (respecting category/search)
-    const options = machinesInView.map(m => m.specs?.[catId]).filter(Boolean);
+    const options = machinesInView.map(m => m.specs?.[activeSpecId]).filter(Boolean);
     const uniqueOptions = Array.from(new Set(options)).sort((a, b) => parseFloat(a as string) - parseFloat(b as string));
     return ['Tutte', ...uniqueOptions];
   };
+
+  // Get available spec categories that actually have values in current view
+  const availableSpecCategories = specCategories.filter(cat => {
+    const options = machinesInView.map(m => m.specs?.[cat.id]).filter(Boolean);
+    const uniqueOptions = new Set(options);
+    return uniqueOptions.size > 0;
+  });
 
   return (
     <div className="pt-32 pb-24">
@@ -88,18 +109,18 @@ const Sales: React.FC = () => {
 
         {/* Filters Grid */}
         <div className="bg-zinc-950 p-6 rounded-2xl mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative col-span-2 md:col-span-2">
               <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">Cerca Modello</label>
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
                 <input
                   type="text"
                   placeholder="Marca o modello..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-zinc-900 border-none rounded-xl py-4 pl-12 pr-6 text-white text-sm focus:ring-2 focus:ring-orange-600 outline-none"
+                  className="w-full bg-zinc-900 border-none rounded-xl py-3 pl-10 pr-4 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none"
                 />
               </div>
             </div>
@@ -110,7 +131,7 @@ const Sales: React.FC = () => {
               <select
                 value={selectedBrand}
                 onChange={(e) => setSelectedBrand(e.target.value)}
-                className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-sm focus:ring-2 focus:ring-orange-600 outline-none appearance-none"
+                className="w-full bg-zinc-900 border-none rounded-xl py-3 px-3 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
               >
                 {brands.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
@@ -122,7 +143,7 @@ const Sales: React.FC = () => {
               <select
                 value={selectedPower}
                 onChange={(e) => setSelectedPower(e.target.value)}
-                className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-sm focus:ring-2 focus:ring-orange-600 outline-none appearance-none"
+                className="w-full bg-zinc-900 border-none rounded-xl py-3 px-3 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
               >
                 <option value="Tutte">Tutte</option>
                 <option value="Termico">Termico</option>
@@ -130,26 +151,40 @@ const Sales: React.FC = () => {
               </select>
             </div>
 
-            {/* Dynamic Specs Filters */}
-            {specCategories.map(cat => {
-              const options = getSpecOptions(cat.id);
-              if (options.length <= 1) return null; // Only show if there are actual values
-              return (
-                <div key={cat.id}>
-                  <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">{cat.name}</label>
-                  <select
-                    value={selectedSpecs[cat.id] || 'Tutte'}
-                    onChange={(e) => setSelectedSpecs(prev => ({ ...prev, [cat.id]: e.target.value }))}
-                    className="w-full bg-zinc-900 border-none rounded-xl py-4 px-4 text-white text-sm focus:ring-2 focus:ring-orange-600 outline-none appearance-none"
-                  >
-                    {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                </div>
-              );
-            })}
+            {/* Dynamic Specs Filter Selector */}
+            <div>
+              <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1">Specifica</label>
+              <select
+                value={activeSpecId}
+                onChange={(e) => {
+                  setActiveSpecId(e.target.value);
+                  setActiveSpecValue('Tutte');
+                }}
+                className="w-full bg-zinc-900 border-none rounded-xl py-3 px-3 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
+              >
+                <option value="">Nessuna</option>
+                {availableSpecCategories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              </select>
+            </div>
+
+            {/* Dynamic Spec Value Selector */}
+            {activeSpecId && (
+              <div className="animate-in fade-in slide-in-from-left-4 duration-300">
+                <label className="block text-[10px] font-black uppercase text-zinc-500 mb-2 tracking-widest px-1 truncate">
+                  Valore {specCategories.find(c => c.id === activeSpecId)?.name}
+                </label>
+                <select
+                  value={activeSpecValue}
+                  onChange={(e) => setActiveSpecValue(e.target.value)}
+                  className="w-full bg-zinc-900 border-none rounded-xl py-3 px-3 text-white text-xs focus:ring-1 focus:ring-orange-600 outline-none appearance-none"
+                >
+                  {getActiveSpecOptions().map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
-          {(activeCategory !== 'Tutti' || searchQuery || selectedBrand !== 'Tutte' || selectedPower !== 'Tutte' || Object.values(selectedSpecs).some(v => v !== 'Tutte')) && (
+          {(activeCategory !== 'Tutti' || searchQuery || selectedBrand !== 'Tutte' || selectedPower !== 'Tutte' || (activeSpecId && activeSpecValue !== 'Tutte')) && (
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => {
@@ -157,7 +192,8 @@ const Sales: React.FC = () => {
                   setSearchQuery('');
                   setSelectedBrand('Tutte');
                   setSelectedPower('Tutte');
-                  setSelectedSpecs({});
+                  setActiveSpecId('');
+                  setActiveSpecValue('Tutte');
                 }}
                 className="text-orange-600 text-[10px] font-black uppercase tracking-widest hover:underline"
               >
@@ -177,7 +213,7 @@ const Sales: React.FC = () => {
         ) : (
           <div className="py-20 text-center">
             <p className="text-zinc-400 text-xl italic font-light">Nessun macchinario trovato con questi criteri.</p>
-            <button onClick={() => { setActiveCategory('Tutti'); setSearchQuery(''); setSelectedBrand('Tutte'); setSelectedPower('Tutte'); setSelectedSpecs({}); }} className="mt-4 text-orange-600 font-bold underline italic">Resetta filtri</button>
+            <button onClick={() => { setActiveCategory('Tutti'); setSearchQuery(''); setSelectedBrand('Tutte'); setSelectedPower('Tutte'); setActiveSpecId(''); setActiveSpecValue('Tutte'); }} className="mt-4 text-orange-600 font-bold underline italic">Resetta filtri</button>
           </div>
         )}
       </div>

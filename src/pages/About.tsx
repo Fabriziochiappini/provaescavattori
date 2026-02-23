@@ -27,7 +27,7 @@ const About: React.FC = () => {
             </div>
           </div>
           <div className="relative">
-            <img src="https://picsum.photos/seed/about-office/800/1000" className="rounded-3xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000" alt="Office" />
+            <img src="/images/chisiamo.jpg" className="rounded-3xl shadow-2xl" alt="Office" />
             <div className="absolute -bottom-10 -left-10 bg-white p-10 rounded-3xl shadow-2xl border border-zinc-100 max-w-xs hidden md:block">
               <p className="italic text-zinc-500">"Non vendiamo solo macchine, ma soluzioni concrete per garantire che il tuo cantiere non si fermi mai."</p>
               <p className="font-bold mt-4">— La Direzione</p>

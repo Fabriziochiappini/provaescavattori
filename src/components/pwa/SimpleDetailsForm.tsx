@@ -19,6 +19,7 @@ export const SimpleDetailsForm: React.FC = () => {
         price: '',
         category: '',
         condition: 'NUOVO' as 'NUOVO' | 'USATO' | 'OTTIME CONDIZIONI',
+        powerType: 'DIESEL',
         rentalPrice: '',
         description: '',
         features: [] as string[],
@@ -217,6 +218,20 @@ export const SimpleDetailsForm: React.FC = () => {
                                     <option value="OTTIME CONDIZIONI">OTTIME CONDIZIONI</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-zinc-400 mb-2 px-1">Alimentazione</label>
+                            <select
+                                className="w-full p-4 rounded-2xl border-2 border-zinc-100 bg-white focus:border-amber-500 transition-all font-bold outline-none appearance-none"
+                                value={formData.powerType}
+                                onChange={e => setFormData({ ...formData, powerType: e.target.value })}
+                            >
+                                <option value="DIESEL">DIESEL</option>
+                                <option value="ELETTRICO">ELETTRICO</option>
+                                <option value="BENZINA">BENZINA</option>
+                                <option value="IBRIDO">IBRIDO</option>
+                            </select>
                         </div>
                     </div>
                 ) : (

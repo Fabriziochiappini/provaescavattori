@@ -19,7 +19,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         images: [],
         available: true,
         condition: 'NUOVO',
-        powerType: 'Termico',
+        powerType: 'DIESEL',
         specs: {}
     });
 
@@ -102,6 +102,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         try {
             const finalData: Excavator = {
                 ...formData as Excavator,
+                model: formData.name, // Ensure model is set from name (which is the model input)
                 images: images,
                 imageUrl: images[0] || '', // Main image is the first one
             };
@@ -250,6 +251,21 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                     <option value="OTTIME CONDIZIONI">OTTIME CONDIZIONI</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Alimentazione</label>
+                            <select
+                                name="powerType"
+                                value={formData.powerType || 'Diesel'}
+                                onChange={handleChange}
+                                className="w-full p-3 bg-gray-50 dark:bg-gray-700 border-none rounded-xl focus:ring-2 focus:ring-amber-500 dark:text-white"
+                            >
+                                <option value="DIESEL">DIESEL</option>
+                                <option value="ELETTRICO">ELETTRICO</option>
+                                <option value="BENZINA">BENZINA</option>
+                                <option value="IBRIDO">IBRIDO</option>
+                            </select>
                         </div>
 
                         <div>

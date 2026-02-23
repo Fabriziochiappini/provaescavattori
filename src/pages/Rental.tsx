@@ -22,7 +22,21 @@ const Rental: React.FC = () => {
     model: exc.model || exc.name,
   }));
 
-  const rentalMachines = machines.filter(m => m.type === 'rent' || m.type === 'both');
+  const rentalMachines = machines
+    .filter(m => m.type === 'rent' || m.type === 'both')
+    .sort((a, b) => {
+      const getTime = (t: any) => {
+        if (!t) return 0;
+        if (typeof t === 'number') return t;
+        if (typeof t?.toMillis === 'function') return t.toMillis();
+        if (t?.seconds) return t.seconds * 1000;
+        return 0;
+      };
+      const timeA = getTime(a.createdAt);
+      const timeB = getTime(b.createdAt);
+      if (timeA !== timeB) return timeB - timeA;
+      return 0;
+    });
 
   const brands = ['Tutte', ...new Set(rentalMachines.map(m => m.brand).filter(Boolean))];
 

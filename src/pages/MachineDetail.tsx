@@ -8,7 +8,8 @@ import GalleryModal from '../components/GalleryModal';
 const MachineDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { excavators, specCategories } = useData(); // Added specCategories
+    const { excavators, specCategories, adminSettings } = useData(); // Added specCategories
+    const showPrices = adminSettings?.showPrices !== false;
     const [machine, setMachine] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'features'>('desc');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -119,7 +120,13 @@ const MachineDetail: React.FC = () => {
                             <h1 className="text-4xl font-extrabold text-zinc-900 mb-4">{machine.name}</h1>
                             <div className="flex items-end gap-2 mb-6">
                                 <span className="text-3xl font-bold text-zinc-900">
-                                    {machine.type === 'rent' ? machine.rentalPrice : `€ ${machine.price?.toLocaleString()}`}
+                                    {machine.type === 'rent' ? (
+                                        machine.rentalPrice
+                                    ) : showPrices ? (
+                                        `€ ${machine.price?.toLocaleString()}`
+                                    ) : (
+                                        <span className="text-amber-600 text-2xl uppercase tracking-widest">Trattativa Riservata</span>
+                                    )}
                                 </span>
                                 {machine.type === 'rent' && <span className="text-zinc-500 mb-1">/ giorno</span>}
                             </div>
@@ -161,6 +168,15 @@ const MachineDetail: React.FC = () => {
                                         <div>
                                             <p className="text-xs text-zinc-500 uppercase font-bold">Stato</p>
                                             <p className="font-semibold">{machine.condition}</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {machine.powerType && (
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg"><Zap size={20} /></div>
+                                        <div>
+                                            <p className="text-xs text-zinc-500 uppercase font-bold">Alimentazione</p>
+                                            <p className="font-semibold">{machine.powerType}</p>
                                         </div>
                                     </div>
                                 )}
@@ -213,6 +229,10 @@ const MachineDetail: React.FC = () => {
                                             <tr className="border-b border-zinc-100">
                                                 <td className="py-2 text-zinc-500 font-medium">Categoria</td>
                                                 <td className="py-2 text-zinc-900 font-bold text-right">{machine.category}</td>
+                                            </tr>
+                                            <tr className="border-b border-zinc-100">
+                                                <td className="py-2 text-zinc-500 font-medium">Alimentazione</td>
+                                                <td className="py-2 text-zinc-900 font-bold text-right">{machine.powerType || '-'}</td>
                                             </tr>
                                             {/* Dynamic Specs */}
                                             {specCategories.map(cat => {

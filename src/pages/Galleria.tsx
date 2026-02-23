@@ -34,7 +34,7 @@ const Galleria: React.FC = () => {
                 >
                     <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.3em] mb-4 block">Archivio Fotografico</span>
                     <h1 className="text-5xl md:text-7xl font-black text-slate-900 uppercase italic tracking-tighter mb-6">
-                        LA NOSTRA <span className="text-orange-600">GALLERIA</span>
+                        CONTE<span className="text-orange-600">GROUP</span>
                     </h1>
                     <div className="w-24 h-2 bg-orange-600 mx-auto"></div>
                 </motion.div>
