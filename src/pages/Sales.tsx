@@ -14,6 +14,9 @@ const Sales: React.FC = () => {
   // Dynamic Specs Filter State
   const [activeSpecId, setActiveSpecId] = useState<string>('');
   const [activeSpecValue, setActiveSpecValue] = useState<string>('Tutte');
+  
+  // Pagination State
+  const [visibleCount, setVisibleCount] = useState(12);
 
   // Transform Excavators (DB) to Machines (UI)
   const machines: any[] = excavators.map(exc => ({
@@ -198,6 +201,7 @@ const Sales: React.FC = () => {
                   setSelectedPower('Tutte');
                   setActiveSpecId('');
                   setActiveSpecValue('Tutte');
+                  setVisibleCount(12);
                 }}
                 className="text-orange-600 text-[10px] font-black uppercase tracking-widest hover:underline"
               >
@@ -209,15 +213,28 @@ const Sales: React.FC = () => {
 
         {/* Results */}
         {filteredMachines.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredMachines.map((machine) => (
-              <MachineCard key={machine.id} machine={machine} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredMachines.slice(0, visibleCount).map((machine) => (
+                <MachineCard key={machine.id} machine={machine} />
+              ))}
+            </div>
+            
+            {visibleCount < filteredMachines.length && (
+              <div className="mt-12 text-center">
+                <button 
+                  onClick={() => setVisibleCount(prev => prev + 12)}
+                  className="bg-zinc-900 text-white hover:bg-orange-600 px-8 py-4 rounded-xl font-bold uppercase tracking-widest transition-all shadow-lg"
+                >
+                  Carica Altri
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="py-20 text-center">
             <p className="text-zinc-400 text-xl italic font-light">Nessun macchinario trovato con questi criteri.</p>
-            <button onClick={() => { setActiveCategory('Tutti'); setSearchQuery(''); setSelectedBrand('Tutte'); setSelectedPower('Tutte'); setActiveSpecId(''); setActiveSpecValue('Tutte'); }} className="mt-4 text-orange-600 font-bold underline italic">Resetta filtri</button>
+            <button onClick={() => { setActiveCategory('Tutti'); setSearchQuery(''); setSelectedBrand('Tutte'); setSelectedPower('Tutte'); setActiveSpecId(''); setActiveSpecValue('Tutte'); setVisibleCount(12); }} className="mt-4 text-orange-600 font-bold underline italic">Resetta filtri</button>
           </div>
         )}
       </div>

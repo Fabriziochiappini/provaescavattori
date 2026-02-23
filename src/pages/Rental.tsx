@@ -13,6 +13,9 @@ const Rental: React.FC = () => {
   const [selectedPower, setSelectedPower] = useState('Tutte');
   const [selectedSpecs, setSelectedSpecs] = useState<Record<string, string>>({});
 
+  // Pagination State
+  const [visibleCount, setVisibleCount] = useState(12);
+
   // Transform Excavators (DB) to Machines (UI)
   const machines: any[] = excavators.map(exc => ({
     ...exc,
@@ -167,10 +170,21 @@ const Rental: React.FC = () => {
 
         {/* Results */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredMachines.map((machine) => (
+          {filteredMachines.slice(0, visibleCount).map((machine) => (
             <MachineCard key={machine.id} machine={machine} />
           ))}
         </div>
+
+        {visibleCount < filteredMachines.length && (
+          <div className="mt-12 text-center">
+            <button 
+              onClick={() => setVisibleCount(prev => prev + 12)}
+              className="bg-zinc-900 text-white hover:bg-orange-600 px-8 py-4 rounded-xl font-bold uppercase tracking-widest transition-all shadow-lg"
+            >
+              Carica Altri
+            </button>
+          </div>
+        )}
 
         {filteredMachines.length === 0 && (
           <div className="py-20 text-center">
