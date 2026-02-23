@@ -44,7 +44,7 @@ const Assistance: React.FC = () => {
                             <img
                                 src="https://res.cloudinary.com/dn96krsq7/image/upload/v1771848905/ricambioriginali_bwb3wa.png"
                                 alt="Ricambi Originali"
-                                className="w-full h-full object-cover grayscale transition-all group-hover:grayscale-0 group-hover:scale-105 duration-500"
+                                className="w-full h-full object-cover transition-all group-hover:scale-105 duration-500 object-top"
                             />
                         </div>
                         <div className="p-10">
@@ -72,7 +72,7 @@ const Assistance: React.FC = () => {
                             <img
                                 src="https://res.cloudinary.com/dn96krsq7/image/upload/v1771848906/assistenzatecnica_bp5eme.png"
                                 alt="Service a Domicilio"
-                                className="w-full h-full object-cover grayscale transition-all group-hover:grayscale-0 group-hover:scale-105 duration-500"
+                                className="w-full h-full object-cover transition-all group-hover:scale-105 duration-500 object-top"
                             />
                         </div>
                         <div className="p-10">
