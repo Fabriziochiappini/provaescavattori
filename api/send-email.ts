@@ -109,7 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         
         <div style="display: flex; gap: 20px; margin-top: 20px;">
             <a href="tel:+390823982162" style="background-color: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">📞 Chiama 0823 982162</a>
-            <a href="https://wa.me/393518349368" style="background-color: #25D366; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 WhatsApp</a>
+            <a clicktracking="off" href="https://wa.me/393518349368" style="background-color: #25D366; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 WhatsApp</a>
         </div>
 
         <hr style="margin: 40px 0; border: none; border-top: 1px solid #e5e7eb;" />
