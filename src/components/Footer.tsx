@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-zinc-950 text-white pt-16 pb-8 border-t border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Info */}
           <div className="space-y-6">
             <Link to="/" className="flex items-center space-x-2">
@@ -50,18 +50,6 @@ const Footer: React.FC = () => {
                   <Link to={link.path} className="text-zinc-400 hover:text-orange-500 transition-colors">
                     {link.name}
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="text-lg font-bold font-oswald uppercase tracking-wider mb-6">I Nostri Servizi</h4>
-            <ul className="space-y-4">
-              {['Vendita Usato', 'Noleggio Breve Termine', 'Noleggio Lungo Termine', 'Assistenza Tecnica', 'Ricambi'].map((item) => (
-                <li key={item}>
-                  <Link to={item === 'Ricambi' ? '/assistenza' : `/${item.toLowerCase().replace(/ /g, '-')}`} className="text-zinc-400 hover:text-orange-500 transition-colors">{item}</Link>
                 </li>
               ))}
             </ul>
