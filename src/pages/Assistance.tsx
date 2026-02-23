@@ -42,7 +42,7 @@ const Assistance: React.FC = () => {
                     <div className="group relative bg-white rounded-3xl overflow-hidden shadow-xl border border-zinc-100 transition-all hover:shadow-2xl">
                         <div className="aspect-video overflow-hidden">
                             <img
-                                src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=2070&auto=format&fit=crop"
+                                src="https://res.cloudinary.com/dn96krsq7/image/upload/v1771848905/ricambioriginali_bwb3wa.png"
                                 alt="Ricambi Originali"
                                 className="w-full h-full object-cover grayscale transition-all group-hover:grayscale-0 group-hover:scale-105 duration-500"
                             />
@@ -70,7 +70,7 @@ const Assistance: React.FC = () => {
                     <div className="group relative bg-white rounded-3xl overflow-hidden shadow-xl border border-zinc-100 transition-all hover:shadow-2xl">
                         <div className="aspect-video overflow-hidden">
                             <img
-                                src="https://images.unsplash.com/photo-1581092334651-ddf26d9a1930?q=80&w=2070&auto=format&fit=crop"
+                                src="https://res.cloudinary.com/dn96krsq7/image/upload/v1771848906/assistenzatecnica_bp5eme.png"
                                 alt="Service a Domicilio"
                                 className="w-full h-full object-cover grayscale transition-all group-hover:grayscale-0 group-hover:scale-105 duration-500"
                             />
