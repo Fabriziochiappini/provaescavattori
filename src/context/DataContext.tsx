@@ -90,6 +90,10 @@ export interface BrandsBannerData {
     active: boolean;
 }
 
+export interface AdminSettingsData {
+    navStyle: 'smart' | 'fixed';
+}
+
 interface DataContextType {
     excavators: Excavator[];
     addExcavator: (excavator: Excavator) => Promise<void>;
@@ -134,6 +138,10 @@ interface DataContextType {
 
     brandsBanner: BrandsBannerData;
     updateBrandsBanner: (data: BrandsBannerData) => Promise<void>;
+    
+    adminSettings: AdminSettingsData;
+    updateAdminSettings: (data: AdminSettingsData) => Promise<void>;
+    
     refreshData: () => void;
 }
 
@@ -154,6 +162,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         speed: 'medium',
         position: 'after_hero',
         active: true
+    });
+    const [adminSettings, setAdminSettings] = useState<AdminSettingsData>({
+        navStyle: 'smart'
     });
 
     // Seeding Logic: If database is empty, seed with mock data
@@ -316,6 +327,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return () => unsub();
     }, []);
 
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'settings', 'admin_settings'), (snap) => {
+            if (snap.exists()) {
+                setAdminSettings(snap.data() as AdminSettingsData);
+            }
+        });
+        return () => unsub();
+    }, []);
+
     // CRUD Operations - EXCAVATORS
     const addExcavator = async (item: Excavator) => {
         const { id, ...rest } = item;
@@ -409,6 +429,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await setDoc(doc(db, 'settings', 'brands_banner'), data);
     };
 
+    // Admin Settings
+    const updateAdminSettings = async (data: AdminSettingsData) => {
+        await setDoc(doc(db, 'settings', 'admin_settings'), data);
+    };
+
     // Stats
     const incrementVisit = async () => {
         const sessionKey = 'contegroup_visit_' + new Date().toDateString();
@@ -467,6 +492,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             siteData: initialSiteData,
             brandsBanner,
             updateBrandsBanner,
+            adminSettings,
+            updateAdminSettings,
             refreshData: () => {
                 // Force a re-render or re-fetch if needed, though onSnapshot handles it
                 console.log("Refreshing data...");

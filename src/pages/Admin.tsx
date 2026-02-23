@@ -8,8 +8,22 @@ import MachineCategoriesManager from '../components/admin/MachineCategoriesManag
 import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree, Trash2, Edit2 } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree, Trash2, Edit2, Mail, MapPin, Clock, HelpCircle, Sliders } from 'lucide-react';
 
+const getIcon = (iconName: string) => {
+    switch (iconName?.toLowerCase()) {
+        case 'phone': return Phone;
+        case 'email':
+        case 'mail': return Mail;
+        case 'place':
+        case 'map':
+        case 'map-pin': return MapPin;
+        case 'schedule':
+        case 'clock': return Clock;
+        case 'whatsapp': return Phone;
+        default: return HelpCircle;
+    }
+};
 const Admin: React.FC = () => {
     const {
         excavators, addExcavator, updateExcavator, deleteExcavator,
@@ -17,7 +31,8 @@ const Admin: React.FC = () => {
         contacts, addContact, updateContact, deleteContact,
         galleries, addGallery, updateGallery, deleteGallery,
         homeGallery, updateHomeGallery,
-        uploadImage, deleteImage
+        uploadImage, deleteImage,
+        adminSettings, updateAdminSettings
     } = useData();
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -49,7 +64,10 @@ const Admin: React.FC = () => {
         checkAuth();
     }, []);
 
-    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs' | 'categories'>('excavators');
+    const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs' | 'categories' | 'settings'>('excavators');
+    
+    // Usa lo stato dal DataContext (Firebase), default a 'smart' se non caricato
+    const navStyle = adminSettings?.navStyle || 'smart';
 
     const adminTabs = [
         { id: 'excavators', label: 'Parco', icon: LayoutDashboard },
@@ -59,6 +77,7 @@ const Admin: React.FC = () => {
         { id: 'gallery', label: 'Galleria', icon: ImageIcon },
         { id: 'brands', label: 'Marchi', icon: Award },
         { id: 'contacts', label: 'Contatti', icon: Phone },
+        { id: 'settings', label: 'Impostazioni', icon: Sliders },
     ];
 
     // CMS State
@@ -317,13 +336,41 @@ const Admin: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen pt-16 pb-8 bg-[#f8fafc] text-gray-900">
+        <div className={`min-h-screen ${navStyle === 'fixed' ? 'pt-24' : 'pt-16'} pb-8 bg-[#f8fafc] text-gray-900`}>
             {/* Desktop Navigation */}
-            <FloatingAdminNav
-                activeTab={activeTab}
-                onTabChange={(tab) => { setActiveTab(tab); resetForm(); }}
-                tabs={adminTabs}
-            />
+            {navStyle === 'smart' ? (
+                <FloatingAdminNav
+                    activeTab={activeTab}
+                    onTabChange={(tab) => { setActiveTab(tab); resetForm(); }}
+                    tabs={adminTabs}
+                />
+            ) : (
+                <div className="hidden sm:flex bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 px-6 py-4 items-center gap-6 fixed top-0 left-0 right-0 z-[110]">
+                    <h1 className="text-2xl font-black text-amber-500 uppercase italic mr-4">Admin</h1>
+                    <div className="flex-grow flex items-center gap-2 overflow-x-auto">
+                        {adminTabs.map((tab) => {
+                            const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => { setActiveTab(tab.id as any); resetForm(); }}
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-xs font-bold transition-all whitespace-nowrap active:scale-95 border border-transparent ${isActive ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'text-slate-600 hover:bg-white hover:border-slate-200 hover:shadow-sm'}`}
+                                >
+                                    <Icon size={18} className={isActive ? 'text-white' : 'text-slate-400'} />
+                                    <span>{tab.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-500 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-red-100 transition-all active:scale-95 shrink-0"
+                    >
+                        <LogOut size={16} /> Esci
+                    </button>
+                </div>
+            )}
 
             {/* Mobile Header Menu */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 z-[110] flex items-center justify-between px-4 sm:hidden">
@@ -527,7 +574,10 @@ const Admin: React.FC = () => {
                                         <div key={contact.id} className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex items-start gap-4 relative group overflow-hidden">
                                             <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -translate-y-12 translate-x-12 group-hover:scale-150 transition-all duration-700"></div>
                                             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0 shadow-sm border border-amber-500/10">
-                                                <span className="material-icons-outlined text-2xl">{contact.icon}</span>
+                                                {(() => {
+                                                    const Icon = getIcon(contact.icon);
+                                                    return <Icon size={24} />;
+                                                })()}
                                             </div>
                                             <div className="flex-grow">
                                                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{contact.label}</p>
@@ -623,6 +673,47 @@ const Admin: React.FC = () => {
                         {activeTab === 'categories' && (
                             <MachineCategoriesManager />
                         )}
+
+                        {activeTab === 'settings' && (
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Impostazioni Admin</h2>
+                                </div>
+                                
+                                <div className="bg-white p-6 sm:p-8 rounded-[32px] shadow-sm border border-slate-100">
+                                    <h3 className="text-lg font-black text-slate-900 mb-6 uppercase tracking-tighter italic">Aspetto e Navigazione</h3>
+                                    
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-slate-50 rounded-[24px]">
+                                        <div>
+                                            <h4 className="font-black text-slate-900 flex items-center gap-2">
+                                                <LayoutDashboard size={18} className="text-amber-500" />
+                                                Stile Menu Admin
+                                            </h4>
+                                            <p className="text-sm font-medium text-slate-500 mt-1">Scegli tra il menu flottante "smart" in basso a destra, oppure la barra di navigazione fissa in alto (classica).</p>
+                                        </div>
+                                        
+                                        <div className="flex bg-slate-200/50 p-1.5 rounded-2xl whitespace-nowrap overflow-x-auto w-full sm:w-auto">
+                                            <button
+                                                onClick={async () => {
+                                                    await updateAdminSettings({ navStyle: 'smart' });
+                                                }}
+                                                className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${navStyle === 'smart' ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                Smart (Flottante)
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    await updateAdminSettings({ navStyle: 'fixed' });
+                                                }}
+                                                className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${navStyle === 'fixed' ? 'bg-white text-amber-500 shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                Fisso (In Alto)
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-[32px] shadow-2xl border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-500">
@@ -677,20 +768,38 @@ const Admin: React.FC = () => {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Sorgente Immagine</label>
-                                            <div className="relative rounded-[32px] overflow-hidden border-2 border-dashed border-slate-200 p-2 group">
-                                                {formData.image ? (
-                                                    <img src={formData.image} alt="preview" className="w-full h-48 object-cover rounded-[24px] shadow-sm" />
+                                            <div className="relative rounded-[32px] border-2 border-dashed border-slate-200 p-4 group">
+                                                {formData.images && formData.images.length > 0 ? (
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                                                        {formData.images.map((img: string, idx: number) => (
+                                                            <div key={idx} className="relative group/img rounded-xl overflow-hidden shadow-sm h-24">
+                                                                <img src={img} alt={`preview ${idx}`} className="w-full h-full object-cover" />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const newImages = [...formData.images];
+                                                                        newImages.splice(idx, 1);
+                                                                        setFormData((prev: any) => ({ ...prev, images: newImages }));
+                                                                    }}
+                                                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                                                >
+                                                                    <X size={14} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 ) : (
                                                     <div className="h-48 flex flex-col items-center justify-center bg-slate-50 text-slate-300 rounded-[24px]">
                                                         <ImageIcon size={40} className="mb-2" />
-                                                        <span className="text-[10px] font-black uppercase tracking-tighter">No Preview</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Nessuna Immagine</span>
                                                     </div>
                                                 )}
                                                 <div className="mt-4 px-2 pb-2">
                                                     <ImageUploader
+                                                        multiple={true}
                                                         onUpload={async (file) => {
                                                             const url = await uploadImage(file, 'gallery');
-                                                            setFormData((prev: any) => ({ ...prev, image: url }));
+                                                            setFormData((prev: any) => ({ ...prev, images: [...(prev.images || []), url] }));
                                                         }}
                                                     />
                                                 </div>
@@ -828,7 +937,7 @@ const Admin: React.FC = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Icona (Material Icon name: phone, email, place, schedule)</label>
+                                            <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest px-1">Icona (es. phone, email, place, schedule)</label>
                                             <input
                                                 name="icon"
                                                 value={formData.icon || ''}

@@ -245,7 +245,7 @@ export const CameraView: React.FC = () => {
         const sourceY = (videoHeight - squareSize) / 2;
 
         // Calculate output size with max dimension limit
-        const maxDimension = 2048; // Good quality while keeping blob size manageable on mobile
+        const maxDimension = 4096; // Good quality while keeping blob size manageable on mobile
         const outputSize = Math.min(squareSize, maxDimension);
 
         canvas.width = outputSize;
@@ -282,7 +282,7 @@ export const CameraView: React.FC = () => {
                 setIsCapturing(false);
             },
             'image/jpeg',
-            0.92 // High quality with much smaller blob size (~3-4MB vs 10-15MB)
+            0.98 // High quality
         );
 
         // Safety timeout
