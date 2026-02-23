@@ -38,9 +38,9 @@ const MachineDetail: React.FC = () => {
         ? machine.images
         : [machine.imageUrl];
 
-    const hasWeight = machine.weight && machine.weight > 0;
-    const hasYear = machine.year && machine.year > 0;
-    const hasHours = machine.hours && machine.hours > 0;
+    const hasWeight = (machine.weight || 0) > 0;
+    const hasYear = (machine.year || 0) > 0;
+    const hasHours = (machine.hours || 0) > 0;
     const hasCondition = !!machine.condition;
     const showKeyStats = hasWeight || hasYear || hasHours || hasCondition;
 
