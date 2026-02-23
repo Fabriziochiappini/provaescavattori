@@ -496,13 +496,13 @@ const Home: React.FC = () => {
             </div>
 
             <div className="relative z-10 max-w-4xl">
-              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.4em] mb-8 block">Inizia Ora</span>
+              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.4em] mb-8 block">Contattaci Subito</span>
               <h2 className="text-4xl md:text-7xl font-black text-white uppercase italic leading-[0.9] mb-10 tracking-tighter">
-                PRONTO A POTENZIARE IL <br />
-                <span className="text-orange-600">TUO BUSINESS?</span>
+                TROVIAMO IL MEZZO ADATTO <br />
+                <span className="text-orange-600">AL TUO LAVORO</span>
               </h2>
               <p className="text-xl text-slate-400 font-medium mb-12 max-w-2xl mx-auto border-y border-white/10 py-8">
-                Richiedi una consulenza tecnica gratuita. Il nostro team di esperti analizzerà le tue esigenze per offrirti la soluzione più efficiente.
+                Devi acquistare o noleggiare un macchinario? Ti aiutiamo a scegliere la soluzione migliore per la tua attività, con preventivi chiari e veloci.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
