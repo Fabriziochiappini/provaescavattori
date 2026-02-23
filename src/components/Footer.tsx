@@ -1,9 +1,12 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, HardHat } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, HardHat, Eye } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 const Footer: React.FC = () => {
+  const { stats } = useData();
+  
   return (
     <footer className="bg-zinc-950 text-white pt-16 pb-8 border-t border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,10 +88,18 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-500 text-xs text-center md:text-left">
-          <p>© 2026 Venus S.r.l. - P.IVA 03030410611 - Tutti i diritti riservati.</p>
-          <div className="flex gap-6 uppercase tracking-widest font-bold">
-            <Link to="/privacy-policy" className="hover:text-orange-500 transition-colors">Privacy Policy</Link>
-            <Link to="/termini-e-condizioni" className="hover:text-orange-500 transition-colors">Termini e Condizioni</Link>
+          <p className="flex items-center gap-2">
+            © 2026 Venus S.r.l. - P.IVA 03030410611 - Tutti i diritti riservati.
+          </p>
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex items-center gap-2 text-zinc-600 bg-zinc-900 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                <Eye size={12} />
+                <span>{stats?.visits ? stats.visits.toLocaleString() : '0'} Visite</span>
+            </div>
+            <div className="flex gap-6 uppercase tracking-widest font-bold text-xs">
+              <Link to="/privacy-policy" className="hover:text-orange-500 transition-colors">Privacy Policy</Link>
+              <Link to="/termini-e-condizioni" className="hover:text-orange-500 transition-colors">Termini e Condizioni</Link>
+            </div>
           </div>
         </div>
       </div>

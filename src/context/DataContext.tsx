@@ -131,7 +131,6 @@ interface DataContextType {
     deleteGallery: (id: string) => Promise<void>;
 
     stats: Stats;
-    incrementVisit: () => void;
     incrementFooterClick: () => void;
 
     uploadImage: (file: File, folder: string) => Promise<string>;
@@ -362,15 +361,27 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await setDoc(doc(db, 'settings', 'admin_settings'), data);
     };
 
-    // Stats
-    const incrementVisit = async () => {
-        const sessionKey = 'contegroup_visit_' + new Date().toDateString();
-        if (!sessionStorage.getItem(sessionKey)) {
-            sessionStorage.setItem(sessionKey, 'true');
-            await setDoc(doc(db, 'stats', 'global'), { visits: increment(1) }, { merge: true });
-        }
-    };
+    // Increment visits on mount
+    useEffect(() => {
+        const incrementVisit = async () => {
+            const sessionKey = 'contegroup_visit_' + new Date().toDateString();
+            if (!sessionStorage.getItem(sessionKey)) {
+                try {
+                    const statsRef = doc(db, 'stats', 'global');
+                    // We use setDoc with merge: true which works like upsert
+                    // If doc doesn't exist, it creates it. If it exists, it updates it.
+                    // increment(1) is an atomic operation safe for concurrent updates
+                    await setDoc(statsRef, { visits: increment(1) }, { merge: true });
+                    sessionStorage.setItem(sessionKey, 'true');
+                } catch (error) {
+                    console.error("Error incrementing visits:", error);
+                }
+            }
+        };
+        incrementVisit();
+    }, []);
 
+    // Stats
     const incrementFooterClick = async () => {
         await setDoc(doc(db, 'stats', 'global'), { footerClicks: increment(1) }, { merge: true });
     };
@@ -415,7 +426,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             contacts, addContact, updateContact, deleteContact,
             galleries, addGallery, updateGallery, deleteGallery,
             homeGallery, updateHomeGallery,
-            stats, incrementVisit, incrementFooterClick,
+            stats, incrementFooterClick,
             uploadImage, deleteImage,
             siteData: initialSiteData,
             brandsBanner,
