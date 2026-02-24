@@ -45,7 +45,7 @@ const BrandsBanner: React.FC = () => {
                                 <img
                                     src={logo.image}
                                     alt="Brand logo"
-                                    className="max-w-full max-h-full object-contain filter grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                                    className="max-w-full max-h-full object-contain transition-all duration-500 hover:scale-110"
                                 />
                             </div>
                         ))}
@@ -59,7 +59,7 @@ const BrandsBanner: React.FC = () => {
                                 <img
                                     src={logo.image}
                                     alt="Brand logo"
-                                    className="max-w-full max-h-full object-contain filter grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                                    className="max-w-full max-h-full object-contain transition-all duration-500 hover:scale-110"
                                 />
                             </div>
                         ))}
