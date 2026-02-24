@@ -81,7 +81,7 @@ const Home: React.FC = () => {
       // Final fallback to string comparison of IDs to ensure stability
       return String(b.id).localeCompare(String(a.id));
     })
-    .slice(0, 4);
+    .slice(0, 8); // Increased from 4 to 8
 
   // If filteredMachines is empty, show nothing instead of crashing or showing empty space
   // or handle it gracefully

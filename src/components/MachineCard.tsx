@@ -46,24 +46,24 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
 
   return (
     <>
-      <div className="group bg-white border border-slate-200 rounded-[32px] overflow-hidden hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
+      <div className="group bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-xl hover:border-orange-200 transition-all duration-300 h-full flex flex-col">
         {/* Image Container */}
-        <div className="relative h-64 overflow-hidden cursor-pointer bg-slate-100" onClick={handleImageClick}>
+        <div className="relative h-56 overflow-hidden cursor-pointer bg-slate-100" onClick={handleImageClick}>
           <img
             src={mainImage}
             alt={machine.name}
-            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
           />
           
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-              <Maximize2 className="text-white" size={24} />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <div className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+              <Maximize2 className="text-slate-900" size={20} />
             </div>
           </div>
 
           {/* Condition Badge */}
           {machine.condition && (
-            <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-lg">
+            <div className="absolute top-3 left-3 bg-slate-900/90 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm">
               {machine.condition}
             </div>
           )}
@@ -74,7 +74,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
               href={machine.technicalSheetUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute top-4 left-24 bg-red-600/90 backdrop-blur text-white p-1.5 rounded-full shadow-lg hover:bg-red-700 transition-colors z-10"
+              className="absolute top-3 left-20 bg-red-600/90 text-white p-1 rounded shadow-sm hover:bg-red-700 transition-colors z-10"
               title="Scheda Tecnica PDF"
               onClick={(e) => e.stopPropagation()}
             >
@@ -83,43 +83,43 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
           )}
 
           {/* Type Badge */}
-          <div className={`absolute top-4 right-4 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg ${
+          <div className={`absolute top-3 right-3 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm ${
             machine.type === 'sale' 
-              ? 'bg-emerald-500 text-white' 
+              ? 'bg-emerald-600 text-white' 
               : (machine.type === 'rental' || machine.type === 'rent')
-              ? 'bg-blue-500 text-white'
-              : 'bg-orange-500 text-white'
+              ? 'bg-blue-600 text-white'
+              : 'bg-orange-600 text-white'
           }`}>
             {machine.type === 'sale' ? 'Vendita' : (machine.type === 'rental' || machine.type === 'rent') ? 'Noleggio' : 'Vendita / Noleggio'}
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-8 flex flex-col flex-grow">
-          <div className="mb-6">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-orange-600 font-bold text-xs uppercase tracking-[0.2em]">{machine.brand}</span>
+        <div className="p-5 flex flex-col flex-grow">
+          <div className="mb-4">
+            <div className="flex justify-between items-start mb-1">
+              <span className="text-orange-600 font-bold text-[10px] uppercase tracking-wider">{machine.brand}</span>
               {machine.year && (
-                <span className="text-slate-400 font-medium text-xs bg-slate-100 px-2 py-1 rounded">
+                <span className="text-slate-500 font-bold text-[10px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                   {machine.year}
                 </span>
               )}
             </div>
-            <h3 className="text-xl font-black text-slate-900 uppercase italic leading-tight group-hover:text-orange-600 transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-orange-600 transition-colors truncate">
               {machine.name} {machine.model}
             </h3>
           </div>
 
           {/* Specs Grid */}
-          <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-8 border-y border-slate-100 py-6">
+          <div className="grid grid-cols-2 gap-y-2 gap-x-2 mb-4 border-t border-b border-slate-100 py-3">
             
             {/* Weight - Only show if > 0 */}
             {(safeWeight > 0) ? (
-              <div className="flex items-center gap-3">
-                <Scale size={16} className="text-slate-400" />
-                <div>
-                  <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Peso</span>
-                  <span className="font-bold text-slate-700 text-sm">
+              <div className="flex items-center gap-2">
+                <Scale size={14} className="text-slate-400" />
+                <div className="flex flex-col leading-none">
+                  <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wide">Peso</span>
+                  <span className="font-bold text-slate-700 text-xs">
                     {safeWeight > 1000 ? `${(safeWeight / 1000).toFixed(1)} t` : `${safeWeight} kg`}
                   </span>
                 </div>
@@ -127,22 +127,22 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
             ) : null}
 
             {/* Alimentazione (Power Type) */}
-            <div className="flex items-center gap-3">
-              <Zap size={16} className="text-slate-400" />
-              <div>
-                <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Alim.</span>
-                <span className="font-bold text-slate-700 text-sm">
+            <div className="flex items-center gap-2">
+              <Zap size={14} className="text-slate-400" />
+              <div className="flex flex-col leading-none">
+                <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wide">Alim.</span>
+                <span className="font-bold text-slate-700 text-xs">
                   {machine.powerType === 'Termico' ? 'Diesel' : (machine.powerType || 'Diesel')}
                 </span>
               </div>
             </div>
 
             {/* Categoria */}
-            <div className="flex items-center gap-3">
-              <Tag size={16} className="text-slate-400" />
-              <div>
-                <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Cat.</span>
-                <span className="font-bold text-slate-700 text-sm truncate max-w-[100px]" title={typeof machine.category === 'string' ? machine.category : ''}>
+            <div className="flex items-center gap-2">
+              <Tag size={14} className="text-slate-400" />
+              <div className="flex flex-col leading-none">
+                <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wide">Cat.</span>
+                <span className="font-bold text-slate-700 text-xs truncate max-w-[80px]" title={typeof machine.category === 'string' ? machine.category : ''}>
                   {typeof machine.category === 'string' ? machine.category : 'Standard'}
                 </span>
               </div>
@@ -150,23 +150,23 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
 
             {/* Hours */}
             {safeHours > 0 ? (
-              <div className="flex items-center gap-3">
-                <Clock size={16} className="text-slate-400" />
-                <div>
-                  <span className="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Ore</span>
-                  <span className="font-bold text-slate-700 text-sm">{safeHours} h</span>
+              <div className="flex items-center gap-2">
+                <Clock size={14} className="text-slate-400" />
+                <div className="flex flex-col leading-none">
+                  <span className="text-[9px] uppercase text-slate-400 font-bold tracking-wide">Ore</span>
+                  <span className="font-bold text-slate-700 text-xs">{safeHours} h</span>
                 </div>
               </div>
             ) : null}
             
           </div>
 
-          <div className="mt-auto space-y-4">
+          <div className="mt-auto space-y-3">
             {/* Price */}
             {showPrices && (safePrice > 0 || machine.rentalPrice) && (
               <div className="flex items-baseline gap-1">
-                <span className="text-sm font-bold text-slate-400">da</span>
-                <span className="text-2xl font-black text-slate-900 tracking-tight">
+                <span className="text-xs font-bold text-slate-400">da</span>
+                <span className="text-xl font-black text-slate-900 tracking-tight">
                   {(machine.type === 'rental' || machine.type === 'rent') && machine.rentalPrice 
                     ? machine.rentalPrice 
                     : safePrice > 0
@@ -178,10 +178,10 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
 
             <Link 
               to={`/macchina/${machine.id}`}
-              className="w-full bg-slate-900 text-white hover:bg-orange-600 py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all group/btn"
+              className="w-full bg-slate-900 text-white hover:bg-orange-600 py-3 px-4 rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all group/btn"
             >
               Dettagli
-              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
