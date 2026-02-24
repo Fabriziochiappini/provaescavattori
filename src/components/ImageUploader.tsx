@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
 interface ImageUploaderProps {
-    onUpload: (file: File) => Promise<void>;
+    onUpload?: (file: File) => Promise<void>; // Make optional
+    onUploadMultiple?: (files: File[]) => Promise<void>; // New prop for bulk
     label?: string;
     accept?: string;
     maxSizeMB?: number;
@@ -11,6 +12,7 @@ interface ImageUploaderProps {
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
     onUpload,
+    onUploadMultiple,
     label = "Carica Immagine",
     accept = "image/*",
     maxSizeMB = 5,
@@ -21,32 +23,35 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const files = Array.from(e.target.files);
+        const files = e.target.files ? Array.from(e.target.files) : [];
+        if (files.length === 0) return;
 
-            // Check sizes
-            const invalidFile = files.find(f => f.size > maxSizeMB * 1024 * 1024);
-            if (invalidFile) {
-                setError(`Il file ${invalidFile.name} è troppo grande (Max ${maxSizeMB}MB)`);
-                return;
-            }
+        // Check sizes
+        const invalidFile = files.find(f => f.size > maxSizeMB * 1024 * 1024);
+        if (invalidFile) {
+            setError(`Il file ${invalidFile.name} è troppo grande (Max ${maxSizeMB}MB)`);
+            return;
+        }
 
-            setUploading(true);
-            setError(null);
+        setUploading(true);
+        setError(null);
 
-            try {
-                // Upload sequentially to ensure order/state consistency
+        try {
+            if (onUploadMultiple) {
+                // Bulk upload handler
+                await onUploadMultiple(files);
+            } else if (onUpload) {
+                // Sequential single upload handler (legacy)
                 for (const file of files) {
                     await onUpload(file);
                 }
-            } catch (err) {
-                console.error(err);
-                setError("Errore durante il caricamento di alcuni file.");
-            } finally {
-                setUploading(false);
-                // Reset input
-                e.target.value = '';
             }
+        } catch (err) {
+            console.error(err);
+            setError("Errore durante il caricamento.");
+        } finally {
+            setUploading(false);
+            e.target.value = ''; // Reset input
         }
     };
 

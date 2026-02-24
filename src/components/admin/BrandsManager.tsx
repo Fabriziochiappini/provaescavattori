@@ -133,10 +133,9 @@ const BrandsManager: React.FC = () => {
 
                     <div className="relative">
                         <ImageUploader
-                            onUpload={(file) => handleUploadLogos([file])}
-                        // Note: Assuming ImageUploader handles single file but we can wrap it or modify if it supports multiple.
-                        // Based on current projects, many ImageUploaders are single-file. 
-                        // Let's make sure we can handle multiple if possible, otherwise user can click multiple times.
+                            onUploadMultiple={handleUploadLogos}
+                            multiple={true}
+                            label="Seleziona Loghi"
                         />
                         {isUploading && (
                             <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 flex items-center justify-center rounded-xl z-10">
