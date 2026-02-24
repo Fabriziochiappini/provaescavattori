@@ -58,16 +58,36 @@ const Footer: React.FC = () => {
           {/* Contact Info */}
           <div>
             <h4 className="text-lg font-bold font-oswald uppercase tracking-wider mb-6">Contattaci</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 text-sm">
               <li className="flex items-start space-x-3 text-zinc-400">
                 <MapPin className="text-orange-500 shrink-0 mt-1" size={18} />
-                <span>Sede Operativa: Via Campo di Santo, 38<br />81040 Pietravairano (CE)</span>
+                <div className="flex flex-col gap-1">
+                    <span className="font-bold text-white uppercase">Sede Legale:</span>
+                    <span>Via Roma, 20 - 81040 Pietravairano (CE)</span>
+                </div>
+              </li>
+              <li className="flex items-start space-x-3 text-zinc-400">
+                <MapPin className="text-orange-500 shrink-0 mt-1" size={18} />
+                <div className="flex flex-col gap-1">
+                    <span className="font-bold text-white uppercase">Sede Operativa:</span>
+                    <span>Via Fossa della Marcia, 8 - 81040 Pietravairano (CE)</span>
+                </div>
+              </li>
+              <li className="flex items-center space-x-3 text-zinc-400 pt-2 border-t border-zinc-900 mt-2">
+                <Phone className="text-orange-500 shrink-0" size={18} />
+                <div className="flex flex-col">
+                    <span className="text-xs uppercase font-bold text-zinc-500">Uffici</span>
+                    <a onClick={trackInteraction} href="tel:+390823526506" className="hover:text-orange-500 font-bold text-white text-lg">0823 526506</a>
+                </div>
               </li>
               <li className="flex items-center space-x-3 text-zinc-400">
                 <Phone className="text-orange-500 shrink-0" size={18} />
-                <a onClick={trackInteraction} href="tel:+390823982162" className="hover:text-orange-500">+39 0823 982162</a>
+                <div className="flex flex-col">
+                    <span className="text-xs uppercase font-bold text-zinc-500">Mobile</span>
+                    <a onClick={trackInteraction} href="tel:+393518349368" className="hover:text-orange-500 font-bold text-white text-lg">351 8349368</a>
+                </div>
               </li>
-              <li className="flex items-center space-x-3 text-zinc-400">
+              <li className="flex items-center space-x-3 text-zinc-400 pt-2">
                 <Mail className="text-orange-500 shrink-0" size={18} />
                 <a onClick={trackInteraction} href="mailto:info@contegroup.com" className="hover:text-orange-500">info@contegroup.com</a>
               </li>

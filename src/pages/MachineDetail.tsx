@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ChevronLeft, Scale, Clock, Zap, Calendar, Wrench, Phone, Mail, Share2, Maximize2, FileText, Download } from 'lucide-react';
+import { ChevronLeft, Scale, Clock, Zap, Calendar, Wrench, Phone, Mail, Share2, Maximize2, FileText, Download, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GalleryModal from '../components/GalleryModal';
 
@@ -304,6 +304,15 @@ const MachineDetail: React.FC = () => {
                                 className="px-6 py-4 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-colors flex items-center justify-center"
                             >
                                 <Phone size={24} />
+                            </a>
+                            <a
+                                href={`https://wa.me/390823982162?text=${encodeURIComponent(`Salve, vorrei informazioni su: ${machine.brand} ${machine.name}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => trackInteraction()}
+                                className="px-6 py-4 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors flex items-center justify-center"
+                            >
+                                <MessageCircle size={24} />
                             </a>
                             <button
                                 onClick={() => {
