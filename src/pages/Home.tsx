@@ -88,7 +88,7 @@ const Home: React.FC = () => {
 
 
   return (
-    <div className="pt-20">
+    <div className="pt-24 md:pt-28">
       {/* 1. HERO SECTION */}
       <section className="relative min-h-screen flex items-center overflow-hidden bg-slate-950">
         <div className="absolute inset-0 z-0">
