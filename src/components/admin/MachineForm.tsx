@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Excavator, useData } from '../../context/DataContext';
 import ImageUploader from '../ImageUploader';
 import { Reorder } from 'framer-motion';
-import { X, GripVertical, Trash2, Plus, Save, ArrowLeft, Settings } from 'lucide-react';
+import { X, GripVertical, Trash2, Plus, Save, ArrowLeft, Settings, FileText } from 'lucide-react';
 
 interface MachineFormProps {
     initialData?: Excavator | null;
@@ -11,7 +11,7 @@ interface MachineFormProps {
 }
 
 const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel }) => {
-    const { uploadImage, deleteImage, specCategories, machineCategories } = useData();
+    const { uploadImage, uploadFile, deleteImage, specCategories, machineCategories } = useData();
     const [formData, setFormData] = useState<Partial<Excavator>>({
         type: 'sale',
         category: '',
@@ -24,6 +24,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
     });
 
     const [images, setImages] = useState<string[]>([]);
+    const [technicalSheet, setTechnicalSheet] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [activeSection, setActiveSection] = useState<1 | 2 | 3>(1);
 
@@ -31,6 +32,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         if (initialData) {
             setFormData(initialData);
             setImages(initialData.images || []);
+            setTechnicalSheet(initialData.technicalSheetUrl || null);
             if (initialData.imageUrl && (!initialData.images || initialData.images.length === 0)) {
                 setImages([initialData.imageUrl]);
             }
@@ -94,6 +96,25 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
         }
     };
 
+    const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        try {
+            const url = await uploadFile(file, 'technical_sheets');
+            setTechnicalSheet(url);
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("Errore caricamento PDF");
+        }
+    };
+
+    const handlePdfDelete = () => {
+        if (window.confirm("Rimuovere la scheda tecnica?")) {
+            setTechnicalSheet(null);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.name || !formData.brand) return alert("Compila i campi obbligatori!");
@@ -105,6 +126,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                 model: formData.name, // Ensure model is set from name (which is the model input)
                 images: images,
                 imageUrl: images[0] || '', // Main image is the first one
+                technicalSheetUrl: technicalSheet || undefined,
             };
 
             // Generate ID if new
@@ -301,13 +323,54 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-1">
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Carica Nuove</label>
-                                <ImageUploader
-                                    onUpload={handleImageUpload}
-                                    multiple={true}
-                                    label="Seleziona Foto"
-                                />
+                            <div className="md:col-span-1 space-y-6">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-2">Carica Nuove Foto</label>
+                                    <ImageUploader
+                                        onUpload={handleImageUpload}
+                                        multiple={true}
+                                        label="Seleziona Foto"
+                                    />
+                                </div>
+
+                                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                                    <label className="block text-xs font-bold uppercase text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                                        <FileText size={14} />
+                                        Scheda Tecnica (PDF)
+                                    </label>
+                                    
+                                    {!technicalSheet ? (
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                accept=".pdf"
+                                                onChange={handlePdfUpload}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            />
+                                            <div className="w-full py-3 px-4 border-2 border-dashed border-blue-200 rounded-lg bg-white dark:bg-gray-800 text-blue-500 text-sm font-bold text-center hover:bg-blue-50 transition-colors">
+                                                + Carica PDF
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-lg border border-blue-200">
+                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                <div className="bg-red-100 p-1.5 rounded text-red-500">
+                                                    <FileText size={16} />
+                                                </div>
+                                                <span className="text-xs font-medium truncate max-w-[120px]">
+                                                    {technicalSheet.split('%2F').pop()?.split('?')[0]}
+                                                </span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handlePdfDelete}
+                                                className="text-gray-400 hover:text-red-500"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="md:col-span-2">

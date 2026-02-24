@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Machine } from '../types';
-import { ChevronRight, Zap, Scale, Clock, Maximize2, Tag } from 'lucide-react';
+import { ChevronRight, Zap, Scale, Clock, Maximize2, Tag, FileText } from 'lucide-react';
 import GalleryModal from './GalleryModal';
 import { useData } from '../context/DataContext';
 
@@ -66,6 +66,20 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine }) => {
             <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest border border-white/10 shadow-lg">
               {machine.condition}
             </div>
+          )}
+
+          {/* PDF Badge */}
+          {machine.technicalSheetUrl && (
+            <a 
+              href={machine.technicalSheetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute top-4 left-24 bg-red-600/90 backdrop-blur text-white p-1.5 rounded-full shadow-lg hover:bg-red-700 transition-colors z-10"
+              title="Scheda Tecnica PDF"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FileText size={14} />
+            </a>
           )}
 
           {/* Type Badge */}

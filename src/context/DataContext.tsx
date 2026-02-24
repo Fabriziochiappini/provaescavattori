@@ -26,6 +26,7 @@ export interface Excavator {
     powerType?: 'Elettrico' | 'Termico' | string; // Added powerType
     specs?: Record<string, string>; // Added dynamic specs
     imageUrl?: string;
+    technicalSheetUrl?: string; // PDF Technical Sheet
     createdAt?: number | any;
 }
 
@@ -134,6 +135,7 @@ interface DataContextType {
     trackInteraction: () => void;
 
     uploadImage: (file: File, folder: string) => Promise<string>;
+    uploadFile: (file: File, folder: string) => Promise<string>;
     deleteImage: (url: string) => Promise<void>;
     siteData: typeof initialSiteData;
 
@@ -407,6 +409,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const uploadFile = async (file: File, folder: string) => {
+        try {
+            const timestamp = Date.now();
+            const storageRef = ref(storage, `${folder}/${timestamp}_${file.name}`);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            throw error;
+        }
+    };
+
     const deleteImage = async (url: string) => {
         if (!url || !url.includes('firebasestorage')) return;
         try {
@@ -427,7 +441,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             galleries, addGallery, updateGallery, deleteGallery,
             homeGallery, updateHomeGallery,
             stats, trackInteraction,
-            uploadImage, deleteImage,
+            uploadImage, uploadFile, deleteImage,
             siteData: initialSiteData,
             brandsBanner,
             updateBrandsBanner,

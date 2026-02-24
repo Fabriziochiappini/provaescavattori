@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ChevronLeft, Scale, Clock, Zap, Calendar, Wrench, Phone, Mail, Share2, Maximize2 } from 'lucide-react';
+import { ChevronLeft, Scale, Clock, Zap, Calendar, Wrench, Phone, Mail, Share2, Maximize2, FileText, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GalleryModal from '../components/GalleryModal';
 
@@ -181,6 +181,27 @@ const MachineDetail: React.FC = () => {
                                     </div>
                                 )}
                             </div>
+                        )}
+
+                        {/* Technical Sheet Download */}
+                        {machine.technicalSheetUrl && (
+                            <a 
+                                href={machine.technicalSheetUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-4 mb-8 bg-blue-50 border border-blue-100 rounded-xl text-blue-700 hover:bg-blue-100 transition-colors group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-white rounded-lg text-blue-600 shadow-sm">
+                                        <FileText size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm uppercase">Scheda Tecnica Ufficiale</p>
+                                        <p className="text-xs opacity-70">Scarica il PDF con tutti i dettagli</p>
+                                    </div>
+                                </div>
+                                <Download size={20} className="group-hover:translate-y-1 transition-transform" />
+                            </a>
                         )}
 
                         {/* Tabs */}
