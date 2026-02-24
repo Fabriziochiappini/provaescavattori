@@ -13,13 +13,14 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Info */}
           <div className="space-y-6">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-orange-600 p-2 rounded-lg">
-                <HardHat className="w-6 h-6 text-black" />
+            <Link to="/" className="inline-block">
+              <div className="bg-white/90 p-3 rounded-xl inline-block hover:bg-white transition-colors">
+                <img 
+                  src="/images/logoconte.png" 
+                  alt="Conte Group Logo" 
+                  className="h-12 w-auto object-contain"
+                />
               </div>
-              <span className="text-xl font-bold font-oswald tracking-tighter">
-                CONTE<span className="text-orange-500">GROUP</span>
-              </span>
             </Link>
             <p className="text-zinc-400 text-sm leading-relaxed">
               Da oltre 40 anni, Venus SRL (Conte Group) è il vostro partner di fiducia in Campania per la vendita, il noleggio e l'assistenza di macchine movimento terra e carrelli elevatori.
