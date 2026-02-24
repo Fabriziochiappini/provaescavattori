@@ -14,11 +14,11 @@ const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="space-y-6">
             <Link to="/" className="inline-block">
-              <div className="bg-white/90 p-3 rounded-xl inline-block hover:bg-white transition-colors">
+              <div className="bg-white/90 p-4 rounded-xl inline-block hover:bg-white transition-colors">
                 <img 
                   src="/images/logoconte.png" 
                   alt="Conte Group Logo" 
-                  className="h-12 w-auto object-contain"
+                  className="h-24 w-auto object-contain"
                 />
               </div>
             </Link>
