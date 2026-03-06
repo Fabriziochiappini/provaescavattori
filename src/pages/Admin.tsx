@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useData, type Excavator, type Service, type ContactInfo, type SpecCategory, type Gallery } from '../context/DataContext';
 import ImageUploader from '../components/ImageUploader';
 import MachineForm from '../components/admin/MachineForm';
@@ -8,7 +9,7 @@ import MachineCategoriesManager from '../components/admin/MachineCategoriesManag
 import FloatingAdminNav from '../components/admin/FloatingAdminNav';
 import { Reorder } from 'framer-motion';
 import { usePWAInstall } from '../hooks/usePWAInstall';
-import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree, Trash2, Edit2, Mail, MapPin, Clock, HelpCircle, Sliders } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Phone, Image as ImageIcon, Award, Menu, X, LogOut, Download, Plus, Settings, FolderTree, Trash2, Edit2, Mail, MapPin, Clock, HelpCircle, Sliders, ArrowLeft } from 'lucide-react';
 
 const getIcon = (iconName: string) => {
     switch (iconName?.toLowerCase()) {
@@ -65,7 +66,7 @@ const Admin: React.FC = () => {
     }, []);
 
     const [activeTab, setActiveTab] = useState<'excavators' | 'services' | 'contacts' | 'gallery' | 'brands' | 'specs' | 'categories' | 'settings'>('excavators');
-    
+
     // Usa lo stato dal DataContext (Firebase), default a 'smart' se non caricato
     const navStyle = adminSettings?.navStyle || 'smart';
     const showPrices = adminSettings?.showPrices !== false; // Default true if undefined
@@ -348,6 +349,12 @@ const Admin: React.FC = () => {
             ) : (
                 <div className="hidden sm:flex bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 px-6 py-4 items-center gap-6 fixed top-0 left-0 right-0 z-[110]">
                     <h1 className="text-2xl font-black text-amber-500 uppercase italic mr-4">Admin</h1>
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all active:scale-95"
+                    >
+                        <ArrowLeft size={14} /> Torna al sito
+                    </Link>
                     <div className="flex-grow flex items-center gap-2 overflow-x-auto">
                         {adminTabs.map((tab) => {
                             const Icon = tab.icon;
@@ -375,11 +382,19 @@ const Admin: React.FC = () => {
 
             {/* Mobile Header Menu */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 z-[110] flex items-center justify-between px-4 sm:hidden">
-                <h1 className="text-xl font-black text-amber-500 uppercase italic">Admin</h1>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-xl font-black text-amber-500 uppercase italic">Admin</h1>
+                    <Link
+                        to="/"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg font-bold uppercase tracking-widest text-[9px] active:scale-95 shadow-sm border border-slate-200"
+                    >
+                        <ArrowLeft size={12} /> Sito
+                    </Link>
+                </div>
                 <div className="flex items-center gap-2">
                     {canInstall && !isInstalled && (
-                        <button 
-                            onClick={installPWA} 
+                        <button
+                            onClick={installPWA}
                             className="flex items-center gap-2 px-3 py-2 text-white bg-amber-500 rounded-xl active:scale-95 transition-all font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-amber-500/30"
                         >
                             <Download size={16} />
@@ -439,12 +454,20 @@ const Admin: React.FC = () => {
                         <p className="text-slate-400 font-bold mt-1 uppercase tracking-widest text-[10px]">Gestione Contenuti</p>
                     </div>
 
-                    <button
-                        onClick={handleLogout}
-                        className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 rounded-2xl text-slate-600 hover:text-red-500 font-black tracking-widest text-[10px] uppercase transition-all active:scale-95"
-                    >
-                        <LogOut size={14} /> Logout
-                    </button>
+                    <div className="flex gap-3">
+                        <Link
+                            to="/"
+                            className="flex items-center gap-2 px-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-amber-500 hover:bg-amber-50 font-black tracking-widest text-[10px] uppercase transition-all active:scale-95 shadow-sm"
+                        >
+                            <ArrowLeft size={14} /> Torna al sito
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 rounded-2xl text-slate-600 hover:text-red-500 font-black tracking-widest text-[10px] uppercase transition-all active:scale-95"
+                        >
+                            <LogOut size={14} /> Logout
+                        </button>
+                    </div>
                 </div>
 
                 {!isAdding && !editingItem ? (
@@ -689,10 +712,10 @@ const Admin: React.FC = () => {
                                 <div className="flex justify-between items-center">
                                     <h2 className="text-xl font-black uppercase tracking-tight text-slate-800">Impostazioni Admin</h2>
                                 </div>
-                                
+
                                 <div className="bg-white p-6 sm:p-8 rounded-[32px] shadow-sm border border-slate-100">
                                     <h3 className="text-lg font-black text-slate-900 mb-6 uppercase tracking-tighter italic">Aspetto e Navigazione</h3>
-                                    
+
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 bg-slate-50 rounded-[24px]">
                                         <div>
                                             <h4 className="font-black text-slate-900 flex items-center gap-2">
@@ -701,7 +724,7 @@ const Admin: React.FC = () => {
                                             </h4>
                                             <p className="text-sm font-medium text-slate-500 mt-1">Scegli tra il menu flottante "smart" in basso a destra, oppure la barra di navigazione fissa in alto (classica).</p>
                                         </div>
-                                        
+
                                         <div className="flex bg-slate-200/50 p-1.5 rounded-2xl whitespace-nowrap overflow-x-auto w-full sm:w-auto">
                                             <button
                                                 onClick={async () => {
@@ -732,7 +755,7 @@ const Admin: React.FC = () => {
                                                 Se attivo, i prezzi delle macchine in vendita saranno visibili pubblicamente. Se disattivo, verranno nascosti ovunque.
                                             </p>
                                         </div>
-                                        
+
                                         <div className="flex bg-slate-200/50 p-1.5 rounded-2xl whitespace-nowrap overflow-x-auto w-full sm:w-auto">
                                             <button
                                                 onClick={async () => {
