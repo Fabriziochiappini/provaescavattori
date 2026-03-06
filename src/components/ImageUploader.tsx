@@ -15,7 +15,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     onUploadMultiple,
     label = "Carica Immagine",
     accept = "image/*",
-    maxSizeMB = 5,
+    maxSizeMB = 20, // Increased to 20MB as we use client-side compression later
     disabled = false,
     multiple = false
 }) => {

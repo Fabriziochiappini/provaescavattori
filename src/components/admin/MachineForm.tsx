@@ -99,7 +99,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
     const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        
+
         try {
             const url = await uploadFile(file, 'technical_sheets');
             setTechnicalSheet(url);
@@ -126,7 +126,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                 model: formData.name, // Ensure model is set from name (which is the model input)
                 images: images,
                 imageUrl: images[0] || '', // Main image is the first one
-                technicalSheetUrl: technicalSheet || undefined,
+                technicalSheetUrl: technicalSheet || null,
             };
 
             // Generate ID if new
@@ -338,7 +338,7 @@ const MachineForm: React.FC<MachineFormProps> = ({ initialData, onSave, onCancel
                                         <FileText size={14} />
                                         Scheda Tecnica (PDF)
                                     </label>
-                                    
+
                                     {!technicalSheet ? (
                                         <div className="relative">
                                             <input
