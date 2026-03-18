@@ -64,7 +64,17 @@ const LayoutContent: React.FC = () => {
   );
 };
 
+const MAINTENANCE_MODE = true;
+
 const App: React.FC = () => {
+  if (MAINTENANCE_MODE) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'white', color: 'black', fontFamily: 'sans-serif' }}>
+        <h1>server scaduto</h1>
+      </div>
+    );
+  }
+
   return (
     <DataProvider>
       <Router>
