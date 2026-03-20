@@ -64,7 +64,7 @@ const LayoutContent: React.FC = () => {
   );
 };
 
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const App: React.FC = () => {
   if (MAINTENANCE_MODE) {
