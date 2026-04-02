@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/macchina/:id",
+            "destination": "/api/macchina?id=$id"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
