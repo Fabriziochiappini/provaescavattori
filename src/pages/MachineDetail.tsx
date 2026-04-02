@@ -314,19 +314,66 @@ const MachineDetail: React.FC = () => {
                             >
                                 <MessageCircle size={24} />
                             </a>
-                            <button
-                                onClick={() => {
-                                    trackInteraction();
-                                    navigator.share({
-                                        title: `Conte Group - ${machine.name}`,
-                                        text: `Guarda questo mezzo: ${machine.name}`,
-                                        url: window.location.href,
-                                    }).catch(() => { });
-                                }}
-                                className="px-6 py-4 bg-zinc-100 text-zinc-900 rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center"
-                            >
-                                <Share2 size={24} />
-                            </button>
+                            <div className="relative">
+                                <button
+                                    onClick={() => {
+                                        const shareMenu = document.getElementById('share-menu');
+                                        if (shareMenu) {
+                                            shareMenu.classList.toggle('hidden');
+                                        }
+                                    }}
+                                    className="px-6 py-4 h-full bg-zinc-100 text-zinc-900 rounded-xl font-bold hover:bg-zinc-200 transition-colors flex items-center justify-center"
+                                >
+                                    <Share2 size={24} />
+                                </button>
+                                
+                                {/* Dropdown Menu */}
+                                <div id="share-menu" className="hidden absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-lg border border-zinc-100 overflow-hidden z-50">
+                                    <button 
+                                        onClick={() => {
+                                            trackInteraction();
+                                            window.open(`https://wa.me/?text=${encodeURIComponent(`Guarda questo mezzo: ${window.location.href}`)}`, '_blank');
+                                        }}
+                                        className="w-full text-left px-4 py-3 hover:bg-zinc-50 font-medium text-sm border-b border-zinc-100"
+                                    >
+                                        Condividi su WhatsApp
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            trackInteraction();
+                                            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                                        }}
+                                        className="w-full text-left px-4 py-3 hover:bg-zinc-50 font-medium text-sm border-b border-zinc-100"
+                                    >
+                                        Condividi su Facebook
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            trackInteraction();
+                                            navigator.clipboard.writeText(window.location.href);
+                                            alert("Link copiato negli appunti!");
+                                        }}
+                                        className="w-full text-left px-4 py-3 hover:bg-zinc-50 font-medium text-sm border-b border-zinc-100"
+                                    >
+                                        Copia Link
+                                    </button>
+                                    {navigator.share && (
+                                        <button 
+                                            onClick={() => {
+                                                trackInteraction();
+                                                navigator.share({
+                                                    title: `Conte Group - ${machine.name}`,
+                                                    text: `Guarda questo mezzo: ${machine.name}`,
+                                                    url: window.location.href,
+                                                }).catch(() => { });
+                                            }}
+                                            className="w-full text-left px-4 py-3 hover:bg-zinc-50 font-medium text-sm text-amber-600"
+                                        >
+                                            Usa app di sistema...
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                     </div>
