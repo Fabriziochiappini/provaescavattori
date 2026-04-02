@@ -42,7 +42,7 @@ export default async function handler(req: any, res: any) {
           }
 
           const title = `Conte Group - ${brand} ${name}`.trim();
-          const desc = description.substring(0, 150) + (description.length > 150 ? '...' : '');
+          const desc = description.substring(0, 150).replace(/\n/g, ' ') + (description.length > 150 ? '...' : '');
 
           const metaTags = `
   <title>${title}</title>
